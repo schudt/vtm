@@ -234,11 +234,11 @@ public class XmlThemeBuilder extends DefaultHandler {
                 checkState(localName, Element.RENDERING_INSTRUCTION);
                 handleLineElement(localName, attributes, false);
 
-            } else if ("text".equals(localName)) {
+            } else if ("text".equals(localName) || "pathText".equals(localName)) {
                 checkState(localName, Element.RENDERING_INSTRUCTION);
                 handleTextElement(localName, attributes, false, false);
 
-            } else if ("symbol".equals(localName)) {
+            } else if ("symbol".equals(localName) || "lineSymbol".equals(localName)) {
                 checkState(localName, Element.RENDERING_INSTRUCTION);
                 SymbolStyle symbol = createSymbol(localName, attributes);
                 if (symbol != null)
@@ -252,10 +252,6 @@ public class XmlThemeBuilder extends DefaultHandler {
                 checkState(localName, Element.RENDERING_INSTRUCTION);
                 ExtrusionStyle extrusion = createExtrusion(localName, attributes, mLevels++);
                 mCurrentRule.addStyle(extrusion);
-
-            } else if ("lineSymbol".equals(localName)) {
-                checkState(localName, Element.RENDERING_INSTRUCTION);
-                log.error("unknown element: {}", localName);
 
             } else if ("atlas".equals(localName)) {
                 checkState(localName, Element.ATLAS);
@@ -442,10 +438,10 @@ public class XmlThemeBuilder extends DefaultHandler {
             else if ("blur".equals(name))
                 b.blur = parseFloat(value);
 
-            else if ("style".equals(name))
+            else if ("style".equals(name) || "font-style".equals(name))
                 ; // ignore
 
-            else if ("dasharray".equals(name))
+            else if ("dasharray".equals(name) || "stroke-dasharray".equals(name) )
                 ; // TBD
 
             else
@@ -745,10 +741,10 @@ public class XmlThemeBuilder extends DefaultHandler {
             else if ("font-family".equals(name))
                 b.fontFamily = FontFamily.valueOf(value.toUpperCase());
 
-            else if ("style".equals(name))
+            else if ("style".equals(name) || "font-style".equals(name))
                 b.fontStyle = FontStyle.valueOf(value.toUpperCase());
 
-            else if ("size".equals(name))
+            else if ("size".equals(name) || "font-size".equals(name))
                 b.fontSize = Float.parseFloat(value);
 
             else if ("fill".equals(name))
@@ -770,7 +766,7 @@ public class XmlThemeBuilder extends DefaultHandler {
                 // NB: minus..
                 b.dy = -Float.parseFloat(value) * CanvasAdapter.dpi / 160;
 
-            else if ("symbol".equals(name)) {
+            else if ("symbol".equals(name) || "lineSymbol".equals(name)) {
                 String lowValue = value.toLowerCase(Locale.ENGLISH);
                 if (lowValue.endsWith(".png") || lowValue.endsWith(".svg")) {
                     try {

@@ -237,7 +237,7 @@ public class MapDatabase implements ITileDataSource {
             /* simplification tolerance */
             int pixel = (tile.zoomLevel > 11) ? 1 : 2;
 
-            int simplify = Tile.SIZE / pixel;
+            int simplify = Tile.SIZE ;// pixel;
 
             /* translate screen pixel for tile to latitude and longitude
              * tolerance for point reduction before projection. */

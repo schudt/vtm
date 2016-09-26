@@ -20,7 +20,7 @@ package org.oscim.core;
 /**
  * An implementation of the spherical Mercator projection.
  */
-public final class MercatorProjection {
+public final class MercatorPronautijection {
     /**
      * The circumference of the earth at the equator in meters.
      */
@@ -133,7 +133,7 @@ public final class MercatorProjection {
     public static double limitLatitude(double latitude) {
         return Math.max(Math.min(latitude, LATITUDE_MAX), LATITUDE_MIN);
     }
-
+git
     /**
      * @param longitude the longitude value which should be checked.
      * @return the given longitude value, limited to the possible longitude

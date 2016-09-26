@@ -157,7 +157,7 @@ public class TileManager {
 
     public TileManager(Map map, int cacheLimit) {
         mMap = map;
-        mMaxZoom = 20;
+        mMaxZoom = 22;
         mMinZoom = 0;
         mCacheLimit = cacheLimit;
         mCacheReduce = 0;

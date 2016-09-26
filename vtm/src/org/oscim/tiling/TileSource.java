@@ -50,7 +50,7 @@ public abstract class TileSource {
     }
 
     protected int mZoomMin = 0;
-    protected int mZoomMax = 20;
+    protected int mZoomMax = 22;
 
     protected TileSource() {
     }
