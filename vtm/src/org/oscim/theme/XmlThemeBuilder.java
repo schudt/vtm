@@ -2,6 +2,7 @@
  * Copyright 2010, 2011, 2012 mapsforge.org
  * Copyright 2013 Hannes Janetzek
  * Copyright 2016 devemux86
+ * Copyright 2016 Longri
  *
  * This file is part of the OpenScienceMap project (http://www.opensciencemap.org).
  *
@@ -52,10 +53,10 @@ import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.DefaultHandler;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.Set;
 import java.util.Stack;
 
 import static java.lang.Boolean.parseBoolean;
@@ -63,15 +64,16 @@ import static java.lang.Float.parseFloat;
 import static java.lang.Integer.parseInt;
 
 public class XmlThemeBuilder extends DefaultHandler {
-    static final Logger log = LoggerFactory.getLogger(XmlThemeBuilder.class);
+    private static final Logger log = LoggerFactory.getLogger(XmlThemeBuilder.class);
 
     private static final int RENDER_THEME_VERSION = 1;
 
-    private static enum Element {
-        RENDER_THEME, RENDERING_INSTRUCTION, RULE, STYLE, ATLAS;
+    private enum Element {
+        RENDER_THEME, RENDERING_INSTRUCTION, RULE, STYLE, ATLAS, RENDERING_STYLE
     }
 
     private static final String ELEMENT_NAME_RENDER_THEME = "rendertheme";
+    private static final String ELEMENT_NAME_STYLE_MENU = "stylemenu";
     private static final String ELEMENT_NAME_MATCH = "m";
     private static final String UNEXPECTED_ELEMENT = "unexpected element: ";
 
@@ -80,21 +82,16 @@ public class XmlThemeBuilder extends DefaultHandler {
     private static final String AREA_STYLE = "A";
 
     /**
-     * @param relativePathPrefix the prefix for all relative resource paths.
-     * @param inputStream        an input stream containing valid render theme XML data.
-     * @return a new RenderTheme which is created by parsing the XML data from
-     * the input stream.
+     * @param theme an input theme containing valid render theme XML data.
+     * @return a new RenderTheme which is created by parsing the XML data from the input theme.
      * @throws ThemeException if an error occurs while parsing the render theme XML.
-     * @throws IOException    if an I/O error occurs while reading from the input stream.
      */
-    public static IRenderTheme read(String relativePathPrefix, InputStream inputStream)
-            throws ThemeException {
-
-        XmlThemeBuilder renderThemeHandler = new XmlThemeBuilder(relativePathPrefix);
+    public static IRenderTheme read(ThemeFile theme) throws ThemeException {
+        XmlThemeBuilder renderThemeHandler = new XmlThemeBuilder(theme);
 
         try {
-            new XMLReaderAdapter().parse(renderThemeHandler, inputStream);
-        } catch (IOException e) {
+            new XMLReaderAdapter().parse(renderThemeHandler, theme.getRenderThemeAsStream());
+        } catch (Exception e) {
             throw new ThemeException(e.getMessage());
         }
 
@@ -109,20 +106,18 @@ public class XmlThemeBuilder extends DefaultHandler {
      * @param value          the XML attribute value.
      * @param attributeIndex the XML attribute index position.
      */
-    public static void logUnknownAttribute(String element, String name,
-                                           String value, int attributeIndex) {
+    private static void logUnknownAttribute(String element, String name,
+                                            String value, int attributeIndex) {
         log.debug("unknown attribute in element {} () : {} = {}",
                 element, attributeIndex, name, value);
     }
 
-    private final ArrayList<RuleBuilder> mRulesList = new ArrayList<RuleBuilder>();
-    private final Stack<Element> mElementStack = new Stack<Element>();
-    private final Stack<RuleBuilder> mRuleStack = new Stack<RuleBuilder>();
-    private final HashMap<String, RenderStyle> mStyles =
-            new HashMap<String, RenderStyle>(10);
+    private final ArrayList<RuleBuilder> mRulesList = new ArrayList<>();
+    private final Stack<Element> mElementStack = new Stack<>();
+    private final Stack<RuleBuilder> mRuleStack = new Stack<>();
+    private final HashMap<String, RenderStyle> mStyles = new HashMap<>(10);
 
-    private final HashMap<String, TextStyle.TextBuilder<?>> mTextStyles =
-            new HashMap<String, TextStyle.TextBuilder<?>>(10);
+    private final HashMap<String, TextStyle.TextBuilder<?>> mTextStyles = new HashMap<>(10);
 
     private final TextBuilder<?> mTextBuilder = TextStyle.builder();
     private final AreaBuilder<?> mAreaBuilder = AreaStyle.builder();
@@ -135,11 +130,18 @@ public class XmlThemeBuilder extends DefaultHandler {
     private int mMapBackground = 0xffffffff;
     private float mTextScale = 1;
 
-    private final String mRelativePathPrefix;
+    private final ThemeFile mTheme;
     private RenderTheme mRenderTheme;
 
-    public XmlThemeBuilder(String relativePathPrefix) {
-        mRelativePathPrefix = relativePathPrefix;
+    private final float mScale;
+
+    private Set<String> mCategories;
+    private XmlRenderThemeStyleLayer mCurrentLayer;
+    private XmlRenderThemeStyleMenu mRenderThemeStyleMenu;
+
+    public XmlThemeBuilder(ThemeFile theme) {
+        mTheme = theme;
+        mScale = CanvasAdapter.scale + (CanvasAdapter.dpi / 240 - 1) * 0.5f;
     }
 
     @Override
@@ -166,9 +168,19 @@ public class XmlThemeBuilder extends DefaultHandler {
         if (ELEMENT_NAME_MATCH.equals(localName)) {
             mRuleStack.pop();
             if (mRuleStack.empty()) {
-                mRulesList.add(mCurrentRule);
+                if (isVisible(mCurrentRule)) {
+                    mRulesList.add(mCurrentRule);
+                }
             } else {
                 mCurrentRule = mRuleStack.peek();
+            }
+        } else if (ELEMENT_NAME_STYLE_MENU.equals(localName)) {
+            // when we are finished parsing the menu part of the file, we can get the
+            // categories to render from the initiator. This allows the creating action
+            // to select which of the menu options to choose
+            if (null != mTheme.getMenuCallback()) {
+                // if there is no callback, there is no menu, so the categories will be null
+                mCategories = mTheme.getMenuCallback().getCategories(mRenderThemeStyleMenu);
             }
         }
     }
@@ -193,8 +205,8 @@ public class XmlThemeBuilder extends DefaultHandler {
 
             } else if (ELEMENT_NAME_MATCH.equals(localName)) {
                 checkState(localName, Element.RULE);
-                RuleBuilder rule = createRule(localName, attributes, mRuleStack);
-                if (!mRuleStack.empty()) {
+                RuleBuilder rule = createRule(localName, attributes);
+                if (!mRuleStack.empty() && isVisible(rule)) {
                     mCurrentRule.addSubRule(rule);
                 }
                 mCurrentRule = rule;
@@ -228,7 +240,8 @@ public class XmlThemeBuilder extends DefaultHandler {
             } else if ("circle".equals(localName)) {
                 checkState(localName, Element.RENDERING_INSTRUCTION);
                 CircleStyle circle = createCircle(localName, attributes, mLevels++);
-                mCurrentRule.addStyle(circle);
+                if (isVisible(circle))
+                    mCurrentRule.addStyle(circle);
 
             } else if ("line".equals(localName)) {
                 checkState(localName, Element.RENDERING_INSTRUCTION);
@@ -241,17 +254,20 @@ public class XmlThemeBuilder extends DefaultHandler {
             } else if ("symbol".equals(localName) || "lineSymbol".equals(localName)) {
                 checkState(localName, Element.RENDERING_INSTRUCTION);
                 SymbolStyle symbol = createSymbol(localName, attributes);
-                if (symbol != null)
+                if (symbol != null && isVisible(symbol))
                     mCurrentRule.addStyle(symbol);
 
             } else if ("outline".equals(localName)) {
                 checkState(localName, Element.RENDERING_INSTRUCTION);
-                addOutline(attributes.getValue("use"));
+                LineStyle outline = createOutline(attributes.getValue("use"), attributes);
+                if (outline != null && isVisible(outline))
+                    mCurrentRule.addStyle(outline);
 
             } else if ("extrusion".equals(localName)) {
                 checkState(localName, Element.RENDERING_INSTRUCTION);
                 ExtrusionStyle extrusion = createExtrusion(localName, attributes, mLevels++);
-                mCurrentRule.addStyle(extrusion);
+                if (isVisible(extrusion))
+                    mCurrentRule.addStyle(extrusion);
 
             } else if ("atlas".equals(localName)) {
                 checkState(localName, Element.ATLAS);
@@ -261,9 +277,53 @@ public class XmlThemeBuilder extends DefaultHandler {
                 checkState(localName, Element.ATLAS);
                 createTextureRegion(localName, attributes);
 
+            } else if ("cat".equals(localName)) {
+                checkState(qName, Element.RENDERING_STYLE);
+                mCurrentLayer.addCategory(getStringAttribute(attributes, "id"));
+
+            } else if ("layer".equals(localName)) {
+                // render theme menu layer
+                checkState(qName, Element.RENDERING_STYLE);
+                boolean enabled = false;
+                if (getStringAttribute(attributes, "enabled") != null) {
+                    enabled = Boolean.valueOf(getStringAttribute(attributes, "enabled"));
+                }
+                boolean visible = Boolean.valueOf(getStringAttribute(attributes, "visible"));
+                mCurrentLayer = mRenderThemeStyleMenu.createLayer(getStringAttribute(attributes, "id"), visible, enabled);
+                String parent = getStringAttribute(attributes, "parent");
+                if (null != parent) {
+                    XmlRenderThemeStyleLayer parentEntry = mRenderThemeStyleMenu.getLayer(parent);
+                    if (null != parentEntry) {
+                        for (String cat : parentEntry.getCategories()) {
+                            mCurrentLayer.addCategory(cat);
+                        }
+                        for (XmlRenderThemeStyleLayer overlay : parentEntry.getOverlays()) {
+                            mCurrentLayer.addOverlay(overlay);
+                        }
+                    }
+                }
+
+            } else if ("name".equals(localName)) {
+                // render theme menu name
+                checkState(qName, Element.RENDERING_STYLE);
+                mCurrentLayer.addTranslation(getStringAttribute(attributes, "lang"), getStringAttribute(attributes, "value"));
+
+            } else if ("overlay".equals(localName)) {
+                // render theme menu overlay
+                checkState(qName, Element.RENDERING_STYLE);
+                XmlRenderThemeStyleLayer overlay = mRenderThemeStyleMenu.getLayer(getStringAttribute(attributes, "id"));
+                if (overlay != null) {
+                    mCurrentLayer.addOverlay(overlay);
+                }
+
+            } else if ("stylemenu".equals(localName)) {
+                checkState(qName, Element.RENDERING_STYLE);
+                mRenderThemeStyleMenu = new XmlRenderThemeStyleMenu(getStringAttribute(attributes, "id"),
+                        getStringAttribute(attributes, "defaultlang"), getStringAttribute(attributes, "defaultvalue"));
+
             } else {
                 log.error("unknown element: {}", localName);
-                //throw new SAXException("unknown element: " + localName);
+                throw new SAXException("unknown element: " + localName);
             }
         } catch (SAXException e) {
             throw new ThemeException(e.getMessage());
@@ -272,8 +332,8 @@ public class XmlThemeBuilder extends DefaultHandler {
         }
     }
 
-    private RuleBuilder createRule(String localName, Attributes attributes,
-                                   Stack<RuleBuilder> ruleStack) {
+    private RuleBuilder createRule(String localName, Attributes attributes) {
+        String cat = null;
         int element = Rule.Element.ANY;
         int closed = Closed.ANY;
         String keys = null;
@@ -296,6 +356,8 @@ public class XmlThemeBuilder extends DefaultHandler {
                 keys = value;
             } else if ("v".equals(name)) {
                 values = value;
+            } else if ("cat".equals(name)) {
+                cat = value;
             } else if ("closed".equals(name)) {
                 String val = value.toUpperCase();
                 if ("YES".equals(val))
@@ -327,7 +389,8 @@ public class XmlThemeBuilder extends DefaultHandler {
             throw new ThemeException("zoom-min must be less or equal zoom-max: " + zoomMin);
 
         RuleBuilder b = RuleBuilder.create(keys, values);
-        b.setZoom(zoomMin, zoomMax);
+        b.cat(cat);
+        b.zoom(zoomMin, zoomMax);
         b.element(element);
         b.select(selector);
         return b;
@@ -364,10 +427,14 @@ public class XmlThemeBuilder extends DefaultHandler {
         if (isStyle) {
             mStyles.put(LINE_STYLE + line.style, line);
         } else {
-            mCurrentRule.addStyle(line);
-            /* Note 'outline' will not be inherited, it's just a
-             * shortcut to add the outline RenderInstruction. */
-            addOutline(attributes.getValue("outline"));
+            if (isVisible(line)) {
+                mCurrentRule.addStyle(line);
+                /* Note 'outline' will not be inherited, it's just a
+                 * shortcut to add the outline RenderInstruction. */
+                LineStyle outline = createOutline(attributes.getValue("outline"), attributes);
+                if (outline != null)
+                    mCurrentRule.addStyle(outline);
+            }
         }
     }
 
@@ -390,6 +457,9 @@ public class XmlThemeBuilder extends DefaultHandler {
             if ("id".equals(name))
                 b.style = value;
 
+            else if ("cat".equals(name))
+                b.cat(value);
+
             else if ("src".equals(name)) {
                 b.texture = loadTexture(value);
                 /*if (b.texture != null)
@@ -404,7 +474,7 @@ public class XmlThemeBuilder extends DefaultHandler {
                 b.color(value);
 
             else if ("width".equals(name) || "stroke-width".equals(name)) {
-                b.strokeWidth = parseFloat(value);
+                b.strokeWidth = parseFloat(value) * mScale;
                 if (line == null) {
                     if (!isOutline)
                         validateNonNegative("width", b.strokeWidth);
@@ -421,7 +491,7 @@ public class XmlThemeBuilder extends DefaultHandler {
                 b.fixed = parseBoolean(value);
 
             else if ("stipple".equals(name))
-                b.stipple = parseInt(value);
+                b.stipple = Math.round(parseInt(value) * mScale);
 
             else if ("stipple-stroke".equals(name))
                 b.stippleColor(value);
@@ -470,7 +540,8 @@ public class XmlThemeBuilder extends DefaultHandler {
         if (isStyle) {
             mStyles.put(AREA_STYLE + area.style, area);
         } else {
-            mCurrentRule.addStyle(area);
+            if (isVisible(area))
+                mCurrentRule.addStyle(area);
         }
     }
 
@@ -489,6 +560,9 @@ public class XmlThemeBuilder extends DefaultHandler {
             if ("id".equals(name))
                 b.style = value;
 
+            else if ("cat".equals(name))
+                b.cat(value);
+
             else if ("use".equals(name))
                 ;// ignore
 
@@ -504,7 +578,7 @@ public class XmlThemeBuilder extends DefaultHandler {
             else if ("stroke-width".equals(name)) {
                 float strokeWidth = Float.parseFloat(value);
                 validateNonNegative("stroke-width", strokeWidth);
-                b.strokeWidth = strokeWidth;
+                b.strokeWidth = strokeWidth * mScale;
 
             } else if ("fade".equals(name))
                 b.fadeScale = Integer.parseInt(value);
@@ -530,7 +604,7 @@ public class XmlThemeBuilder extends DefaultHandler {
             return null;
 
         try {
-            Bitmap bitmap = CanvasAdapter.getBitmapAsset(mRelativePathPrefix, src);
+            Bitmap bitmap = CanvasAdapter.getBitmapAsset(mTheme.getRelativePathPrefix(), src);
             if (bitmap != null) {
                 log.debug("loading {}", src);
                 return new TextureItem(bitmap, true);
@@ -541,14 +615,28 @@ public class XmlThemeBuilder extends DefaultHandler {
         return null;
     }
 
-    private void addOutline(String style) {
+    private LineStyle createOutline(String style, Attributes attributes) {
         if (style != null) {
             LineStyle line = (LineStyle) mStyles.get(OUTLINE_STYLE + style);
-            if (line != null && line.outline)
-                mCurrentRule.addStyle(line);
-            else
-                log.debug("BUG not an outline style: " + style);
+            if (line != null && line.outline) {
+                String cat = null;
+
+                for (int i = 0; i < attributes.getLength(); i++) {
+                    String name = attributes.getLocalName(i);
+                    String value = attributes.getValue(i);
+
+                    if ("cat".equals(name)) {
+                        cat = value;
+                        break;
+                    }
+                }
+
+                return line
+                        .setCat(cat);
+            }
         }
+        log.debug("BUG not an outline style: " + style);
+        return null;
     }
 
     private void createAtlas(String elementName, Attributes attributes) throws IOException {
@@ -566,7 +654,7 @@ public class XmlThemeBuilder extends DefaultHandler {
         }
         validateExists("img", img, elementName);
 
-        Bitmap bitmap = CanvasAdapter.getBitmapAsset(mRelativePathPrefix, img);
+        Bitmap bitmap = CanvasAdapter.getBitmapAsset(mTheme.getRelativePathPrefix(), img);
         if (bitmap != null)
             mTextureAtlas = new TextureAtlas(bitmap);
     }
@@ -631,6 +719,7 @@ public class XmlThemeBuilder extends DefaultHandler {
                     throw new SAXException(UNEXPECTED_ELEMENT + elementName);
                 }
                 return;
+
             case ATLAS:
                 parentElement = mElementStack.peek();
                 // FIXME
@@ -638,6 +727,9 @@ public class XmlThemeBuilder extends DefaultHandler {
                         && parentElement != Element.ATLAS) {
                     throw new SAXException(UNEXPECTED_ELEMENT + elementName);
                 }
+                return;
+
+            case RENDERING_STYLE:
                 return;
         }
 
@@ -662,8 +754,8 @@ public class XmlThemeBuilder extends DefaultHandler {
             if ("schemaLocation".equals(name))
                 continue;
 
-            else if ("version".equals(name))
-                version = Integer.valueOf(Integer.parseInt(value));
+            if ("version".equals(name))
+                version = Integer.parseInt(value);
 
             else if ("map-background".equals(name))
                 mapBackground = Color.parseColor(value);
@@ -681,7 +773,7 @@ public class XmlThemeBuilder extends DefaultHandler {
 
         validateExists("version", version, elementName);
 
-        if (version.intValue() != RENDER_THEME_VERSION)
+        if (version != RENDER_THEME_VERSION)
             throw new ThemeException("invalid render theme version:"
                     + version);
 
@@ -711,7 +803,9 @@ public class XmlThemeBuilder extends DefaultHandler {
             log.debug("put style {}", b.style);
             mTextStyles.put(b.style, TextStyle.builder().from(b));
         } else {
-            mCurrentRule.addStyle(b.buildInternal());
+            TextStyle text = b.buildInternal();
+            if (isVisible(text))
+                mCurrentRule.addStyle(text);
         }
     }
 
@@ -735,6 +829,9 @@ public class XmlThemeBuilder extends DefaultHandler {
             if ("id".equals(name))
                 b.style = value;
 
+            else if ("cat".equals(name))
+                b.cat(value);
+
             else if ("k".equals(name))
                 b.textKey = value.intern();
 
@@ -754,7 +851,7 @@ public class XmlThemeBuilder extends DefaultHandler {
                 b.strokeColor = Color.parseColor(value);
 
             else if ("stroke-width".equals(name))
-                b.strokeWidth = Float.parseFloat(value);
+                b.strokeWidth = Float.parseFloat(value) * mScale;
 
             else if ("caption".equals(name))
                 b.caption = Boolean.parseBoolean(value);
@@ -770,7 +867,7 @@ public class XmlThemeBuilder extends DefaultHandler {
                 String lowValue = value.toLowerCase(Locale.ENGLISH);
                 if (lowValue.endsWith(".png") || lowValue.endsWith(".svg")) {
                     try {
-                        b.bitmap = CanvasAdapter.getBitmapAsset(mRelativePathPrefix, value);
+                        b.bitmap = CanvasAdapter.getBitmapAsset(mTheme.getRelativePathPrefix(), value);
                     } catch (Exception e) {
                         log.debug(e.getMessage());
                     }
@@ -793,7 +890,8 @@ public class XmlThemeBuilder extends DefaultHandler {
      * @param level the drawing level of this instruction.
      * @return a new Circle with the given rendering attributes.
      */
-    private static CircleStyle createCircle(String elementName, Attributes attributes, int level) {
+    private CircleStyle createCircle(String elementName, Attributes attributes, int level) {
+        String cat = null;
         Float radius = null;
         boolean scaleRadius = false;
         int fill = Color.TRANSPARENT;
@@ -805,7 +903,10 @@ public class XmlThemeBuilder extends DefaultHandler {
             String value = attributes.getValue(i);
 
             if ("r".equals(name) || "radius".equals(name))
-                radius = Float.valueOf(Float.parseFloat(value));
+                radius = Float.parseFloat(value) * mScale;
+
+            else if ("cat".equals(name))
+                cat = value;
 
             else if ("scale-radius".equals(name))
                 scaleRadius = Boolean.parseBoolean(value);
@@ -817,7 +918,7 @@ public class XmlThemeBuilder extends DefaultHandler {
                 stroke = Color.parseColor(value);
 
             else if ("stroke-width".equals(name))
-                strokeWidth = Float.parseFloat(value);
+                strokeWidth = Float.parseFloat(value) * mScale;
 
             else
                 logUnknownAttribute(elementName, name, value, i);
@@ -827,13 +928,15 @@ public class XmlThemeBuilder extends DefaultHandler {
         validateNonNegative("radius", radius);
         validateNonNegative("stroke-width", strokeWidth);
 
-        return new CircleStyle(radius, scaleRadius, fill, stroke, strokeWidth, level);
+        return new CircleStyle(radius, scaleRadius, fill, stroke, strokeWidth, level)
+                .setCat(cat);
     }
 
     /**
      * @return a new Symbol with the given rendering attributes.
      */
     private SymbolStyle createSymbol(String elementName, Attributes attributes) {
+        String cat = null;
         String src = null;
 
         for (int i = 0; i < attributes.getLength(); i++) {
@@ -842,6 +945,10 @@ public class XmlThemeBuilder extends DefaultHandler {
 
             if ("src".equals(name))
                 src = value;
+
+            else if ("cat".equals(name))
+                cat = value;
+
             else
                 logUnknownAttribute(elementName, name, value, i);
         }
@@ -851,18 +958,21 @@ public class XmlThemeBuilder extends DefaultHandler {
         String lowSrc = src.toLowerCase(Locale.ENGLISH);
         if (lowSrc.endsWith(".png") || lowSrc.endsWith(".svg")) {
             try {
-                Bitmap bitmap = CanvasAdapter.getBitmapAsset(mRelativePathPrefix, src);
+                Bitmap bitmap = CanvasAdapter.getBitmapAsset(mTheme.getRelativePathPrefix(), src);
                 if (bitmap != null)
-                    return new SymbolStyle(bitmap);
+                    return new SymbolStyle(bitmap)
+                            .setCat(cat);
             } catch (Exception e) {
                 log.debug(e.getMessage());
             }
             return null;
         }
-        return new SymbolStyle(getAtlasRegion(src));
+        return new SymbolStyle(getAtlasRegion(src))
+                .setCat(cat);
     }
 
     private ExtrusionStyle createExtrusion(String elementName, Attributes attributes, int level) {
+        String cat = null;
         int colorSide = 0;
         int colorTop = 0;
         int colorLine = 0;
@@ -872,7 +982,10 @@ public class XmlThemeBuilder extends DefaultHandler {
             String name = attributes.getLocalName(i);
             String value = attributes.getValue(i);
 
-            if ("side-color".equals(name))
+            if ("cat".equals(name))
+                cat = value;
+
+            else if ("side-color".equals(name))
                 colorSide = Color.parseColor(value);
 
             else if ("top-color".equals(name))
@@ -888,16 +1001,42 @@ public class XmlThemeBuilder extends DefaultHandler {
                 logUnknownAttribute(elementName, name, value, i);
         }
 
-        return new ExtrusionStyle(level, colorSide, colorTop, colorLine, defaultHeight);
+        return new ExtrusionStyle(level, colorSide, colorTop, colorLine, defaultHeight)
+                .setCat(cat);
     }
 
-    public static void validateNonNegative(String name, float value) {
+    private String getStringAttribute(Attributes attributes, String name) {
+        for (int i = 0; i < attributes.getLength(); ++i) {
+            if (attributes.getLocalName(i).equals(name)) {
+                return attributes.getValue(i);
+            }
+        }
+        return null;
+    }
+
+    /**
+     * A style is visible if categories is not set or the style has no category
+     * or the categories contain the style's category.
+     */
+    private boolean isVisible(RenderStyle renderStyle) {
+        return mCategories == null || renderStyle.cat == null || mCategories.contains(renderStyle.cat);
+    }
+
+    /**
+     * A rule is visible if categories is not set or the rule has no category
+     * or the categories contain the rule's category.
+     */
+    private boolean isVisible(RuleBuilder rule) {
+        return mCategories == null || rule.cat == null || mCategories.contains(rule.cat);
+    }
+
+    private static void validateNonNegative(String name, float value) {
         if (value < 0)
             throw new ThemeException(name + " must not be negative: "
                     + value);
     }
 
-    public static void validateExists(String name, Object obj, String elementName) {
+    private static void validateExists(String name, Object obj, String elementName) {
         if (obj == null)
             throw new ThemeException("missing attribute " + name
                     + " for element: " + elementName);

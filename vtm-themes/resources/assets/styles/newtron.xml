@@ -500,12 +500,12 @@
             <m zoom-min="17">
                 <extrusion line-color="#10ffffff" side-color="#cc202020" top-color="#cc404040" />
             </m>
-            <!-- <m zoom-min="17">
-              <caption k="name" style="bold" size="10" fill="#4040ff"
-              priority="9" stroke="#ffffff" stroke-width="2.0" />
-              <caption k="addr:housenumber" style="bold" size="10" fill="#606060"
-              priority="10" stroke="#ffffff" stroke-width="2.0" />
-              </m> -->
+            <m zoom-min="17">
+                <caption style="bold" fill="#4040ff" k="name" priority="9" size="14"
+                    stroke="#ffffff" stroke-width="2.0" />
+                <caption style="bold" fill="#606060" k="addr:housenumber" priority="10" size="10"
+                    stroke="#ffffff" stroke-width="2.0" />
+            </m>
         </m>
 
         <!-- outline 1 - 4 -->
@@ -1157,13 +1157,13 @@
 
 
         <m k="highway">
-            <m k="highway" v="bus_stop" zoom-min="16">
-                <symbol src="assets:symbols/transport/bus_stop.svg" />
+            <m v="bus_stop" zoom-min="16">
+                <symbol src="assets:symbols/dot_blue.svg" />
             </m>
-            <m k="highway" v="traffic_signals" zoom-min="17">
+            <m v="traffic_signals" zoom-min="17">
                 <symbol src="assets:symbols/traffic_signal.svg" />
             </m>
-            <m k="highway" v="turning_circle">
+            <m v="turning_circle">
                 <circle fill="#ffffff" radius="1.4" scale-radius="true" />
             </m>
         </m>

@@ -24,6 +24,7 @@ import org.oscim.layers.tile.buildings.BuildingLayer;
 import org.oscim.layers.tile.vector.VectorTileLayer;
 import org.oscim.layers.tile.vector.labeling.LabelLayer;
 import org.oscim.theme.IRenderTheme.ThemeException;
+import org.oscim.theme.StreamRenderTheme;
 import org.oscim.theme.ThemeLoader;
 import org.oscim.tiling.source.OkHttpEngine;
 import org.oscim.tiling.source.UrlTileSource;
@@ -61,7 +62,7 @@ public class MapzenTest extends GdxMap {
 
     private void loadTheme() {
         try {
-            mMap.setTheme(ThemeLoader.load(getClass().getResourceAsStream("/assets/styles/mapzen.xml")));
+            mMap.setTheme(ThemeLoader.load(new StreamRenderTheme("", getClass().getResourceAsStream("/assets/styles/mapzen.xml"))));
         } catch (ThemeException e) {
             e.printStackTrace();
         }
@@ -69,6 +70,6 @@ public class MapzenTest extends GdxMap {
 
     public static void main(String[] args) {
         GdxMapApp.init();
-        GdxMapApp.run(new MapzenTest(), null, 400);
+        GdxMapApp.run(new MapzenTest());
     }
 }

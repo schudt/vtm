@@ -1,6 +1,7 @@
 /*
  * Copyright 2010, 2011, 2012 mapsforge.org
  * Copyright 2013 Hannes Janetzek
+ * Copyright 2016 devemux86
  *
  * This file is part of the OpenScienceMap project (http://www.opensciencemap.org).
  *
@@ -22,10 +23,10 @@ import static org.oscim.backend.canvas.Color.parseColor;
 /**
  * A RenderInstruction is a basic graphical primitive to draw a map.
  */
-public abstract class RenderStyle {
+public abstract class RenderStyle<T extends RenderStyle<T>> {
 
     public static abstract class StyleBuilder<T extends StyleBuilder<T>> {
-
+        public String cat;
         public String style;
 
         public int level;
@@ -35,7 +36,12 @@ public abstract class RenderStyle {
         public int strokeColor;
         public float strokeWidth;
 
-        public T setStyle(String style) {
+        public T cat(String cat) {
+            this.cat = cat;
+            return self();
+        }
+
+        public T style(String style) {
             this.style = style;
             return self();
         }
@@ -87,20 +93,14 @@ public abstract class RenderStyle {
     /**
      * Callback methods for rendering areas, ways and points of interest (POIs).
      */
-    public static interface Callback {
+    public interface Callback {
         /**
          * Renders an area with the given parameters.
-         *
-         * @param area
-         * @param level
          */
         void renderArea(AreaStyle area, int level);
 
         /**
          * Renders an extrusion with the given parameters.
-         *
-         * @param extrusion
-         * @param level
          */
         void renderExtrusion(ExtrusionStyle extrusion, int level);
 
@@ -121,24 +121,34 @@ public abstract class RenderStyle {
 
         /**
          * Renders a way with the given parameters.
-         *
-         * @param line
-         * @param level
          */
         void renderWay(LineStyle line, int level);
 
         /**
          * Renders a way with the given text along the way path.
-         *
-         * @param text
          */
         void renderText(TextStyle text);
 
     }
 
+    /**
+     * Category
+     */
+    public String cat = null;
+
     RenderStyle mCurrent = this;
     RenderStyle mNext;
     boolean update;
+
+    public T setCat(String cat) {
+        this.cat = cat;
+        return self();
+    }
+
+    @SuppressWarnings("unchecked")
+    protected T self() {
+        return (T) this;
+    }
 
     public void set(RenderStyle next) {
         update = true;

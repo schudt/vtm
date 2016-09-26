@@ -1,6 +1,7 @@
 /*
  * Copyright 2014 Hannes Janetzek
- * 
+ * Copyright 2016 devemux86
+ *
  * This file is part of the OpenScienceMap project (http://www.opensciencemap.org).
  * 
  * This program is free software: you can redistribute it and/or modify it under the
@@ -25,13 +26,11 @@ import org.oscim.theme.rule.Rule.PositiveRuleMultiKV;
 import org.oscim.theme.rule.Rule.PositiveRuleV;
 import org.oscim.theme.styles.RenderStyle;
 import org.oscim.theme.styles.RenderStyle.StyleBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class RuleBuilder {
-    final static Logger log = LoggerFactory.getLogger(RuleBuilder.class);
 
     private final static String[] EMPTY_KV = {};
 
@@ -41,6 +40,7 @@ public class RuleBuilder {
         EXCLUDE
     }
 
+    public String cat;
     int zoom;
     int element;
     int selector;
@@ -49,8 +49,8 @@ public class RuleBuilder {
     String keys[];
     String values[];
 
-    ArrayList<RenderStyle> renderStyles = new ArrayList<RenderStyle>(4);
-    ArrayList<RuleBuilder> subRules = new ArrayList<RuleBuilder>(4);
+    ArrayList<RenderStyle> renderStyles = new ArrayList<>(4);
+    ArrayList<RuleBuilder> subRules = new ArrayList<>(4);
     StyleBuilder<?>[] styleBuilder;
 
     private static final String STRING_NEGATION = "~";
@@ -119,7 +119,7 @@ public class RuleBuilder {
         return new RuleBuilder(type, keyList, valueList);
     }
 
-    public RuleBuilder setZoom(byte zoomMin, byte zoomMax) {
+    public RuleBuilder zoom(byte zoomMin, byte zoomMax) {
         // zoom-level bitmask
         zoom = 0;
         for (int z = zoomMin; z <= zoomMax && z < 32; z++)
@@ -154,7 +154,8 @@ public class RuleBuilder {
         int numVals = values.length;
 
         if (numKeys == 0 && numVals == 0)
-            return new Rule(element, zoom, selector, rules, styles);
+            return new Rule(element, zoom, selector, rules, styles)
+                    .setCat(cat);
 
         for (int i = 0; i < numVals; i++)
             values[i] = values[i].intern();
@@ -163,24 +164,23 @@ public class RuleBuilder {
             keys[i] = keys[i].intern();
 
         if (type != RuleType.POSITIVE)
-            return new NegativeRule(type, element, zoom, selector,
-                    keys, values, rules, styles);
+            return new NegativeRule(type, element, zoom, selector, keys, values, rules, styles)
+                    .setCat(cat);
 
-        if (numKeys == 1 && numKeys == 0)
-            return new PositiveRuleK(element, zoom, selector, keys[0],
-                    rules, styles);
+        if (numKeys == 1 && numVals == 0)
+            return new PositiveRuleK(element, zoom, selector, keys[0], rules, styles)
+                    .setCat(cat);
 
         if (numKeys == 0 && numVals == 1)
-            return new PositiveRuleV(element, zoom, selector, values[0],
-                    rules, styles);
+            return new PositiveRuleV(element, zoom, selector, values[0], rules, styles)
+                    .setCat(cat);
 
         if (numKeys == 1 && numVals == 1)
-            return new PositiveRuleKV(element, zoom, selector,
-                    keys[0], values[0], rules, styles);
+            return new PositiveRuleKV(element, zoom, selector, keys[0], values[0], rules, styles)
+                    .setCat(cat);
 
-        return new PositiveRuleMultiKV(element, zoom, selector,
-                keys, values, rules, styles);
-
+        return new PositiveRuleMultiKV(element, zoom, selector, keys, values, rules, styles)
+                .setCat(cat);
     }
 
     public RuleBuilder addStyle(RenderStyle style) {
@@ -199,8 +199,7 @@ public class RuleBuilder {
     }
 
     public RuleBuilder rules(RuleBuilder... rules) {
-        for (RuleBuilder rule : rules)
-            subRules.add(rule);
+        Collections.addAll(subRules, rules);
         return this;
     }
 
@@ -216,6 +215,11 @@ public class RuleBuilder {
 
     public RuleBuilder element(int element) {
         this.element = element;
+        return this;
+    }
+
+    public RuleBuilder cat(String cat) {
+        this.cat = cat;
         return this;
     }
 }
