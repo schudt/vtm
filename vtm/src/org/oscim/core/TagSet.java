@@ -1,5 +1,7 @@
 /*
  * Copyright 2013 Hannes Janetzek
+ * Copyright 2016 Andrey Novikov
+ * Copyright 2016 devemux86
  *
  * This file is part of the OpenScienceMap project (http://www.opensciencemap.org).
  *
@@ -15,6 +17,8 @@
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package org.oscim.core;
+
+import org.oscim.utils.Utils;
 
 import java.util.Arrays;
 
@@ -83,7 +87,7 @@ public class TagSet {
      */
     public Tag get(String key) {
         for (int i = 0; i < numTags; i++) {
-            if (tags[i].key == key)
+            if (Utils.equals(tags[i].key, key))
                 return tags[i];
         }
         return null;
@@ -97,7 +101,7 @@ public class TagSet {
      */
     public boolean containsKey(String key) {
         for (int i = 0; i < numTags; i++) {
-            if (tags[i].key == key)
+            if (Utils.equals(tags[i].key, key))
                 return true;
         }
         return false;
@@ -111,7 +115,7 @@ public class TagSet {
      */
     public String getValue(String key) {
         for (int i = 0; i < numTags; i++) {
-            if (tags[i].key == key)
+            if (Utils.equals(tags[i].key, key))
                 return tags[i].value;
         }
         return null;
@@ -154,7 +158,7 @@ public class TagSet {
     public boolean contains(Tag tag) {
         for (int i = 0; i < numTags; i++) {
             Tag t = tags[i];
-            if ((t == tag) || (t.key == tag.key && t.value == tag.value))
+            if ((t == tag) || (Utils.equals(t.key, tag.key) && Utils.equals(t.value, tag.value)))
                 return true;
         }
         return false;
@@ -169,8 +173,8 @@ public class TagSet {
      */
     public boolean contains(String key, String value) {
         for (int i = 0; i < numTags; i++) {
-            if (tags[i].key == key)
-                return value.equals(tags[i].value);
+            if (Utils.equals(tags[i].key, key))
+                return Utils.equals(tags[i].value, value);
         }
         return false;
     }
