@@ -33,11 +33,27 @@
                 <area fill="#ffffff" />
             </m>
         </m>
-        <m e="way" k="building">
-            <m e="way" k="building" v="yes" >
-                <area fill="#CCDDDAD3" stroke="#7FCCC9C4" stroke-width="0.15" />
+        <!-- building -->
+        <m k="building">
+            <m zoom-min="14">
+                <m closed="yes">
+                    <area fade="14" use="building" />
+                </m>
+                <m closed="no">
+                    <line fade="14" use="building" />
+                </m>
+            </m>
+            <m zoom-min="17">
+                <extrusion line-color="#ffd9d8d6" side-color="#eaecebe9" top-color="#eaf9f8f6" />
+            </m>
+            <m zoom-min="17">
+                <caption style="bold" fill="#4040ff" k="name" priority="9" size="14"
+                         stroke="#ffffff" stroke-width="2.0" />
+                <caption style="bold" fill="#606060" k="addr:housenumber" priority="10" size="10"
+                         stroke="#ffffff" stroke-width="2.0" />
             </m>
         </m>
+
         <m e="way" k="residential">
             <m e="way" k="residential" v="urban" zoom-min="10">
                 <area fill="#F7EFEB" />
@@ -716,7 +732,18 @@
         </m>
         <m e="way" k="wall">
             <m e="way" k="wall" v="yes" zoom-min="18">
-                <area stroke="#000000" fill="#E9E9E9" />
+                <area stroke="#000000" fill="#FF0000" />
+                <m zoom-min="14">
+                    <m closed="yes">
+                        <area fade="14" use="wall" />
+                    </m>
+                    <m closed="no">
+                        <line fade="14" use="wall" />
+                    </m>
+                </m>
+                <m zoom-min="17">
+                    <extrusion line-color="#5500ff00" side-color="#550000ff" top-color="#55f0000f" />
+                </m>
             </m>
         </m>
         <m e="way" k="handrail">

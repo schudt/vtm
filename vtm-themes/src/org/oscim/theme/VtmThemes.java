@@ -31,7 +31,8 @@ public enum VtmThemes implements ThemeFile {
     DEFAULT("styles/default.xml"),
     NEWTRON("styles/newtron.xml"),
     OSMARENDER("styles/osmarender.xml"),
-    TRONRENDER("styles/tronrender.xml");
+    TRONRENDER("styles/tronrender.xml"),
+    CONTAGT("styles/contagt.xml");
 
     private final String mPath;
 
