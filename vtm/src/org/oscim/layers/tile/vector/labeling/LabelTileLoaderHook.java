@@ -18,6 +18,7 @@
 package org.oscim.layers.tile.vector.labeling;
 
 import org.oscim.core.MapElement;
+import org.oscim.core.Point;
 import org.oscim.core.PointF;
 import org.oscim.core.Tile;
 import org.oscim.layers.tile.MapTile;
@@ -99,7 +100,7 @@ public class LabelTileLoaderHook implements TileLoaderThemeHook {
                     return false;
 
                 for (int i = 0, n = element.getNumPoints(); i < n; i++) {
-                    PointF p = element.getPoint(i);
+                    Point p = element.getPoint(i);
                     ld.labels.push(TextItem.pool.get().set(p.x, p.y, value, text));
                 }
             }
@@ -113,7 +114,7 @@ public class LabelTileLoaderHook implements TileLoaderThemeHook {
 
             if (element.type == POINT) {
                 for (int i = 0, n = element.getNumPoints(); i < n; i++) {
-                    PointF p = element.getPoint(i);
+                    Point p = element.getPoint(i);
 
                     SymbolItem it = SymbolItem.pool.get();
                     if (symbol.bitmap != null)
@@ -125,7 +126,7 @@ public class LabelTileLoaderHook implements TileLoaderThemeHook {
             } else if (element.type == LINE) {
                 //TODO: implement
             } else if (element.type == POLY) {
-                PointF centroid = element.labelPosition;
+                Point centroid = element.labelPosition;
                 if (centroid == null)
                     return false;
 
