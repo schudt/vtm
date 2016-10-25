@@ -732,18 +732,7 @@
         </m>
         <m e="way" k="wall">
             <m e="way" k="wall" v="yes" zoom-min="18">
-                <area stroke="#000000" fill="#FF0000" />
-                <m zoom-min="14">
-                    <m closed="yes">
-                        <area fade="14" use="wall" />
-                    </m>
-                    <m closed="no">
-                        <line fade="14" use="wall" />
-                    </m>
-                </m>
-                <m zoom-min="17">
-                    <extrusion line-color="#5500ff00" side-color="#550000ff" top-color="#55f0000f" />
-                </m>
+                <area fill="#99E0D0DB" stroke="#222222" stroke-width="0.15" />
             </m>
         </m>
         <m e="way" k="handrail">
