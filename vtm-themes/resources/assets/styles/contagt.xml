@@ -743,6 +743,17 @@
         <m e="way" k="surface">
             <m e="way" k="surface" v="plant" zoom-min="15">
                 <area fill="#E583DF60" />
+                <m zoom-min="20">
+                    <m closed="yes">
+                        <area fade="20" use="plant" />
+                    </m>
+                    <m closed="no">
+                        <line fade="20" use="plant" />
+                    </m>
+                </m>
+                <m zoom-min="15">
+                    <extrusion line-color="#E583DF60" side-color="#E583DF60" top-color="#E583DF60" />
+                </m>
             </m>
             <m e="way" k="surface" v="solid" zoom-min="15">
                 <area fill="#E50B0811" />
