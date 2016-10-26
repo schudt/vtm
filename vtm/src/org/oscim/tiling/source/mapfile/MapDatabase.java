@@ -20,7 +20,6 @@ package org.oscim.tiling.source.mapfile;
 
 import org.oscim.core.GeometryBuffer.GeometryType;
 import org.oscim.core.MapElement;
-import org.oscim.core.MercatorProjection;
 import org.oscim.core.Tag;
 import org.oscim.core.Tile;
 import org.oscim.layers.tile.MapTile;
@@ -45,7 +44,7 @@ import static org.oscim.tiling.QueryResult.SUCCESS;
  * @see <a
  * href="http://code.google.com/p/mapsforge/wiki/SpecificationBinaryMapFile">Specification</a>
  */
-public class MapDatabase implements ITileDataSource {
+class MapDatabase implements ITileDataSource {
     /**
      * Bitmask to extract the block offset from an index entry.
      */
@@ -74,12 +73,12 @@ public class MapDatabase implements ITileDataSource {
      */
     private static final String INVALID_FIRST_WAY_OFFSET = "invalid first way offset: ";
 
-    static final Logger log = LoggerFactory.getLogger(MapDatabase.class);
+    private static final Logger log = LoggerFactory.getLogger(MapDatabase.class);
 
     /**
      * Maximum way nodes sequence length which is considered as valid.
      */
-    private static final int MAXIMUM_WAY_NODES_SEQUENCE_LENGTH = 8192 * 10;
+    private static final int MAXIMUM_WAY_NODES_SEQUENCE_LENGTH = 8192 * 2;
 
     /**
      * Maximum number of map objects in the zoom table which is considered as
@@ -178,26 +177,23 @@ public class MapDatabase implements ITileDataSource {
     private static final int WAY_NUMBER_OF_TAGS_BITMASK = 0x0f;
 
     private long mFileSize;
-    private boolean mDebugFile;
+    private boolean mDebugFile = false;
     private RandomAccessFile mInputFile;
     private ReadBuffer mReadBuffer;
     private String mSignatureBlock;
-    private String mSignaturePoi;
     private String mSignatureWay;
-    private int mTileLatitude;
-    private int mTileLongitude;
+    private double mTileLatitude;
+    private double mTileLongitude;
     private int[] mIntBuffer;
 
     private final MapElement mElem = new MapElement();
-
-    private int minDeltaLat, minDeltaLon;
 
     private final TileProjection mTileProjection;
     private final TileClipper mTileClipper;
 
     private final MapFileTileSource mTileSource;
 
-    public MapDatabase(MapFileTileSource tileSource) throws IOException {
+    MapDatabase(MapFileTileSource tileSource) throws IOException {
         mTileSource = tileSource;
         try {
             /* open the file in read only mode */
@@ -229,22 +225,6 @@ public class MapDatabase implements ITileDataSource {
 
         try {
             mTileProjection.setTile(tile);
-            //mTile = tile;
-
-            /* size of tile in map coordinates; */
-//            double size = 1.0 / (1 << tile.zoomLevel);
-//
-//            /* simplification tolerance */
-//            int pixel = (tile.zoomLevel > 11) ? 1 : 2;
-//
-//            int simplify = Tile.SIZE ;// pixel;
-//
-//            /* translate screen pixel for tile to latitude and longitude
-//             * tolerance for point reduction before projection. */
-//            minDeltaLat = (int) (Math.abs(MercatorProjection.toLatitude(tile.y + size)
-//                    - MercatorProjection.toLatitude(tile.y)) * 1e6) / simplify;
-//            minDeltaLon = (int) (Math.abs(MercatorProjection.toLongitude(tile.x + size)
-//                    - MercatorProjection.toLongitude(tile.x)) * 1e6) / simplify;
 
             QueryParameters queryParameters = new QueryParameters();
             queryParameters.queryZoomLevel =
@@ -361,26 +341,18 @@ public class MapDatabase implements ITileDataSource {
         /* move the pointer to the first way */
         mReadBuffer.setBufferPosition(firstWayOffset);
 
-        if (!processWays(queryParameters, mapDataSink, waysOnQueryZoomLevel)) {
-            return;
-        }
+        processWays(queryParameters, mapDataSink, waysOnQueryZoomLevel);
 
     }
-
-    //    private long mCurrentRow;
-    //    private long mCurrentCol;
-
-    private int xmin, ymin, xmax, ymax;
-
     private void setTileClipping(QueryParameters queryParameters, long mCurrentRow, long mCurrentCol) {
         long numRows = queryParameters.toBlockY - queryParameters.fromBlockY;
         long numCols = queryParameters.toBlockX - queryParameters.fromBlockX;
 
         //log.debug(numCols + "/" + numRows + " " + mCurrentCol + " " + mCurrentRow);
-        xmin = -16;
-        ymin = -16;
-        xmax = Tile.SIZE + 16;
-        ymax = Tile.SIZE + 16;
+        int xmin = -16;
+        int ymin = -16;
+        int xmax = Tile.SIZE + 16;
+        int ymax = Tile.SIZE + 16;
 
         if (numRows > 0) {
             int w = (int) (Tile.SIZE / (numCols + 1));
@@ -425,7 +397,7 @@ public class MapDatabase implements ITileDataSource {
                         blockNumber);
 
                 /* check the water flag of the block in its index entry */
-                if ((blockIndexEntry & BITMASK_INDEX_WATER) != 0) {
+                //if ((blockIndexEntry & BITMASK_INDEX_WATER) != 0) {
                     // Deprecate water tiles rendering
                     /*MapElement e = mElem;
                     e.clear();
@@ -437,7 +409,7 @@ public class MapDatabase implements ITileDataSource {
                     e.addPoint(xmax, ymax);
                     e.addPoint(xmin, ymax);
                     mapDataSink.process(e);*/
-                }
+                //}
 
                 /* get and check the current block pointer */
                 long blockPointer = blockIndexEntry & BITMASK_INDEX_OFFSET;
@@ -546,7 +518,7 @@ public class MapDatabase implements ITileDataSource {
         for (int elementCounter = numberOfPois; elementCounter != 0; --elementCounter) {
             if (mDebugFile) {
                 /* get and check the POI signature */
-                mSignaturePoi = mReadBuffer.readUTF8EncodedString(SIGNATURE_LENGTH_POI);
+                String mSignaturePoi = mReadBuffer.readUTF8EncodedString(SIGNATURE_LENGTH_POI);
                 if (!mSignaturePoi.startsWith("***POIStart")) {
                     log.warn("invalid POI signature: " + mSignaturePoi);
                     log.warn(DEBUG_SIGNATURE_BLOCK + mSignatureBlock);
@@ -555,9 +527,9 @@ public class MapDatabase implements ITileDataSource {
             }
 
             /* get the POI latitude offset (VBE-S) */
-            int latitude = mTileLatitude + mReadBuffer.readSignedInt();
+            double latitude = mTileLatitude + mReadBuffer.readSignedInt();
             /* get the POI longitude offset (VBE-S) */
-            int longitude = mTileLongitude + mReadBuffer.readSignedInt();
+            double longitude = mTileLongitude + mReadBuffer.readSignedInt();
 
             /* get the special byte which encodes multiple flags */
             byte specialByte = mReadBuffer.readByte();
@@ -649,39 +621,45 @@ public class MapDatabase implements ITileDataSource {
 
     private int decodeWayNodesDoubleDelta(MapElement e, int length, boolean isLine) {
         // get the first way node latitude offset (VBE-S)
-        int firstLatitude = mTileLatitude + mReadBuffer.readSignedInt();
+        double firstLatitude = mTileLatitude + mReadBuffer.readSignedInt();
 
         // get the first way node longitude offset (VBE-S)
-        int firstLongitude = this.mTileLongitude + this.mReadBuffer.readSignedInt();
+        double firstLongitude = this.mTileLongitude + this.mReadBuffer.readSignedInt();
 
         double[] outBuffer = e.ensurePointSize(e.pointPos + length, true);
         int outPos = e.pointPos;
         // store the first way node
-        int currentLat = firstLatitude;
-        int currentLon = firstLongitude;
+        double currentLat = firstLatitude;
+        double currentLon = firstLongitude;
         outBuffer[outPos++] = currentLon;
         outBuffer[outPos++] = currentLat;
         int cnt = 2;
 
-        int previousSingleDeltaLatitude = 0;
-        int previousSingleDeltaLongitude = 0;
+        double previousSingleDeltaLatitude = 0;
+        double previousSingleDeltaLongitude = 0;
         for (int wayNodesIndex = 2; wayNodesIndex < length; wayNodesIndex += 2) {
             // get the way node latitude double-delta offset (VBE-S)
-            int doubleDeltaLatitude = mReadBuffer.readSignedInt();
+            double doubleDeltaLatitude = mReadBuffer.readSignedInt();
 
             // get the way node longitude double-delta offset (VBE-S)
-            int doubleDeltaLongitude = mReadBuffer.readSignedInt();
+            double doubleDeltaLongitude = mReadBuffer.readSignedInt();
 
-            int singleDeltaLatitude = doubleDeltaLatitude + previousSingleDeltaLatitude;
-            int singleDeltaLongitude = doubleDeltaLongitude + previousSingleDeltaLongitude;
+            double singleDeltaLatitude = doubleDeltaLatitude + previousSingleDeltaLatitude;
+            double singleDeltaLongitude = doubleDeltaLongitude + previousSingleDeltaLongitude;
 
             currentLat = currentLat + singleDeltaLatitude;
             currentLon = currentLon + singleDeltaLongitude;
-
-            boolean line = isLine || (currentLon != firstLongitude && currentLat != firstLatitude);
-
-            if (line)
+            if (wayNodesIndex == length - 2)
             {
+                boolean line = isLine || (currentLon != firstLongitude && currentLat != firstLatitude);
+
+                if (line)
+                {
+                    outBuffer[outPos++] = currentLon;
+                    outBuffer[outPos++] = currentLat;
+                    cnt += 2;
+                }
+            } else {
                 outBuffer[outPos++] = currentLon;
                 outBuffer[outPos++] = currentLat;
                 cnt += 2;
@@ -699,16 +677,16 @@ public class MapDatabase implements ITileDataSource {
 
     private int decodeWayNodesSingleDelta(MapElement e, int length, boolean isLine) {
         // get the first way node latitude single-delta offset (VBE-S)
-        int firstLatitude = mTileLatitude + mReadBuffer.readSignedInt();
+        double firstLatitude = mTileLatitude + mReadBuffer.readSignedInt();
 
         // get the first way node longitude single-delta offset (VBE-S)
-        int firstLongitude = mTileLongitude + mReadBuffer.readSignedInt();
+        double firstLongitude = mTileLongitude + mReadBuffer.readSignedInt();
 
         double[] outBuffer = e.ensurePointSize(e.pointPos + length, true);
         int outPos = e.pointPos;
         // store the first way node
-        int currentLat = firstLatitude;
-        int currentLon = firstLongitude;
+        double currentLat = firstLatitude;
+        double currentLon = firstLongitude;
         outBuffer[outPos++] = currentLon;
         outBuffer[outPos++] = currentLat;
         int cnt = 2;
@@ -720,10 +698,16 @@ public class MapDatabase implements ITileDataSource {
             // get the way node longitude offset (VBE-S)
             currentLon = currentLon + mReadBuffer.readSignedInt();
 
-
-            boolean line = isLine || (currentLon != firstLongitude && currentLat != firstLatitude);
-            if (line)
+            if (wayNodesIndex == length - 2)
             {
+                boolean line = isLine || (currentLon != firstLongitude && currentLat != firstLatitude);
+                if (line)
+                {
+                    outBuffer[outPos++] = currentLon;
+                    outBuffer[outPos++] = currentLat;
+                    cnt += 2;
+                }
+            } else {
                 outBuffer[outPos++] = currentLon;
                 outBuffer[outPos++] = currentLat;
                 cnt += 2;
@@ -735,6 +719,7 @@ public class MapDatabase implements ITileDataSource {
         e.pointPos = outPos;
         return cnt;
     }
+
 
     private int decodeWayNodes(boolean doubleDelta, MapElement e, int length, boolean isLine) {
         int[] buffer = mIntBuffer;
@@ -794,8 +779,6 @@ public class MapDatabase implements ITileDataSource {
         return cnt;
     }
 
-    private int stringOffset = -1;
-
 
     /**
      * Processes the given number of ways.
@@ -817,11 +800,10 @@ public class MapDatabase implements ITileDataSource {
         int wayDataBlocks;
 
         // skip string block
-        int stringsSize = 0;
-        stringOffset = 0;
+        int stringOffset = 0;
 
         if (mTileSource.experimental) {
-            stringsSize = mReadBuffer.readUnsignedInt();
+            int stringsSize = mReadBuffer.readUnsignedInt();
             stringOffset = mReadBuffer.getBufferPosition();
             mReadBuffer.skipBytes(stringsSize);
         }
@@ -983,8 +965,8 @@ public class MapDatabase implements ITileDataSource {
         return true;
     }
 
-    private float[] readOptionalLabelPosition() {
-        float[] labelPosition = new float[2];
+    private double[] readOptionalLabelPosition() {
+        double[] labelPosition = new double[2];
 
         /* get the label position latitude offset (VBE-S) */
         labelPosition[1] = mTileLatitude + mReadBuffer.readSignedInt();
@@ -1031,7 +1013,7 @@ public class MapDatabase implements ITileDataSource {
         return zoomTable;
     }
 
-    static class TileProjection {
+    private static class TileProjection {
         private static final double COORD_SCALE = 1000000.0;
 
         long dx, dy;
@@ -1056,20 +1038,20 @@ public class MapDatabase implements ITileDataSource {
             divy = (Math.PI * 2.0) / (mapExtents >> 1);
         }
 
-        public void projectPoint(int lat, int lon, MapElement out) {
+        void projectPoint(double lat, double lon, MapElement out) {
             out.clear();
             out.startPoints();
             out.addPoint(projectLon(lon), projectLat(lat));
         }
 
-        public float projectLat(double lat) {
+        float projectLat(double lat) {
             double s = Math.sin(lat * ((Math.PI / 180) / COORD_SCALE));
             double r = Math.log((1.0 + s) / (1.0 - s));
 
             return Tile.SIZE - (float) (r / divy + dy);
         }
 
-        public float projectLon(double lon) {
+        float projectLon(double lon) {
             return (float) (lon / divx - dx);
         }
 

@@ -53,6 +53,11 @@ public final class OSMUtils {
             if ("aeroway".equals(key) || "building".equals(key) || "landuse".equals(key) || "leisure".equals(key) || "natural".equals(key)) {
                 return true;
             }
+            if ("wall".equals(key)) {
+                if (("yes").equals(value) || ("y").equals(value) || ("true").equals(value)) {
+                    return true;
+                }
+            }
             if ("highway".equals(key) || "barrier".equals(key)) {
                 // false unless something else overrides this.
                 result = false;

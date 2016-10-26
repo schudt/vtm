@@ -53,7 +53,7 @@ public class MapFileTileSource extends TileSource {
     private Callback callback;
 
     public MapFileTileSource() {
-        super(0, 22);
+        super(0, 21);
     }
 
     /**

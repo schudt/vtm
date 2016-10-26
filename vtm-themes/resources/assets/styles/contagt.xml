@@ -35,17 +35,6 @@
         </m>
         <!-- building -->
         <m k="building">
-            <m zoom-min="14">
-                <m closed="yes">
-                    <area fade="14" use="building" />
-                </m>
-                <m closed="no">
-                    <line fade="14" use="building" />
-                </m>
-            </m>
-            <m zoom-min="17">
-                <extrusion line-color="#ffd9d8d6" side-color="#eaecebe9" top-color="#eaf9f8f6" />
-            </m>
             <m zoom-min="17">
                 <caption style="bold" fill="#4040ff" k="name" priority="9" size="14"
                          stroke="#ffffff" stroke-width="2.0" />
@@ -731,8 +720,8 @@
             </m>
         </m>
         <m e="way" k="wall">
-            <m e="way" k="wall" v="yes" zoom-min="18">
-                <area fill="#99E0D0DB" stroke="#222222" stroke-width="0.15" />
+            <m e="way" k="wall" v="yes" zoom-min="17">
+                <area fill="#E0D0DB" stroke="#222222" stroke-width="0.15" />
             </m>
         </m>
         <m e="way" k="handrail">
