@@ -193,8 +193,8 @@ public class ViewController extends Viewport {
             degree -= 360;
         while (degree < -180)
             degree += 360;
-
-        mPos.bearing = (float) degree;
+        float fdegree = (float)degree;
+        mPos.setBearing(fdegree);
 
         updateMatrices();
     }

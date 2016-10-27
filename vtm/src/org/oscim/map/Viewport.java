@@ -86,7 +86,7 @@ public class Viewport {
         mPos.scale = mMinScale;
         mPos.x = 0.5;
         mPos.y = 0.5;
-        mPos.bearing = 0;
+        mPos.setBearing(0);
         mPos.tilt = 0;
     }
 
@@ -127,10 +127,10 @@ public class Viewport {
         }
 
         if (pos.bearing > mMaxBearing) {
-            pos.bearing = mMaxBearing;
+            pos.setBearing(mMaxBearing);
             changed = true;
         } else if (pos.bearing < mMinBearing) {
-            pos.bearing = mMinBearing;
+            pos.setBearing(mMinBearing);
             changed = true;
         }
 
@@ -168,7 +168,7 @@ public class Viewport {
                 || pos.bearing != mPos.bearing
                 || pos.tilt != mPos.tilt);
 
-        pos.bearing = mPos.bearing;
+        pos.setBearing(mPos.bearing);
         pos.tilt = mPos.tilt;
 
         pos.x = mPos.x;

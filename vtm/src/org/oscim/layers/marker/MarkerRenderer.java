@@ -143,7 +143,7 @@ public class MarkerRenderer extends BucketRenderer {
         }
         /* keep position for current state */
         mMapPosition.copy(v.pos);
-        mMapPosition.bearing = -mMapPosition.bearing;
+        mMapPosition.setBearing(-mMapPosition.bearing);
 
         sort(mItems, 0, mItems.length);
         //log.debug(Arrays.toString(mItems));

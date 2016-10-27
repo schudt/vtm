@@ -19,7 +19,10 @@ package org.oscim.core;
 
 import org.oscim.utils.FastMath;
 
-public class MapPosition {
+import java.util.Observable;
+
+public class MapPosition extends Observable
+{
 
     /**
      * Projected position x 0..1
@@ -91,6 +94,8 @@ public class MapPosition {
 
     public MapPosition setBearing(float bearing) {
         this.bearing = bearing;
+        setChanged();
+        notifyObservers();
         return this;
     }
 
@@ -142,6 +147,9 @@ public class MapPosition {
         this.scale = other.scale;
         this.tilt = other.tilt;
         this.zoomLevel = other.zoomLevel;
+
+        setChanged();
+        notifyObservers();
     }
 
     public void set(double x, double y, double scale, float bearing, float tilt) {
@@ -157,6 +165,9 @@ public class MapPosition {
 
         this.tilt = tilt;
         this.zoomLevel = FastMath.log2((int) scale);
+
+        setChanged();
+        notifyObservers();
     }
 
     /**
