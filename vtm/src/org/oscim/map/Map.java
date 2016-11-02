@@ -306,9 +306,9 @@ public abstract class Map implements TaskQueue {
      * MapPosition instance.
      */
     public MapPosition getMapPosition() {
-        MapPosition pos = new MapPosition();
-        mViewport.getMapPosition(pos);
-        return pos;
+        /*MapPosition pos = new MapPosition();
+        boolean pos = mViewport.getMapPosition(pos);*/
+        return mMapPosition;
     }
 
     public BoundingBox getBoundingBox(int expand) {

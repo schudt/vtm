@@ -17,11 +17,12 @@
  */
 package org.oscim.core;
 
+import org.oscim.event.eventInterfaces.VTMMapPositionInterface;
 import org.oscim.utils.FastMath;
 
-import java.util.Observable;
+import java.util.LinkedList;
 
-public class MapPosition extends Observable
+public class MapPosition
 {
 
     /**
@@ -57,17 +58,37 @@ public class MapPosition extends Observable
      */
     public int zoomLevel;
 
-    public MapPosition() {
+    private LinkedList<VTMMapPositionInterface> positionListener = new LinkedList<>();
+
+     public MapPosition() {
         this.scale = 1;
         this.x = 0.5;
         this.y = 0.5;
         this.zoomLevel = 1;
         this.bearing = 0;
+         notifyPositionListener();
     }
 
     public MapPosition(double latitude, double longitude, double scale) {
         setPosition(latitude, longitude);
         setScale(scale);
+    }
+
+    public void addPositionListener(VTMMapPositionInterface listener) {
+        if (!positionListener.contains(listener)) {
+            positionListener.add(listener);
+        }
+    }
+
+    public void removePositionListener(VTMMapPositionInterface listener) {
+        positionListener.remove(listener);
+    }
+
+    private void notifyPositionListener() {
+        for (VTMMapPositionInterface listener: positionListener)
+        {
+            listener.onBearingChanged(this.bearing);
+        }
     }
 
     public double getX() {
@@ -94,8 +115,7 @@ public class MapPosition extends Observable
 
     public MapPosition setBearing(float bearing) {
         this.bearing = bearing;
-        setChanged();
-        notifyObservers();
+        notifyPositionListener();
         return this;
     }
 
@@ -147,9 +167,7 @@ public class MapPosition extends Observable
         this.scale = other.scale;
         this.tilt = other.tilt;
         this.zoomLevel = other.zoomLevel;
-
-        setChanged();
-        notifyObservers();
+        notifyPositionListener();
     }
 
     public void set(double x, double y, double scale, float bearing, float tilt) {
@@ -166,8 +184,7 @@ public class MapPosition extends Observable
         this.tilt = tilt;
         this.zoomLevel = FastMath.log2((int) scale);
 
-        setChanged();
-        notifyObservers();
+        notifyPositionListener();
     }
 
     /**

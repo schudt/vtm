@@ -58,6 +58,11 @@ public final class OSMUtils {
                     return true;
                 }
             }
+            if ("surface".equals(key)) {
+                if (("steps").equals(value)) {
+                    return true;
+                }
+            }
             if ("highway".equals(key) || "barrier".equals(key)) {
                 // false unless something else overrides this.
                 result = false;
