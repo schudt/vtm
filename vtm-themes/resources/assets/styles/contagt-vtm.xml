@@ -1,0 +1,822 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rendertheme xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" base-text-scale="1.25"
+             map-background="#00FFFFFF" version="1" xmlns="http://opensciencemap.org/rendertheme"
+             xsi:schemaLocation="http://opensciencemap.org/rendertheme https://raw.githubusercontent.com/mapsforge/vtm/master/resources/rendertheme.xsd">
+    <m e="way">
+        <m e="way" k="natural">
+            <m e="way" k="natural" v="glacier" zoom-min="3">
+                <area fill="#fcfeff" />
+            </m>
+            <m e="way" k="natural" v="coastline" >
+                <area fill="#fcf8e4" />
+            </m>
+        </m>
+        <m e="way" k="building">
+            <m e="way" k="building" v="yes" >
+                <area fill="#E5DDDAD3" stroke="#7FCCC9C4" stroke-width="0.15" />
+            </m>
+        </m>
+        <m e="way" k="place">
+            <m e="way" k="place" v="town" zoom-min="10">
+                <area fill="#99FAF7F7" />
+            </m>
+            <m e="way" k="place" v="city" zoom-min="10">
+                <area fill="#99FAF7F7" />
+            </m>
+            <m e="way" k="place" v="village" zoom-min="10">
+                <area fill="#99F3ECEB" />
+            </m>
+            <m e="way" k="place" v="locality" zoom-min="10">
+                <area fill="#99F3ECEB" />
+            </m>
+            <m e="way" k="place" v="hamlet" zoom-min="10">
+                <area fill="#99F3ECEB" />
+            </m>
+        </m>
+        <m e="way" k="surface">
+            <m e="way" k="surface" v="background" >
+                <area fill="#ffffff" />
+            </m>
+        </m>
+        <m e="way" k="residential">
+            <m e="way" k="residential" v="urban" zoom-min="10">
+                <area fill="#F7EFEB" />
+            </m>
+            <m e="way" k="residential" v="rural" zoom-min="10">
+                <area fill="#f4d7c7" />
+            </m>
+        </m>
+        <m e="way" k="landuse">
+            <m e="way" k="landuse" v="residential" zoom-min="10">
+                <area fill="#F7EFEB" />
+            </m>
+            <m e="way" k="landuse" v="residential" zoom-min="16">
+                <area stroke-width="0.03" stroke="#cb8904" />
+            </m>
+        </m>
+        <m e="way" k="amenity">
+            <m e="way" k="amenity" v="parking" zoom-min="15">
+                <area fill="#ecedf4" />
+            </m>
+        </m>
+        <m e="way" k="landuse">
+            <m e="way" k="landuse" v="industrial" zoom-min="10">
+                <area fill="#ddd8da" />
+            </m>
+            <m e="way" k="landuse" v="orchard" zoom-min="10" zoom-max="15">
+                <area fill="#edf2c1" />
+            </m>
+            <m e="way" k="landuse" v="allotments" zoom-min="10">
+                <area fill="#edf2c1" />
+            </m>
+            <m e="way" k="landuse" v="garages" zoom-min="10">
+                <area fill="#ddd8da" />
+            </m>
+            <m e="way" k="landuse" v="wood" zoom-min="4">
+                <area fill="#d6f4c6" />
+            </m>
+            <m e="way" k="landuse" v="forest" zoom-min="4">
+                <area fill="#d6f4c6" />
+            </m>
+            <m e="way" k="landuse" v="military" zoom-min="10">
+                <area fill="#ddd8da" />
+            </m>
+        </m>
+        <m e="way" k="natural">
+            <m e="way" k="natural" v="wood" zoom-min="4">
+                <area fill="#d6f4c6" />
+            </m>
+            <m e="way" k="natural" v="scrub" zoom-min="12">
+                <area fill="#e5f5dc" />
+            </m>
+            <m e="way" k="natural" v="forest" zoom-min="4">
+                <area fill="#d6f4c6" />
+            </m>
+            <m e="way" k="natural" v="heath" zoom-min="12">
+                <area fill="#ecffe5" />
+            </m>
+        </m>
+        <m e="way" k="leisure">
+            <m e="way" k="leisure" v="park" zoom-min="10">
+                <area fill="#c4e9a4" />
+            </m>
+            <m e="way" k="leisure" v="garden" zoom-min="10" zoom-max="15">
+                <area fill="#edf2c1" />
+            </m>
+        </m>
+        <m e="way" k="landuse">
+            <m e="way" k="landuse" v="recreation_ground" zoom-min="12">
+                <area fill="#f4ffe5" />
+            </m>
+            <m e="way" k="landuse" v="grass" zoom-min="12">
+                <area fill="#f4ffe5" />
+            </m>
+            <m e="way" k="landuse" v="meadow" zoom-min="12">
+                <area fill="#f4ffe5" />
+            </m>
+        </m>
+        <m e="way" k="natural">
+            <m e="way" k="natural" v="grass" zoom-min="12">
+                <area fill="#f4ffe5" />
+            </m>
+            <m e="way" k="natural" v="meadow" zoom-min="12">
+                <area fill="#f4ffe5" />
+            </m>
+        </m>
+        <m e="way" k="aeroway">
+            <m e="way" k="aeroway" v="aerodrome" zoom-min="13">
+                <area stroke="#008ac6" stroke-width="0.08" />
+            </m>
+        </m>
+        <m e="way" k="landuse">
+            <m e="way" k="landuse" v="farm" zoom-min="10">
+                <area fill="#fff5c4" />
+            </m>
+            <m e="way" k="landuse" v="field" zoom-min="10">
+                <area fill="#fff5c4" />
+            </m>
+            <m e="way" k="landuse" v="farmland" zoom-min="10">
+                <area fill="#fff5c4" />
+            </m>
+            <m e="way" k="landuse" v="cemetery" zoom-min="10">
+                <area fill="#e5f5dc" />
+            </m>
+        </m>
+        <m e="way" k="place">
+            <m e="way" k="place" v="town" zoom-min="6" zoom-max="9">
+                <area fill="#99FFE1D0" />
+            </m>
+            <m e="way" k="place" v="city" zoom-min="6" zoom-max="9">
+                <area fill="#99FFE1D0" />
+            </m>
+        </m>
+        <m e="way" k="leisure">
+            <m e="way" k="leisure" v="stadium" zoom-min="12">
+                <area fill="#e3deb1" />
+            </m>
+            <m e="way" k="leisure" v="pitch" zoom-min="12">
+                <area fill="#e3deb1" />
+            </m>
+        </m>
+        <m e="way" k="waterway">
+            <m e="way" k="waterway" v="canal" zoom-min="10">
+                <line stroke="#abc4f5" stroke-width="0.06" />
+            </m>
+            <m e="way" k="waterway" v="river" zoom-min="7" zoom-max="10">
+                <line stroke="#C4D4F5" stroke-width="0.06" />
+            </m>
+            <m e="way" k="waterway" v="river" zoom-min="10" zoom-max="14">
+                <line stroke="#C4D4F5" stroke-width="0.07" />
+            </m>
+            <m e="way" k="waterway" v="river" zoom-min="15">
+                <line stroke="#C4D4F5" stroke-width="0.09" />
+            </m>
+            <m e="way" k="waterway" v="riverbank" zoom-min="5">
+                <area fill="#C4D4F5" stroke="#C4D4F5" stroke-width="0.01" />
+            </m>
+            <m e="way" k="waterway" v="stream" zoom-min="9" zoom-max="10">
+                <line stroke="#C4D4F5" stroke-width="0.03" />
+            </m>
+            <m e="way" k="waterway" v="stream" zoom-min="10">
+                <line stroke="#C4D4F5" stroke-width="0.05" />
+            </m>
+        </m>
+        <m e="way" k="landuse">
+            <m e="way" k="landuse" v="reservoir" zoom-min="10">
+                <area fill="#C4D4F5" stroke="#C4D4F5" stroke-width="0.01" />
+            </m>
+        </m>
+        <m e="way" k="natural">
+            <m e="way" k="natural" v="water" zoom-min="5">
+                <area fill="#C4D4F5" stroke="#C4D4F5" stroke-width="0.01" />
+            </m>
+        </m>
+        <m e="way" k="highway">
+            <m e="way" k="highway" v="track" zoom-min="14" zoom-max="16">
+                <line stroke-width="0.15" stroke="#ffffff" />
+            </m>
+            <m e="way" k="highway" v="track" zoom-min="16">
+                <line stroke-width="0.25" stroke="#ffffff" />
+            </m>
+            <m e="way" k="highway" v="road" zoom-min="14" zoom-max="16">
+                <line stroke-width="0.15" stroke="#ffffff" />
+            </m>
+            <m e="way" k="highway" v="road" zoom-min="16">
+                <line stroke-width="0.25" stroke="#ffffff" />
+            </m>
+        </m>
+        <m e="way" k="living_street">
+            <m e="way" k="living_street" v="yes" zoom-min="14" zoom-max="14">
+                <line stroke-width="0.03" stroke="#99996703" />
+            </m>
+            <m e="way" k="living_street" v="yes" zoom-min="15" zoom-max="15">
+                <line stroke-width="0.02" stroke="#7F996703" />
+            </m>
+            <m e="way" k="living_street" v="yes" zoom-min="16">
+                <line stroke-width="0.12" stroke="#996703" />
+            </m>
+            <m e="way" k="living_street" v="yes" zoom-min="15" zoom-max="15">
+                <line stroke-width="0.25" stroke="#ffffff" />
+            </m>
+            <m e="way" k="living_street" v="yes" zoom-min="16" zoom-max="16">
+                <line stroke-width="0.35" stroke="#996703" />
+            </m>
+            <m e="way" k="living_street" v="yes" zoom-min="17">
+                <line stroke-width="0.15" stroke="#CCC7C3" />
+            </m>
+        </m>
+        <m e="way" k="service">
+            <m e="way" k="service" v="parking_aisle" zoom-min="14" zoom-max="14">
+                <line stroke-width="0.03" stroke="#99996703" />
+            </m>
+            <m e="way" k="service" v="parking_aisle" zoom-min="15" zoom-max="15">
+                <line stroke-width="0.02" stroke="#7F996703" />
+            </m>
+            <m e="way" k="service" v="parking_aisle" zoom-min="16">
+                <line stroke-width="0.12" stroke="#996703" />
+            </m>
+            <m e="way" k="service" v="parking_aisle" zoom-min="15" zoom-max="15">
+                <line stroke-width="0.25" stroke="#ffffff" />
+            </m>
+            <m e="way" k="service" v="parking_aisle" zoom-min="16" zoom-max="16">
+                <line stroke-width="0.35" stroke="#996703" />
+            </m>
+            <m e="way" k="service" v="parking_aisle" zoom-min="17">
+                <line stroke-width="0.15" stroke="#CCC7C3" />
+            </m>
+        </m>
+        <m e="way" k="highway">
+            <m e="way" k="highway" v="living_street" zoom-min="16" zoom-max="16">
+                <line stroke-width="0.35" stroke="#996703" />
+            </m>
+            <m e="way" k="highway" v="living_street" zoom-min="17">
+                <line stroke-width="0.15" stroke="#CCC7C3" />
+            </m>
+            <m e="way" k="highway" v="service" zoom-min="14" zoom-max="14">
+                <line stroke-width="0.03" stroke="#99996703" />
+            </m>
+            <m e="way" k="highway" v="service" zoom-min="15" zoom-max="15">
+                <line stroke-width="0.02" stroke="#7F996703" />
+            </m>
+            <m e="way" k="highway" v="service" zoom-min="15" zoom-max="15">
+                <line stroke-width="0.02" stroke="#7F996703" />
+            </m>
+            <m e="way" k="highway" v="service" zoom-min="16">
+                <line stroke-width="0.12" stroke="#996703" />
+            </m>
+            <m e="way" k="highway" v="service" zoom-min="16">
+                <line stroke-width="0.12" stroke="#996703" />
+            </m>
+            <m e="way" k="highway" v="service" zoom-min="15" zoom-max="15">
+                <line stroke-width="0.25" stroke="#ffffff" />
+            </m>
+            <m e="way" k="highway" v="service" zoom-min="16" zoom-max="16">
+                <line stroke-width="0.35" stroke="#996703" />
+            </m>
+            <m e="way" k="highway" v="service" zoom-min="17">
+                <line stroke-width="0.15" stroke="#CCC7C3" />
+            </m>
+            <m e="way" k="highway" v="service" zoom-min="17">
+                <line stroke-width="0.15" stroke="#CCC7C3" />
+            </m>
+            <m e="way" k="highway" v="footway" zoom-min="15">
+                <line stroke-width="0.02" stroke="#bf96ce" stroke-dasharray="5,3" />
+            </m>
+            <m e="way" k="highway" v="track" zoom-min="12" zoom-max="12">
+                <line stroke-width="0.03" stroke="#99996703" />
+            </m>
+            <m e="way" k="highway" v="track" zoom-min="13" zoom-max="13">
+                <line stroke-width="0.06" stroke="#7F996703" />
+            </m>
+            <m e="way" k="highway" v="residential" zoom-min="12" zoom-max="12">
+                <line stroke-width="0.03" stroke="#99996703" />
+            </m>
+            <m e="way" k="highway" v="residential" zoom-min="13" zoom-max="13">
+                <line stroke-width="0.12" stroke="#ffffff" />
+            </m>
+            <m e="way" k="highway" v="residential" zoom-min="14" zoom-max="15">
+                <line stroke-width="0.25" stroke="#ffffff" />
+            </m>
+            <m e="way" k="highway" v="residential" zoom-min="16" zoom-max="16">
+                <line stroke-width="0.35" stroke="#996703" />
+            </m>
+            <m e="way" k="highway" v="residential" zoom-min="17">
+                <line stroke-width="0.15" stroke="#CCC7C3" />
+            </m>
+            <m e="way" k="highway" v="cycleway" zoom-min="15">
+                <line stroke-width="0.02" stroke="#bf96ce" stroke-dasharray="5,3" />
+            </m>
+            <m e="way" k="highway" v="unclassified" zoom-min="14" zoom-max="15">
+                <line stroke-width="0.25" stroke="#ffffff" />
+            </m>
+            <m e="way" k="highway" v="unclassified" zoom-min="16" zoom-max="16">
+                <line stroke-width="0.35" stroke="#996703" />
+            </m>
+            <m e="way" k="highway" v="unclassified" zoom-min="17">
+                <line stroke-width="0.15" stroke="#CCC7C3" />
+            </m>
+            <m e="way" k="highway" v="pedestrian" zoom-min="15">
+                <line stroke-width="0.02" stroke="#bf96ce" stroke-dasharray="5,3" />
+            </m>
+            <m e="way" k="highway" v="construction" zoom-min="15" zoom-max="16">
+                <line stroke-width="0.2" stroke="#ffffff" stroke-dasharray="9,9" />
+            </m>
+            <m e="way" k="highway" v="construction" zoom-min="17">
+                <line stroke-width="0.3" stroke="#ffffff" stroke-dasharray="9,9" />
+            </m>
+            <m e="way" k="highway" v="steps" zoom-min="15">
+                <line stroke-width="0.3" stroke="#bf96ce" stroke-dasharray="1,1" stroke-linecap="butt" />
+            </m>
+            <m e="way" k="highway" v="tertiary" zoom-min="9" zoom-max="10">
+                <line stroke-width="0.03" stroke="#99996703" />
+            </m>
+            <m e="way" k="highway" v="path" zoom-min="15">
+                <line stroke-width="0.02" stroke="#bf96ce" stroke-dasharray="5,3" />
+            </m>
+            <m e="way" k="highway" v="road" zoom-min="12" zoom-max="12">
+                <line stroke-width="0.03" stroke="#99996703" />
+            </m>
+            <m e="way" k="highway" v="road" zoom-min="13" zoom-max="13">
+                <line stroke-width="0.06" stroke="#7F996703" />
+            </m>
+            <m e="way" k="highway" v="secondary" zoom-min="9" zoom-max="9">
+                <line stroke-width="0.03" stroke="#99996703" />
+            </m>
+        </m>
+        <m e="way" k="highway">
+            <m e="way" k="highway" v="secondary_link" zoom-min="12" zoom-max="12">
+                <line stroke-width="0.3" stroke="#fcffd1" />
+            </m>
+            <m e="way" k="highway" v="secondary_link" zoom-min="13" zoom-max="13">
+                <line stroke-width="0.4" stroke="#fcffd1" />
+            </m>
+            <m e="way" k="highway" v="secondary_link" zoom-min="14" zoom-max="14">
+                <line stroke-width="0.5" stroke="#fcffd1" />
+            </m>
+            <m e="way" k="highway" v="secondary_link" zoom-min="15" zoom-max="15">
+                <line stroke-width="0.6" stroke="#fcffd1" />
+            </m>
+            <m e="way" k="highway" v="secondary_link" zoom-min="16" zoom-max="16">
+                <line stroke-width="0.7" stroke="#fcffd1" />
+            </m>
+            <m e="way" k="highway" v="secondary_link" zoom-min="17" zoom-max="17">
+                <line stroke-width="0.8" stroke="#fcffd1" />
+            </m>
+            <m e="way" k="highway" v="secondary_link" zoom-min="18" zoom-max="18">
+                <line stroke-width="0.9" stroke="#fcffd1" />
+            </m>
+            <m e="way" k="highway" v="tertiary_link" zoom-min="12" zoom-max="12">
+                <line stroke-width="0.3" stroke="#fcffd1" />
+            </m>
+            <m e="way" k="highway" v="tertiary_link" zoom-min="13" zoom-max="13">
+                <line stroke-width="0.4" stroke="#fcffd1" />
+            </m>
+            <m e="way" k="highway" v="tertiary_link" zoom-min="14" zoom-max="14">
+                <line stroke-width="0.5" stroke="#fcffd1" />
+            </m>
+            <m e="way" k="highway" v="tertiary_link" zoom-min="15" zoom-max="15">
+                <line stroke-width="0.6" stroke="#fcffd1" />
+            </m>
+            <m e="way" k="highway" v="tertiary_link" zoom-min="16" zoom-max="16">
+                <line stroke-width="0.7" stroke="#fcffd1" />
+            </m>
+            <m e="way" k="highway" v="tertiary_link" zoom-min="17" zoom-max="17">
+                <line stroke-width="0.8" stroke="#fcffd1" />
+            </m>
+            <m e="way" k="highway" v="tertiary_link" zoom-min="18" zoom-max="18">
+                <line stroke-width="0.9" stroke="#fcffd1" />
+            </m>
+            <m e="way" k="highway" v="tertiary" zoom-min="11" zoom-max="11">
+                <line stroke-width="0.14" stroke="#fcffd1" />
+            </m>
+            <m e="way" k="highway" v="tertiary" zoom-min="12" zoom-max="12">
+                <line stroke-width="0.3" stroke="#fcffd1" />
+            </m>
+            <m e="way" k="highway" v="tertiary" zoom-min="13" zoom-max="13">
+                <line stroke-width="0.4" stroke="#fcffd1" />
+            </m>
+            <m e="way" k="highway" v="tertiary" zoom-min="14" zoom-max="14">
+                <line stroke-width="0.5" stroke="#fcffd1" />
+            </m>
+            <m e="way" k="highway" v="tertiary" zoom-min="15" zoom-max="15">
+                <line stroke-width="0.6" stroke="#fcffd1" />
+            </m>
+            <m e="way" k="highway" v="tertiary" zoom-min="16" zoom-max="16">
+                <line stroke-width="0.7" stroke="#fcffd1" />
+            </m>
+            <m e="way" k="highway" v="tertiary" zoom-min="17" zoom-max="17">
+                <line stroke-width="0.8" stroke="#fcffd1" />
+            </m>
+            <m e="way" k="highway" v="tertiary" zoom-min="18" zoom-max="18">
+                <line stroke-width="0.9" stroke="#fcffd1" />
+            </m>
+            <m e="way" k="highway" v="secondary" zoom-min="10" zoom-max="10">
+                <line stroke-width="0.12" stroke="#fcffd1" />
+            </m>
+            <m e="way" k="highway" v="secondary" zoom-min="11" zoom-max="11">
+                <line stroke-width="0.14" stroke="#fcffd1" />
+            </m>
+            <m e="way" k="highway" v="secondary" zoom-min="12" zoom-max="12">
+                <line stroke-width="0.3" stroke="#fcffd1" />
+            </m>
+            <m e="way" k="highway" v="secondary" zoom-min="13" zoom-max="13">
+                <line stroke-width="0.4" stroke="#fcffd1" />
+            </m>
+            <m e="way" k="highway" v="secondary" zoom-min="14" zoom-max="14">
+                <line stroke-width="0.5" stroke="#fcffd1" />
+            </m>
+            <m e="way" k="highway" v="secondary" zoom-min="15" zoom-max="15">
+                <line stroke-width="0.6" stroke="#fcffd1" />
+            </m>
+            <m e="way" k="highway" v="secondary" zoom-min="16" zoom-max="16">
+                <line stroke-width="0.7" stroke="#fcffd1" />
+            </m>
+            <m e="way" k="highway" v="secondary" zoom-min="17" zoom-max="17">
+                <line stroke-width="0.8" stroke="#fcffd1" />
+            </m>
+            <m e="way" k="highway" v="secondary" zoom-min="18" zoom-max="18">
+                <line stroke-width="0.9" stroke="#fcffd1" />
+            </m>
+        </m>
+        <m e="way" k="highway">
+            <m e="way" k="highway" v="primary_link" zoom-min="9" zoom-max="9">
+                <line stroke-width="0.2" stroke="#fcea97" />
+            </m>
+            <m e="way" k="highway" v="primary_link" zoom-min="10" zoom-max="10">
+                <line stroke-width="0.3" stroke="#fcea97" />
+            </m>
+            <m e="way" k="highway" v="primary_link" zoom-min="11" zoom-max="11">
+                <line stroke-width="0.4" stroke="#fcea97" />
+            </m>
+            <m e="way" k="highway" v="primary_link" zoom-min="12" zoom-max="12">
+                <line stroke-width="0.5" stroke="#fcea97" />
+            </m>
+            <m e="way" k="highway" v="primary_link" zoom-min="13" zoom-max="13">
+                <line stroke-width="0.6" stroke="#fcea97" />
+            </m>
+            <m e="way" k="highway" v="primary_link" zoom-min="14" zoom-max="14">
+                <line stroke-width="0.7" stroke="#fcea97" />
+            </m>
+            <m e="way" k="highway" v="primary_link" zoom-min="15" zoom-max="15">
+                <line stroke-width="0.8" stroke="#fcea97" />
+            </m>
+            <m e="way" k="highway" v="primary_link" zoom-min="16" zoom-max="16">
+                <line stroke-width="0.9" stroke="#fcea97" />
+            </m>
+            <m e="way" k="highway" v="primary_link" zoom-min="17" zoom-max="17">
+                <line stroke-width="1.0" stroke="#fcea97" />
+            </m>
+            <m e="way" k="highway" v="primary_link" zoom-min="18" zoom-max="18">
+                <line stroke-width="1.1" stroke="#fcea97" />
+            </m>
+            <m e="way" k="highway" v="primary" zoom-min="7" zoom-max="7">
+                <line stroke-width="0.1" stroke="#fcea97" />
+            </m>
+            <m e="way" k="highway" v="primary" zoom-min="8" zoom-max="8">
+                <line stroke-width="0.2" stroke="#fcea97" />
+            </m>
+            <m e="way" k="highway" v="primary" zoom-min="9" zoom-max="9">
+                <line stroke-width="0.2" stroke="#fcea97" />
+            </m>
+            <m e="way" k="highway" v="primary" zoom-min="10" zoom-max="10">
+                <line stroke-width="0.3" stroke="#fcea97" />
+            </m>
+            <m e="way" k="highway" v="primary" zoom-min="11" zoom-max="11">
+                <line stroke-width="0.4" stroke="#fcea97" />
+            </m>
+            <m e="way" k="highway" v="primary" zoom-min="12" zoom-max="12">
+                <line stroke-width="0.5" stroke="#fcea97" />
+            </m>
+            <m e="way" k="highway" v="primary" zoom-min="13" zoom-max="13">
+                <line stroke-width="0.6" stroke="#fcea97" />
+            </m>
+            <m e="way" k="highway" v="primary" zoom-min="14" zoom-max="14">
+                <line stroke-width="0.7" stroke="#fcea97" />
+            </m>
+            <m e="way" k="highway" v="primary" zoom-min="15" zoom-max="15">
+                <line stroke-width="0.8" stroke="#fcea97" />
+            </m>
+            <m e="way" k="highway" v="primary" zoom-min="16" zoom-max="16">
+                <line stroke-width="0.9" stroke="#fcea97" />
+            </m>
+            <m e="way" k="highway" v="primary" zoom-min="17" zoom-max="17">
+                <line stroke-width="1.0" stroke="#fcea97" />
+            </m>
+            <m e="way" k="highway" v="primary" zoom-min="18" zoom-max="18">
+                <line stroke-width="1.1" stroke="#fcea97" />
+            </m>
+        </m>
+        <m e="way" k="highway">
+            <m e="way" k="highway" v="motorway" zoom-min="6" zoom-max="6">
+                <line stroke-width="0.1" stroke="#fc9265" />
+            </m>
+            <m e="way" k="highway" v="motorway" zoom-min="7" zoom-max="7">
+                <line stroke-width="0.12" stroke="#fc9265" />
+            </m>
+            <m e="way" k="highway" v="motorway" zoom-min="8" zoom-max="8">
+                <line stroke-width="0.2" stroke="#fc9265" />
+            </m>
+            <m e="way" k="highway" v="motorway" zoom-min="9" zoom-max="9">
+                <line stroke-width="0.3" stroke="#ffd780" />
+            </m>
+            <m e="way" k="highway" v="motorway" zoom-min="10" zoom-max="10">
+                <line stroke-width="0.4" stroke="#ffd780" />
+            </m>
+            <m e="way" k="highway" v="motorway" zoom-min="11" zoom-max="11">
+                <line stroke-width="0.5" stroke="#ffd780" />
+            </m>
+            <m e="way" k="highway" v="motorway" zoom-min="12" zoom-max="12">
+                <line stroke-width="0.7" stroke="#ffd780" />
+            </m>
+            <m e="way" k="highway" v="motorway" zoom-min="13" zoom-max="13">
+                <line stroke-width="0.8" stroke="#ffd780" />
+            </m>
+            <m e="way" k="highway" v="motorway" zoom-min="14" zoom-max="14">
+                <line stroke-width="0.9" stroke="#ffd780" />
+            </m>
+            <m e="way" k="highway" v="motorway" zoom-min="15" zoom-max="15">
+                <line stroke-width="1.0" stroke="#ffd780" />
+            </m>
+            <m e="way" k="highway" v="motorway" zoom-min="16" zoom-max="16">
+                <line stroke-width="1.1" stroke="#ffd780" />
+            </m>
+            <m e="way" k="highway" v="motorway" zoom-min="17" zoom-max="17">
+                <line stroke-width="1.2" stroke="#ffd780" />
+            </m>
+            <m e="way" k="highway" v="motorway" zoom-min="18" zoom-max="18">
+                <line stroke-width="1.3" stroke="#ffd780" />
+            </m>
+            <m e="way" k="highway" v="trunk_link" zoom-min="14" zoom-max="14">
+                <line stroke-width="0.9" stroke="#ffd780" />
+            </m>
+            <m e="way" k="highway" v="trunk_link" zoom-min="15" zoom-max="15">
+                <line stroke-width="1.0" stroke="#ffd780" />
+            </m>
+            <m e="way" k="highway" v="trunk_link" zoom-min="16" zoom-max="16">
+                <line stroke-width="1.1" stroke="#ffd780" />
+            </m>
+            <m e="way" k="highway" v="trunk_link" zoom-min="17" zoom-max="17">
+                <line stroke-width="1.2" stroke="#ffd780" />
+            </m>
+            <m e="way" k="highway" v="trunk_link" zoom-min="18" zoom-max="18">
+                <line stroke-width="1.3" stroke="#ffd780" />
+            </m>
+            <m e="way" k="highway" v="motorway_link" zoom-min="14" zoom-max="14">
+                <line stroke-width="0.9" stroke="#ffd780" />
+            </m>
+            <m e="way" k="highway" v="motorway_link" zoom-min="15" zoom-max="15">
+                <line stroke-width="1.0" stroke="#ffd780" />
+            </m>
+            <m e="way" k="highway" v="motorway_link" zoom-min="16" zoom-max="16">
+                <line stroke-width="1.1" stroke="#ffd780" />
+            </m>
+            <m e="way" k="highway" v="motorway_link" zoom-min="17" zoom-max="17">
+                <line stroke-width="1.2" stroke="#ffd780" />
+            </m>
+            <m e="way" k="highway" v="motorway_link" zoom-min="18" zoom-max="18">
+                <line stroke-width="1.3" stroke="#ffd780" />
+            </m>
+            <m e="way" k="highway" v="trunk" zoom-min="6" zoom-max="6">
+                <line stroke-width="0.09" stroke="#fbcd40" />
+            </m>
+            <m e="way" k="highway" v="trunk" zoom-min="7" zoom-max="7">
+                <line stroke-width="0.1" stroke="#fbcd40" />
+            </m>
+            <m e="way" k="highway" v="trunk" zoom-min="8" zoom-max="8">
+                <line stroke-width="0.2" stroke="#fbcd40" />
+            </m>
+            <m e="way" k="highway" v="trunk" zoom-min="9" zoom-max="9">
+                <line stroke-width="0.3" stroke="#ffd780" />
+            </m>
+            <m e="way" k="highway" v="trunk" zoom-min="10" zoom-max="10">
+                <line stroke-width="0.4" stroke="#ffd780" />
+            </m>
+            <m e="way" k="highway" v="trunk" zoom-min="11" zoom-max="11">
+                <line stroke-width="0.5" stroke="#ffd780" />
+            </m>
+            <m e="way" k="highway" v="trunk" zoom-min="12" zoom-max="12">
+                <line stroke-width="0.7" stroke="#ffd780" />
+            </m>
+            <m e="way" k="highway" v="trunk" zoom-min="13" zoom-max="13">
+                <line stroke-width="0.8" stroke="#ffd780" />
+            </m>
+            <m e="way" k="highway" v="trunk" zoom-min="14" zoom-max="14">
+                <line stroke-width="0.9" stroke="#ffd780" />
+            </m>
+            <m e="way" k="highway" v="trunk" zoom-min="15" zoom-max="15">
+                <line stroke-width="1.0" stroke="#ffd780" />
+            </m>
+            <m e="way" k="highway" v="trunk" zoom-min="16" zoom-max="16">
+                <line stroke-width="1.1" stroke="#ffd780" />
+            </m>
+            <m e="way" k="highway" v="trunk" zoom-min="17" zoom-max="17">
+                <line stroke-width="1.2" stroke="#ffd780" />
+            </m>
+            <m e="way" k="highway" v="trunk" zoom-min="18" zoom-max="18">
+                <line stroke-width="1.3" stroke="#ffd780" />
+            </m>
+        </m>
+        <m e="way" k="highway">
+            <m e="way" k="highway" v="primary_link" zoom-min="13">
+                <line stroke-width="0.03" stroke="#fa6478" />
+            </m>
+            <m e="way" k="highway" v="primary" zoom-min="13">
+                <line stroke-width="0.03" stroke="#fa6478" />
+            </m>
+            <m e="way" k="highway" v="motorway_link" zoom-min="9">
+                <line stroke-width="0.03" stroke="#fa6478" />
+            </m>
+            <m e="way" k="highway" v="motorway" zoom-min="9">
+                <line stroke-width="0.03" stroke="#fa6478" />
+            </m>
+            <m e="way" k="highway" v="trunk" zoom-min="9">
+                <line stroke-width="0.03" stroke="#fa6478" />
+            </m>
+            <m e="way" k="highway" v="trunk_link" zoom-min="9">
+                <line stroke-width="0.03" stroke="#fa6478" />
+            </m>
+        </m>
+        <m e="way" k="railway">
+            <m e="way" k="railway" v="tram" zoom-min="9">
+                <line stroke-width="0.18" stroke="#303030" />
+            </m>
+            <m e="way" k="railway" v="rail" zoom-min="7" zoom-max="7">
+                <line stroke-width="0.15" stroke="#303030" />
+            </m>
+            <m e="way" k="railway" v="rail" zoom-min="8" zoom-max="8">
+                <line stroke-width="0.06" stroke="#303030" />
+            </m>
+            <m e="way" k="railway" v="rail" zoom-min="9">
+                <line stroke-width="0.34" stroke="#606060" />
+            </m>
+            <m e="way" k="railway" v="subway" zoom-min="12">
+                <line stroke-width="0.3" stroke="#4C072889" stroke-dasharray="3,3" stroke-linecap="butt" />
+            </m>
+        </m>
+        <m e="way" k="color">
+            <m e="way" k="color" v="#000000" zoom-min="15">
+                <line stroke-width="0.1" stroke="#000000" />
+            </m>
+            <m e="way" k="color" v="#ff0000" zoom-min="15">
+                <line stroke-width="0.1" stroke="#c00000" />
+            </m>
+            <m e="way" k="color" v="#ffffff" zoom-min="15">
+                <line stroke-width="0.1" stroke="#ffffff" />
+            </m>
+        </m>
+        <m e="way" k="colour">
+            <m e="way" k="colour" v="#000000" zoom-min="15">
+                <line stroke-width="0.1" stroke="#000000" />
+            </m>
+            <m e="way" k="colour" v="#ff0000" zoom-min="15">
+                <line stroke-width="0.1" stroke="#c00000" />
+            </m>
+            <m e="way" k="colour" v="#ffffff" zoom-min="15">
+                <line stroke-width="0.1" stroke="#ffffff" />
+            </m>
+        </m>
+        <m e="way" k="railway">
+            <m e="way" k="railway" v="tram" zoom-min="9">
+                <line stroke-width="0.06" stroke="#ffffff" stroke-dasharray="6,6" />
+            </m>
+            <m e="way" k="railway" v="rail" zoom-min="7" zoom-max="7">
+                <line stroke-width="0.03" stroke="#ffffff" stroke-dasharray="3,3" />
+            </m>
+            <m e="way" k="railway" v="rail" zoom-min="8" zoom-max="8">
+                <line stroke-width="0.035" stroke="#ffffff" stroke-dasharray="3,3" />
+            </m>
+            <m e="way" k="railway" v="rail" zoom-min="9">
+                <line stroke-width="0.1" stroke="#ffffff" stroke-dasharray="6,6" />
+            </m>
+        </m>
+        <m e="way" k="marking">
+            <m e="way" k="marking" v="sport" zoom-min="15">
+                <line stroke-width="0.05" stroke="#a0a0a0" />
+            </m>
+            <m e="way" k="marking" v="sport" zoom-min="15">
+                <line stroke-width="0.1" stroke="#ffffff" />
+            </m>
+            <m e="way" k="marking" v="sport" zoom-min="15">
+                <line stroke-width="0.1" stroke="#ffffff" />
+            </m>
+            <m e="way" k="marking" v="sport" zoom-min="15">
+                <line stroke-width="0.1" stroke="#c00000" />
+            </m>
+            <m e="way" k="marking" v="sport" zoom-min="15">
+                <line stroke-width="0.1" stroke="#c00000" />
+            </m>
+            <m e="way" k="marking" v="sport" zoom-min="15">
+                <line stroke-width="0.1" stroke="#000000" />
+            </m>
+            <m e="way" k="marking" v="sport" zoom-min="15">
+                <line stroke-width="0.1" stroke="#000000" />
+            </m>
+        </m>
+        <m e="way" k="barrier">
+            <m e="way" k="barrier" v="wall" zoom-min="16">
+                <line stroke-width="0.05" stroke="#000000" />
+            </m>
+            <m e="way" k="barrier" v="fence" zoom-min="16">
+                <line stroke-width="0.03" stroke="#000000" />
+            </m>
+        </m>
+        <m e="way" k="wall">
+            <m e="way" k="wall" v="yes" zoom-min="18">
+                <area stroke="#000000" fill="#E9E9E9" />
+            </m>
+        </m>
+        <m e="way" k="surface">
+            <m e="way" k="surface" v="plant" zoom-min="15">
+                <area fill="#E583DF60" />
+            </m>
+            <m e="way" k="surface" v="solid" zoom-min="15">
+                <area fill="#E50B0811" />
+            </m>
+            <m e="way" k="surface" v="paving_slab" zoom-min="0">
+                <area fill="#99E0D0DB" stroke="#222222" stroke-width="0.15" />
+            </m>
+            <m e="way" k="surface" v="concrete" zoom-min="0">
+                <area fill="#E5DDDDDD" stroke="#99222222" stroke-width="0.15" />
+            </m>
+            <m e="way" k="surface" v="sand" zoom-min="15">
+                <area fill="#E5FDD485" stroke="#CC000000" stroke-width="0.15" />
+            </m>
+            <m e="way" k="surface" v="green" zoom-min="0">
+                <area fill="#3388C037" />
+            </m>
+            <m e="way" k="surface" v="transparent" zoom-min="15">
+                <area fill="#66FFFFFF" />
+            </m>
+        </m>
+        <m e="way" k="surface">
+            <m e="way" k="surface" v="floor" zoom-min="18">
+                <area fill="#F5F4FF" />
+            </m>
+        </m>
+        <m e="way" k="surface">
+            <m e="way" k="surface" v="balcony" zoom-min="18">
+                <area fill="#99875646" />
+            </m>
+        </m>
+        <m e="way" k="surface">
+            <m e="way" k="surface" v="window" zoom-min="19">
+                <area fill="#4C13C5CF" stroke="#000000" stroke-width="0.15" />
+            </m>
+        </m>
+        <m e="way" k="room">
+            <m e="way" k="room" v="shop" zoom-min="19">
+                <area fill="#E9E9E9" stroke-width="0.15" />
+            </m>
+            <m e="way" k="room" v="restaurant" zoom-min="19">
+                <area fill="#E9E9E9" stroke-width="0.15" />
+            </m>
+        </m>
+        <m e="way" k="surface">
+            <m e="way" k="surface" v="sanitary" zoom-min="19">
+                <area fill="#EECFFC" stroke-width="0.15" />
+            </m>
+            <m e="way" k="surface" v="beverages" zoom-min="19">
+                <area fill="#E3EFEA" stroke-width="0.15" />
+            </m>
+            <m e="way" k="surface" v="room" zoom-min="19">
+                <area fill="#E9E9E9" stroke-width="0.15" />
+            </m>
+        </m>
+        <m e="way" k="surface">
+            <m e="way" k="surface" v="door" zoom-min="19">
+                <area fill="#99607F84" stroke="#000000" />
+            </m>
+        </m>
+        <m e="way" k="surface">
+            <m e="way" k="surface" v="door" zoom-min="19">
+                <line stroke="#DBDBDB" stroke-width="0.1" />
+            </m>
+        </m>
+        <m e="way" k="wall">
+            <m e="way" k="wall" v="yes" zoom-min="0" zoom-max="15">
+                <line stroke="#000000" stroke-width="0.03" />
+            </m>
+            <m e="way" k="wall" v="yes" zoom-min="15" zoom-max="18">
+                <line stroke="#000000" stroke-width="0.05" />
+            </m>
+            <m e="way" k="wall" v="yes" zoom-min="18">
+                <line stroke="#000000" stroke-width="0.1" />
+            </m>
+        </m>
+        <m e="way" k="surface">
+            <m e="way" k="surface" v="steps" zoom-min="18">
+                <area fill="#FFA384" />
+            </m>
+            <m e="way" k="surface" v="elevator" zoom-min="18">
+                <area fill="#CCA384" stroke-width="0.15" />
+            </m>
+        </m>
+        <m e="way" k="handrail">
+            <m e="way" k="handrail" v="yes" zoom-min="18">
+                <line stroke="#111111" stroke-width="0.1" stroke-dasharray="5, 5" />
+            </m>
+        </m>
+    </m>
+
+
+</rendertheme>

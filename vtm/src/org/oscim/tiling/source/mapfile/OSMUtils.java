@@ -63,7 +63,8 @@ public final class OSMUtils {
                     return true;
                 }
             }
-            if ("highway".equals(key) || "barrier".equals(key)) {
+            if ("highway".equals(key) || "barrier".equals(key) || "handrail".equals(key))
+            {
                 // false unless something else overrides this.
                 result = false;
             }
