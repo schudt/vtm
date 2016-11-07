@@ -78,14 +78,14 @@ public class LabelTileLoaderHook implements TileLoaderThemeHook {
                 if (value == null || value.length() == 0)
                     return false;
 
-                PointF label = element.labelPosition;
+                Point label = element.labelPosition;
                 // skip unnecessary calculations if label is outside of visible area
                 if (label != null && (label.x < 0 || label.x > Tile.SIZE || label.y < 0 || label.y > Tile.SIZE))
                     return false;
 
                 if (text.areaSize > 0f) {
-                    float area = element.area();
-                    float ratio = area / (Tile.SIZE * Tile.SIZE); // we can't use static as it's recalculated based on dpi
+                    double area = element.area();
+                    double ratio = area / (Tile.SIZE * Tile.SIZE); // we can't use static as it's recalculated based on dpi
                     if (ratio < text.areaSize)
                         return false;
                 }

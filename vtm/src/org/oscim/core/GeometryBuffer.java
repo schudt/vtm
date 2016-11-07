@@ -416,11 +416,11 @@ public class GeometryBuffer {
      *
      * @return polygon area, 0 for other geometries
      */
-    public float area() {
+    public double area() {
         if (isPoint() || isLine() || getNumPoints() < 3)
             return 0f;
 
-        float area = 0f;
+        double area = 0f;
         // use only outer ring
         int n = index[0];
 
