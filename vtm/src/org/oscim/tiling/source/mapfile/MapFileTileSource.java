@@ -30,8 +30,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
-public class MapFileTileSource extends TileSource {
-    static final Logger log = LoggerFactory.getLogger(MapFileTileSource.class);
+public class MapFileTileSource extends TileSource implements IMapFileTileSource {
+    private static final Logger log = LoggerFactory.getLogger(MapFileTileSource.class);
 
     /**
      * Amount of cache blocks that the index cache should store.
@@ -44,7 +44,7 @@ public class MapFileTileSource extends TileSource {
     IndexCache databaseIndexCache;
     boolean experimental;
     File mapFile;
-    RandomAccessFile mInputFile;
+    private RandomAccessFile mInputFile;
 
     /**
      * The preferred language when extracting labels from this tile source.
@@ -53,7 +53,11 @@ public class MapFileTileSource extends TileSource {
     private Callback callback;
 
     public MapFileTileSource() {
-        super(0, 21);
+        this(0, 21);
+    }
+
+    public MapFileTileSource(int zoomMin, int zoomMax) {
+        super(zoomMin, zoomMax);
     }
 
     /**
@@ -66,6 +70,7 @@ public class MapFileTileSource extends TileSource {
         return MapFileUtils.extract(s, preferredLanguage);
     }
 
+    @Override
     public void setCallback(Callback callback) {
         this.callback = callback;
     }
@@ -86,6 +91,7 @@ public class MapFileTileSource extends TileSource {
         return true;
     }
 
+    @Override
     public void setPreferredLanguage(String preferredLanguage) {
         this.preferredLanguage = preferredLanguage;
     }
