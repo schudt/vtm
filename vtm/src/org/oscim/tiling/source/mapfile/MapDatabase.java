@@ -356,10 +356,13 @@ class MapDatabase implements ITileDataSource {
         long numCols = queryParameters.toBlockX - queryParameters.fromBlockX;
 
         //log.debug(numCols + "/" + numRows + " " + mCurrentCol + " " + mCurrentRow);
-        int xmin = -16;
-        int ymin = -16;
-        int xmax = Tile.SIZE + 16;
-        int ymax = Tile.SIZE + 16;
+        // Buffer is half the tile size
+        int buffer = Tile.SIZE / 2;
+
+        xmin = -buffer;
+        ymin = -buffer;
+        xmax = Tile.SIZE + buffer;
+        ymax = Tile.SIZE + buffer;
 
         if (numRows > 0) {
             int w = (int) (Tile.SIZE / (numCols + 1));
