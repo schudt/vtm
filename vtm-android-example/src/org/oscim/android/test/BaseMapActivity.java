@@ -1,5 +1,6 @@
 /*
  * Copyright 2013 Hannes Janetzek
+ * Copyright 2016 devemux86
  *
  * This file is part of the OpenScienceMap project (http://www.opensciencemap.org).
  *
@@ -107,7 +108,7 @@ public class BaseMapActivity extends MapActivity {
                 } else {
                     item.setChecked(true);
                     if (mGridLayer == null)
-                        mGridLayer = new TileGridLayer(mMap);
+                        mGridLayer = new TileGridLayer(mMap, getResources().getDisplayMetrics().density);
 
                     mMap.layers().add(mGridLayer);
                 }

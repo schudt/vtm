@@ -148,13 +148,13 @@ public class MapLayers {
 
     }
 
-    void enableGridOverlay(boolean enable) {
+    void enableGridOverlay(Context context, boolean enable) {
         if (mGridEnabled == enable)
             return;
 
         if (enable) {
             if (mGridOverlay == null)
-                mGridOverlay = new TileGridLayer(App.map);
+                mGridOverlay = new TileGridLayer(App.map, context.getResources().getDisplayMetrics().density);
 
             App.map.layers().add(mGridOverlay);
         } else {

@@ -19,6 +19,7 @@
  */
 package org.oscim.tiling.source.mapfile;
 
+import org.oscim.backend.CanvasAdapter;
 import org.oscim.core.GeometryBuffer.GeometryType;
 import org.oscim.core.MapElement;
 import org.oscim.core.Tag;
@@ -356,8 +357,9 @@ class MapDatabase implements ITileDataSource {
         long numCols = queryParameters.toBlockX - queryParameters.fromBlockX;
 
         //log.debug(numCols + "/" + numRows + " " + mCurrentCol + " " + mCurrentRow);
-        // Buffer is half the tile size
-        int buffer = Tile.SIZE / 2;
+
+        // Buffer based on dpi
+        int buffer = (int) (16 * CanvasAdapter.dpi / CanvasAdapter.DEFAULT_DPI + 0.5f);
 
         xmin = -buffer;
         ymin = -buffer;
@@ -523,9 +525,9 @@ class MapDatabase implements ITileDataSource {
         Tag[] poiTags = mTileSource.fileInfo.poiTags;
         MapElement e = mElem;
 
-        int numTags = 0;
-
         for (int elementCounter = numberOfPois; elementCounter != 0; --elementCounter) {
+            int numTags = 0;
+
             if (mDebugFile) {
                 /* get and check the POI signature */
                 String mSignaturePoi = mReadBuffer.readUTF8EncodedString(SIGNATURE_LENGTH_POI);
@@ -805,8 +807,6 @@ class MapDatabase implements ITileDataSource {
         Tag[] wayTags = mTileSource.fileInfo.wayTags;
         MapElement e = mElem;
 
-        int numTags = 0;
-
         int wayDataBlocks;
 
         // skip string block
@@ -821,6 +821,8 @@ class MapDatabase implements ITileDataSource {
         //setTileClipping(queryParameters);
 
         for (int elementCounter = numberOfWays; elementCounter != 0; --elementCounter) {
+            int numTags = 0;
+
             if (mDebugFile) {
                 // get and check the way signature
                 mSignatureWay = mReadBuffer.readUTF8EncodedString(SIGNATURE_LENGTH_WAY);

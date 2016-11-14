@@ -92,7 +92,7 @@ public class MapsforgeMapActivity extends MapActivity {
                 } else {
                     item.setChecked(true);
                     if (mGridLayer == null)
-                        mGridLayer = new TileGridLayer(mMap);
+                        mGridLayer = new TileGridLayer(mMap, getResources().getDisplayMetrics().density);
 
                     mMap.layers().add(mGridLayer);
                 }

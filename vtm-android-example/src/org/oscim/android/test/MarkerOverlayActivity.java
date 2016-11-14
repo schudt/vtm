@@ -81,7 +81,7 @@ public class MarkerOverlayActivity extends BitmapTileMapActivity
 
         markerLayer.addItems(pts);
 
-        mMap.layers().add(new TileGridLayer(mMap));
+        mMap.layers().add(new TileGridLayer(mMap, getResources().getDisplayMetrics().density));
     }
 
     @Override
