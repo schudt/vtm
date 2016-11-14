@@ -43,7 +43,7 @@ public final class LineStyle extends RenderStyle<LineStyle> {
 
     public final boolean randomOffset;
 
-    private LineStyle(LineBuilder<?> builder) {
+    public LineStyle(LineBuilder<?> builder) {
         this.level = builder.level;
         this.style = builder.style;
         this.width = builder.strokeWidth;

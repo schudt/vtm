@@ -117,7 +117,7 @@ public final class PolygonBucket extends RenderBucket {
                 }
             }
 
-            vertexItems.add((short) (points[pos + 0] * S),
+            vertexItems.add((short) (points[pos] * S),
                     (short) (points[pos + 1] * S));
             numVertices++;
 
@@ -327,6 +327,7 @@ public final class PolygonBucket extends RenderBucket {
                 PolygonBucket pb = (PolygonBucket) b;
                 AreaStyle area = pb.area.current();
 
+
                 /* fade out polygon bucket (set in RenderTheme) */
                 if (area.fadeScale > 0 && area.fadeScale > zoom)
                     continue;
@@ -405,6 +406,7 @@ public final class PolygonBucket extends RenderBucket {
             }
 
             if (cur > 0) {
+
                 fillPolygons(v, start, cur, v.pos, div);
                 drawn = true;
             }

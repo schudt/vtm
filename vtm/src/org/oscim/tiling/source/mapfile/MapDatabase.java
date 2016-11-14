@@ -361,10 +361,10 @@ class MapDatabase implements ITileDataSource {
         // Buffer based on dpi
         int buffer = (int) (16 * CanvasAdapter.dpi / CanvasAdapter.DEFAULT_DPI + 0.5f);
 
-        xmin = -buffer;
-        ymin = -buffer;
-        xmax = Tile.SIZE + buffer;
-        ymax = Tile.SIZE + buffer;
+        int xmin = -buffer;
+        int ymin = -buffer;
+        int xmax = Tile.SIZE + buffer;
+        int ymax = Tile.SIZE + buffer;
 
         if (numRows > 0) {
             int w = (int) (Tile.SIZE / (numCols + 1));
@@ -931,7 +931,7 @@ class MapDatabase implements ITileDataSource {
                 }
             }
 
-            int[] labelPosition = null;
+            double[] labelPosition = null;
             if ((featureByte & WAY_FEATURE_LABEL_POSITION) != 0) {
                 labelPosition = readOptionalLabelPosition();
             }

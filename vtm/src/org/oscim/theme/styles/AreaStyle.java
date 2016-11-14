@@ -34,7 +34,7 @@ public class AreaStyle extends RenderStyle<AreaStyle> {
     /**
      * Drawing order level
      */
-    private final int level;
+    public final int level;
 
     /**
      * Style name

@@ -16,6 +16,7 @@
  */
 package org.oscim.layers.vector;
 
+import com.sun.prism.Mesh;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineString;
@@ -35,6 +36,8 @@ import org.oscim.layers.vector.geometries.Style;
 import org.oscim.map.Map;
 import org.oscim.renderer.bucket.LineBucket;
 import org.oscim.renderer.bucket.MeshBucket;
+import org.oscim.renderer.bucket.PolygonBucket;
+import org.oscim.renderer.bucket.TextBucket;
 import org.oscim.theme.styles.AreaStyle;
 import org.oscim.theme.styles.LineStyle;
 import org.oscim.utils.FastMath;
@@ -68,6 +71,7 @@ public class VectorLayer extends AbstractVectorLayer<Drawable> {
     protected final JtsConverter mConverter;
     protected double mMinX;
     protected double mMinY;
+    protected TextBucket mTextBucket;
 
     private static class GeometryWithStyle implements Drawable {
         final Geometry geometry;
@@ -87,6 +91,10 @@ public class VectorLayer extends AbstractVectorLayer<Drawable> {
         public Geometry getGeometry() {
             return geometry;
         }
+    }
+
+    public void addTextBucket(TextBucket textBucket) {
+        mTextBucket = textBucket;
     }
 
     protected Polygon mEnvelope;
@@ -208,6 +216,7 @@ public class VectorLayer extends AbstractVectorLayer<Drawable> {
 
                 lastStyle = style;
             }
+            t.buckets.set(mTextBucket);
         }
     }
 
@@ -289,23 +298,22 @@ public class VectorLayer extends AbstractVectorLayer<Drawable> {
     }
 
     protected void drawPolygon(Task t, int level, Geometry polygon, Style style) {
-
         MeshBucket mesh = t.buckets.getMeshBucket(level);
         if (mesh.area == null) {
-            mesh.area = new AreaStyle(Color.fade(style.fillColor,
+            mesh.area = new AreaStyle(2, Color.fade(style.fillColor,
                     style.fillAlpha));
         }
 
         LineBucket ll = t.buckets.getLineBucket(level + 1);
         if (ll.line == null) {
-            ll.line = new LineStyle(2, style.strokeColor, style.strokeWidth);
+            ll.line = new LineStyle(1, style.strokeColor, style.strokeWidth);
         }
 
         if (style.generalization != Style.GENERALIZATION_NONE) {
             polygon = DouglasPeuckerSimplifier.simplify(polygon, mMinX * style.generalization);
         }
 
-        // if (polygon.isRectangle())
+        //if (polygon.isRectangle());
 
         for (int i = 0; i < polygon.getNumGeometries(); i++) {
             mConverter.transformPolygon(mGeom.clear(), (Polygon) polygon.getGeometryN(i));
@@ -316,7 +324,10 @@ public class VectorLayer extends AbstractVectorLayer<Drawable> {
             if (!mClipper.clip(mGeom))
                 continue;
 
-            mesh.addMesh(mGeom);
+            if (polygon.isValid())
+            {
+                mesh.addConvexMesh(mGeom);
+            }
             ll.addLine(mGeom);
         }
     }

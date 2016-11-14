@@ -9,6 +9,8 @@ dependencies {
     compile('org.jeo:jeo-carto:0-SNAPSHOT') {
         exclude group: 'org.slf4j', module: 'slf4j-jdk14'
     }
+
+
 }
 
 sourceSets {

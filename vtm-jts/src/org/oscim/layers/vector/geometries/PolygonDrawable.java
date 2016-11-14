@@ -20,7 +20,7 @@ public class PolygonDrawable extends JtsDrawable {
      * @param style
      */
     public PolygonDrawable(Geometry polygon, Style style) {
-        super(style);
+        super(polygon, style);
 
         if (polygon.getDimension() != 2)
             throw new IllegalArgumentException("Geometry not a Polygon");

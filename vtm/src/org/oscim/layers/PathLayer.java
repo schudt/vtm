@@ -264,6 +264,7 @@ public class PathLayer extends Layer {
         // projected points
         private double[] mPPoints;
         private final LineClipper mClipper;
+
         private int mNumPoints;
 
         @Override
@@ -415,7 +416,7 @@ public class PathLayer extends Layer {
                 }
             }
             if (i > 2)
-                ll.addLine(projected, i, false);
+                ll.addLine(projected, i, true);
 
             // trigger redraw to let renderer fetch the result.
             mMap.render();
