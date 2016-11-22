@@ -4,10 +4,13 @@
 
 - Mapsforge multiple map files [#208](https://github.com/mapsforge/vtm/issues/208)
 - Polygon label position enhancements [#80](https://github.com/mapsforge/vtm/issues/80)
+- vtm-web modules update [#51](https://github.com/mapsforge/vtm/issues/51)
+- Mapbox vector tiles [#57](https://github.com/mapsforge/vtm/issues/57)
 - PathLayer (vtm) fix disappearing segments [#108](https://github.com/mapsforge/vtm/issues/108)
 - House numbers (nodes) fix visibility [#168](https://github.com/mapsforge/vtm/issues/168)
 - Use baseline 160dpi in scaling [#236](https://github.com/mapsforge/vtm/issues/236)
 - MapFileTileSource zoom level API enhancements [#219](https://github.com/mapsforge/vtm/issues/219)
+- Animator enhancements with easing functions [#246](https://github.com/mapsforge/vtm/issues/246)
 - Tile grid layer scaling [#238](https://github.com/mapsforge/vtm/issues/238)
 - Internal render themes various improvements [#41](https://github.com/mapsforge/vtm/issues/41)
 - Many other minor improvements and bug fixes
