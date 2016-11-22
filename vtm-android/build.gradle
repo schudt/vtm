@@ -3,6 +3,8 @@ apply plugin: 'com.android.library'
 dependencies {
     compile project(':vtm')
     compile 'com.caverock:androidsvg:1.2.2-beta-1'
+    releaseCompile project(path: ':core', configuration: 'release')
+    debugCompile project(path: ':core', configuration: 'debug')
 }
 
 android {

@@ -266,7 +266,6 @@ public class ItemizedLayer<Item extends MarkerInterface> extends MarkerLayer<Ite
 
         if (g instanceof Gesture.LongPress)
             return activateSelectedItems(e, mActiveItemLongPress);
-
         return false;
     }
 }

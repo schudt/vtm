@@ -16,7 +16,6 @@
  */
 package org.oscim.layers.vector;
 
-import com.sun.prism.Mesh;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineString;
@@ -36,7 +35,6 @@ import org.oscim.layers.vector.geometries.Style;
 import org.oscim.map.Map;
 import org.oscim.renderer.bucket.LineBucket;
 import org.oscim.renderer.bucket.MeshBucket;
-import org.oscim.renderer.bucket.PolygonBucket;
 import org.oscim.renderer.bucket.TextBucket;
 import org.oscim.theme.styles.AreaStyle;
 import org.oscim.theme.styles.LineStyle;
@@ -216,7 +214,7 @@ public class VectorLayer extends AbstractVectorLayer<Drawable> {
 
                 lastStyle = style;
             }
-            t.buckets.set(mTextBucket);
+            //t.buckets.set(mTextBucket);
         }
     }
 
