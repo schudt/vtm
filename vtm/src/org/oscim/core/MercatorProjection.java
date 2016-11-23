@@ -85,6 +85,9 @@ public final class MercatorProjection {
         return 90 - 360 * Math.atan(Math.exp((y - 0.5) * (2 * Math.PI))) / Math.PI;
     }
 
+
+
+
     /**
      * Projects a longitude coordinate (in degrees) to the range [0.0,1.0]
      *

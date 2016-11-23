@@ -21,16 +21,16 @@ package org.oscim.android.cache;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteDoneException;
-import android.database.sqlite.SQLiteOpenHelper;
-import android.database.sqlite.SQLiteStatement;
 import android.os.Build;
 import android.os.ParcelFileDescriptor;
 
 import org.oscim.core.Tile;
 import org.oscim.tiling.ITileCache;
 import org.slf4j.LoggerFactory;
+import org.sqlite.database.sqlite.SQLiteDatabase;
+import org.sqlite.database.sqlite.SQLiteDoneException;
+import org.sqlite.database.sqlite.SQLiteOpenHelper;
+import org.sqlite.database.sqlite.SQLiteStatement;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -91,10 +91,10 @@ public class TileCache implements ITileCache {
     }
 
     private final ArrayList<ByteArrayOutputStream> mCacheBuffers;
-    private final SQLiteHelper dbHelper;
-    private final SQLiteDatabase mDatabase;
-    private final SQLiteStatement mStmtGetTile;
-    private final SQLiteStatement mStmtPutTile;
+    private final SQLiteHelper                     dbHelper;
+    private final SQLiteDatabase                   mDatabase;
+    private final SQLiteStatement                  mStmtGetTile;
+    private final SQLiteStatement                  mStmtPutTile;
 
     //private final SQLiteStatement mStmtUpdateTile;
 
@@ -155,7 +155,8 @@ public class TileCache implements ITileCache {
 
     //static final String COLUMN_SIZE = "size";
 
-    class SQLiteHelper extends SQLiteOpenHelper {
+    class SQLiteHelper extends SQLiteOpenHelper
+    {
 
         //private static final String DATABASE_NAME = "tile.db";
         private static final int DATABASE_VERSION = 1;
@@ -262,8 +263,8 @@ public class TileCache implements ITileCache {
         mQueryVals[2] = String.valueOf(tile.tileY);
 
         Cursor cursor = mDatabase.rawQuery("SELECT " + COLUMN_DATA +
-                " FROM " + TABLE_NAME +
-                " WHERE z=? AND x=? AND y=?", mQueryVals);
+                                           " FROM " + TABLE_NAME +
+                                           " WHERE z=? AND x=? AND y=?", mQueryVals);
 
         if (!cursor.moveToFirst()) {
             if (dbg)

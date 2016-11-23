@@ -114,8 +114,8 @@ public class MapPosition
     }
 
     public MapPosition setBearing(float bearing) {
-        this.bearing = bearing;
         notifyPositionListener();
+        this.bearing = clampBearing(bearing);
         return this;
     }
 
@@ -174,17 +174,19 @@ public class MapPosition
         this.x = x;
         this.y = y;
         this.scale = scale;
+        this.bearing = clampBearing(bearing);
+        this.tilt = tilt;
+        this.zoomLevel = FastMath.log2((int) scale);
+        notifyPositionListener();
+    }
 
+    private static float clampBearing(float bearing) {
         while (bearing > 180)
             bearing -= 360;
         while (bearing < -180)
             bearing += 360;
-        this.bearing = bearing;
 
-        this.tilt = tilt;
-        this.zoomLevel = FastMath.log2((int) scale);
-
-        notifyPositionListener();
+        return bearing;
     }
 
     /**

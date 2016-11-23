@@ -1,5 +1,6 @@
 /*
  * Copyright 2013 Hannes Janetzek
+ * Copyright 2016 Izumi Kawashima
  *
  * This file is part of the OpenScienceMap project (http://www.opensciencemap.org).
  *
@@ -17,6 +18,7 @@
 
 package org.oscim.layers.marker;
 
+import org.oscim.core.Box;
 import org.oscim.core.MercatorProjection;
 import org.oscim.core.Point;
 import org.oscim.core.Tile;
@@ -24,19 +26,26 @@ import org.oscim.renderer.BucketRenderer;
 import org.oscim.renderer.GLViewport;
 import org.oscim.renderer.bucket.SymbolBucket;
 import org.oscim.renderer.bucket.SymbolItem;
+import org.oscim.scalebar.DistanceUnitAdapter;
+import org.oscim.utils.QuadTree;
 import org.oscim.utils.TimSort;
 import org.oscim.utils.geom.GeometryUtils;
+import org.oscim.utils.math.MathUtils;
 
 import java.util.Comparator;
+import java.util.LinkedList;
 
 public class MarkerRenderer extends BucketRenderer {
 
     protected final MarkerSymbol mDefaultMarker;
 
+    private QuadTree<InternalItem> clusterQuadTree;
     private final SymbolBucket mSymbolLayer;
     private final float[] mBox = new float[8];
     private final MarkerLayer<MarkerInterface> mMarkerLayer;
     private final Point mMapPoint = new Point();
+
+    private boolean markerClustering = true;
 
     /**
      * increase view to show items that are partially visible
@@ -52,6 +61,9 @@ public class MarkerRenderer extends BucketRenderer {
 
     static class InternalItem {
         MarkerInterface item;
+
+        boolean didSearch = false;
+        boolean wasFound = false;
         boolean visible;
         boolean changes;
         float x, y;
@@ -60,7 +72,7 @@ public class MarkerRenderer extends BucketRenderer {
 
         @Override
         public String toString() {
-            return "\n" + x + ":" + y + " / " + dy + " " + visible;
+            return "\n" + px + ":" + py + " / " + dy + " " + visible + " f:" + wasFound;
         }
     }
 
@@ -68,6 +80,17 @@ public class MarkerRenderer extends BucketRenderer {
         mSymbolLayer = new SymbolBucket();
         mMarkerLayer = markerLayer;
         mDefaultMarker = defaultSymbol;
+        clusterQuadTree = new QuadTree<>(4, 4);
+    }
+
+    public boolean isMarkerClustering()
+    {
+        return markerClustering;
+    }
+
+    public void setMarkerClustering(boolean markerClustering)
+    {
+        this.markerClustering = markerClustering;
     }
 
     @Override
@@ -96,11 +119,10 @@ public class MarkerRenderer extends BucketRenderer {
             }
             return;
         }
-
         double angle = Math.toRadians(v.pos.bearing);
         float cos = (float) Math.cos(angle);
         float sin = (float) Math.sin(angle);
-
+        double groundRes = MercatorProjection.groundResolution(v.pos);
         /* check visibility */
         for (InternalItem it : mItems) {
             it.changes = false;
@@ -112,6 +134,8 @@ public class MarkerRenderer extends BucketRenderer {
             else if (it.x < -flip)
                 it.x += (flip << 1);
 
+
+
             if (!GeometryUtils.pointInPoly(it.x, it.y, mBox, 8, 0)) {
                 if (it.visible) {
                     it.changes = true;
@@ -121,11 +145,38 @@ public class MarkerRenderer extends BucketRenderer {
             }
 
             it.dy = sin * it.x + cos * it.y;
+            //LinkedList<InternalItem> searchResults = new LinkedList<>();
+            if (it.visible && markerClustering) {
+                double width = groundRes * it.item.getMarker().getBitmap().getWidth() * 1e-7 / 2;
+                it.didSearch = true;
+                for (InternalItem i : mItems)
+                {
+                    if (!i.didSearch && GeometryUtils.distance(new double[] {it.px, it.py, i.px, i.py}, 0, 2) < width)
+                    {
+                        i.visible = false;
+                        i.wasFound = true;
+                    }
+                }
 
-            if (!it.visible) {
-                it.visible = true;
-                //changedVisible++;
+                /*
+                it.didSearch = true;
+                clusterQuadTree.search(new Box(it.px - width, it.py - width, it.px + width, it.py + width), searchResults);
+
+                for (InternalItem i : searchResults)
+                {
+                    if (!i.didSearch && !i.equals(it))
+                    {
+                        i.wasFound = true;
+                    }
+                }*/
             }
+
+
+
+            //if (!it.visible && !it.wasFound) {
+            //    it.visible = true;
+                //changedVisible++;
+            //}
             numVisible++;
         }
 
@@ -148,8 +199,19 @@ public class MarkerRenderer extends BucketRenderer {
         sort(mItems, 0, mItems.length);
         //log.debug(Arrays.toString(mItems));
         for (InternalItem it : mItems) {
-            if (!it.visible)
+            it.didSearch = false;
+
+            if (it.wasFound) {
+                it.visible = false;
+                it.wasFound = false;
                 continue;
+            }
+
+            if (!it.visible)
+            {
+                it.visible = true;
+                continue;
+            }
 
             if (it.changes) {
                 it.visible = false;
@@ -161,7 +223,11 @@ public class MarkerRenderer extends BucketRenderer {
                 marker = mDefaultMarker;
 
             SymbolItem s = SymbolItem.pool.get();
-            s.set(it.x, it.y, marker.getBitmap(), true);
+            if (marker.isBitmap()) {
+                s.set(it.x, it.y, marker.getBitmap(), true);
+            } else {
+                s.set(it.x, it.y, marker.getTextureRegion(), true);
+            }
             s.offset = marker.getHotspot();
             s.billboard = marker.isBillboard();
             mSymbolLayer.pushSymbol(s);
@@ -174,7 +240,6 @@ public class MarkerRenderer extends BucketRenderer {
     }
 
     protected void populate(int size) {
-
         InternalItem[] tmp = new InternalItem[size];
 
         for (int i = 0; i < size; i++) {
@@ -186,6 +251,8 @@ public class MarkerRenderer extends BucketRenderer {
             MercatorProjection.project(it.item.getPoint(), mMapPoint);
             it.px = mMapPoint.x;
             it.py = mMapPoint.y;
+
+            clusterQuadTree.insert(new Box(it.px, it.py, it.px, it.py), it);
         }
         synchronized (this) {
             mUpdate = true;

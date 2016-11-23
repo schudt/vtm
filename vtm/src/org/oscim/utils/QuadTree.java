@@ -18,6 +18,11 @@ public class QuadTree<T> extends BoxTree<BoxItem<T>, T> implements SpatialIndex<
 
     static final Logger log = LoggerFactory.getLogger(QuadTree.class);
 
+    /**
+     * Create a new Quadtree Object
+     * @param extents - Must be a power of 2
+     * @param maxDepth - The maximum depth of the quadtree..
+     */
     public QuadTree(int extents, int maxDepth) {
         super(extents, maxDepth);
     }

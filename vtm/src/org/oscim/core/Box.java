@@ -43,7 +43,7 @@ public class Box {
      */
     public Box(double xmin, double ymin, double xmax, double ymax) {
         if (xmin > xmax || ymin > ymax)
-            throw new IllegalArgumentException("min > max !");
+            throw new IllegalArgumentException("min > max ! " + xmin + "|" +  xmax );
         this.xmin = xmin;
         this.ymin = ymin;
         this.xmax = xmax;
