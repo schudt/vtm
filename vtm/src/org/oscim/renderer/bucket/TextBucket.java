@@ -96,7 +96,6 @@ public class TextBucket extends TextureBucket {
         mCanvas.setBitmap(t.bitmap);
 
         for (TextItem it = labels; it != null; ) {
-
             float width = it.width + 2 * mFontPadX;
             float height = (int) (it.text.fontHeight) + 0.5f;
 
@@ -106,12 +105,14 @@ public class TextBucket extends TextureBucket {
             if (height > advanceY)
                 advanceY = (int) height;
 
-            if (x + width > TEXTURE_WIDTH) {
+            if (x + width > TEXTURE_WIDTH)
+            {
                 x = 0;
                 y += advanceY;
                 advanceY = (int) (height + 0.5f);
 
-                if (y + height > TEXTURE_HEIGHT) {
+                if (y + height > TEXTURE_HEIGHT)
+                {
                     t.offset = offsetIndices;
                     t.indices = (numIndices - offsetIndices);
                     offsetIndices = numIndices;
@@ -144,7 +145,8 @@ public class TextBucket extends TextureBucket {
 
                 if (it.next == null
                         || (it.next.text != it.text)
-                        || (it.next.string != it.string)) {
+                        || (!it.next.string.equals(it.string))
+                        ) {
                     it = it.next;
                     break;
                 }

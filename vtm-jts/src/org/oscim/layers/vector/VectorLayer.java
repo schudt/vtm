@@ -36,6 +36,7 @@ import org.oscim.map.Map;
 import org.oscim.renderer.bucket.LineBucket;
 import org.oscim.renderer.bucket.MeshBucket;
 import org.oscim.renderer.bucket.TextBucket;
+import org.oscim.renderer.bucket.TextItem;
 import org.oscim.theme.styles.AreaStyle;
 import org.oscim.theme.styles.LineStyle;
 import org.oscim.utils.FastMath;
@@ -45,6 +46,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import static org.oscim.core.MercatorProjection.latitudeToY;
@@ -69,7 +71,9 @@ public class VectorLayer extends AbstractVectorLayer<Drawable> {
     protected final JtsConverter mConverter;
     protected double mMinX;
     protected double mMinY;
+    private List<TextItem> textItems = new LinkedList<>();
     protected TextBucket mTextBucket;
+    private TextBucket mTextLayer;
 
     private static class GeometryWithStyle implements Drawable {
         final Geometry geometry;
@@ -91,8 +95,8 @@ public class VectorLayer extends AbstractVectorLayer<Drawable> {
         }
     }
 
-    public void addTextBucket(TextBucket textBucket) {
-        mTextBucket = textBucket;
+    public void addText(TextItem text) {
+        textItems.add(text);
     }
 
     protected Polygon mEnvelope;
@@ -180,6 +184,8 @@ public class VectorLayer extends AbstractVectorLayer<Drawable> {
         if (Double.isNaN(bbox.xmin))
             return;
 
+        mTextLayer = new TextBucket();
+        t.buckets.set(mTextLayer);
         //    mEnvelope = new GeomBuilder()
         //        .point(bbox.xmin, bbox.ymin)
         //        .point(bbox.xmin, bbox.ymax)
@@ -199,8 +205,13 @@ public class VectorLayer extends AbstractVectorLayer<Drawable> {
         int level = 0;
         Style lastStyle = null;
 
+
         /* go through features, find the matching style and draw */
         synchronized (this) {
+
+            for (TextItem ti : textItems) {
+                mTextLayer.addText(ti);
+            }
             tmpDrawables.clear();
             mDrawables.search(bbox, tmpDrawables);
             // TODO sort by some order...
@@ -216,6 +227,9 @@ public class VectorLayer extends AbstractVectorLayer<Drawable> {
             }
             //t.buckets.set(mTextBucket);
         }
+        mTextLayer.prepare();
+
+        mTextLayer.clearLabels();
     }
 
     protected void draw(Task task, int level, Drawable d, Style style) {

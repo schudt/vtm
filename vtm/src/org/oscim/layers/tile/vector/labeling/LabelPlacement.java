@@ -189,51 +189,56 @@ public class LabelPlacement {
         if (ld == null)
             return l;
 
-        for (TextItem ti : ld.labels) {
-            if (ti.text.caption)
-                continue;
+        for (TextItem ti : ld.labels)
+        {
+            if (ti.text != null)
+            {
+                if (ti.text.caption)
+                    continue;
 
             /* acquire a TextItem to add to TextLayer */
-            if (l == null)
-                l = getLabel();
+                if (l == null)
+                    l = getLabel();
 
             /* check if path at current scale is long enough */
-            if (!dbg && ti.width > ti.length * scale)
-                continue;
+                if (!dbg && ti.width > ti.length * scale)
+                    continue;
 
-            l.clone(ti);
-            l.x = (float) ((dx + ti.x) * scale);
-            l.y = (float) ((dy + ti.y) * scale);
-            placeLabelFrom(l, ti);
+                l.clone(ti);
+                l.x = (float) ((dx + ti.x) * scale);
+                l.y = (float) ((dy + ti.y) * scale);
+                placeLabelFrom(l, ti);
 
-            if (!wayIsVisible(l))
-                continue;
+                if (!wayIsVisible(l))
+                    continue;
 
-            byte overlaps = -1;
+                byte overlaps = -1;
 
-            if (l.bbox == null)
-                l.bbox = new OBB2D(l.x, l.y, l.x1, l.y1,
-                        l.width + MIN_WAY_DIST,
-                        l.text.fontHeight + MIN_WAY_DIST);
-            else
-                l.bbox.set(l.x, l.y, l.x1, l.y1,
-                        l.width + MIN_WAY_DIST,
-                        l.text.fontHeight + MIN_WAY_DIST);
+                if (l.bbox == null)
+                    l.bbox = new OBB2D(l.x, l.y, l.x1, l.y1,
+                            l.width + MIN_WAY_DIST,
+                            l.text.fontHeight + MIN_WAY_DIST);
+                else
+                    l.bbox.set(l.x, l.y, l.x1, l.y1,
+                            l.width + MIN_WAY_DIST,
+                            l.text.fontHeight + MIN_WAY_DIST);
 
-            if (dbg || ti.width < ti.length * scale)
-                overlaps = checkOverlap(l);
+                if (dbg || ti.width < ti.length * scale)
+                    overlaps = checkOverlap(l);
 
-            if (dbg)
-                Debug.addDebugBox(l, ti, overlaps, false, (float) scale);
+                if (dbg)
+                    Debug.addDebugBox(l, ti, overlaps, false, (float) scale);
 
-            if (overlaps == 0) {
-                addLabel(l);
-                l.item = TextItem.copy(ti);
-                l.tileX = t.tileX;
-                l.tileY = t.tileY;
-                l.tileZ = t.zoomLevel;
-                l.active = mRelabelCnt;
-                l = null;
+                if (overlaps == 0)
+                {
+                    addLabel(l);
+                    l.item = TextItem.copy(ti);
+                    l.tileX = t.tileX;
+                    l.tileY = t.tileY;
+                    l.tileZ = t.zoomLevel;
+                    l.active = mRelabelCnt;
+                    l = null;
+                }
             }
         }
         return l;
@@ -248,7 +253,7 @@ public class LabelPlacement {
 
         O:
         for (TextItem ti : ld.labels) {
-            if (!ti.text.caption)
+            if (ti.text == null || !ti.text.caption)
                 continue;
 
             // acquire a TextItem to add to TextLayer
