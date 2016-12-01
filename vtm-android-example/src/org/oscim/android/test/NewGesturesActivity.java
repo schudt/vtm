@@ -1,7 +1,5 @@
 /*
- * Copyright 2013 Hannes Janetzek
- *
- * This file is part of the OpenScienceMap project (http://www.opensciencemap.org).
+ * Copyright 2016 devemux86
  *
  * This program is free software: you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free Software
@@ -14,23 +12,22 @@
  * You should have received a copy of the GNU Lesser General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.oscim.event;
+package org.oscim.android.test;
 
 import org.oscim.map.Map;
 
-public class GestureDetector {
+public class NewGesturesActivity extends MarkerOverlayActivity {
 
-    private final Map mMap;
-
-    public GestureDetector(Map map) {
-        mMap = map;
+    public NewGesturesActivity() {
+        super();
+        Map.NEW_GESTURES = true;
     }
 
-    public boolean onTouchEvent(MotionEvent e) {
-        if (e.getAction() == MotionEvent.ACTION_DOWN) {
-            return mMap.handleGesture(Gesture.PRESS, e);
-        }
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
 
-        return false;
+        // Revert gestures for other activities
+        Map.NEW_GESTURES = false;
     }
 }
