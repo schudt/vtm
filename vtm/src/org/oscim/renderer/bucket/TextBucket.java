@@ -95,7 +95,7 @@ public class TextBucket extends TextureBucket {
         textures = t;
         mCanvas.setBitmap(t.bitmap);
 
-        for (TextItem it = labels; it != null; ) {
+        for (TextItem it = labels; it != null && it.text != null; ) {
             float width = it.width + 2 * mFontPadX;
             float height = (int) (it.text.fontHeight) + 0.5f;
 

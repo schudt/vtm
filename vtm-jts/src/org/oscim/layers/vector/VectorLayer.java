@@ -16,8 +16,10 @@
  */
 package org.oscim.layers.vector;
 
+import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
@@ -27,18 +29,23 @@ import org.oscim.backend.canvas.Color;
 import org.oscim.core.Box;
 import org.oscim.core.GeometryBuffer;
 import org.oscim.core.MapPosition;
+import org.oscim.core.MercatorProjection;
 import org.oscim.core.Tile;
 import org.oscim.layers.vector.geometries.Drawable;
 import org.oscim.layers.vector.geometries.LineDrawable;
 import org.oscim.layers.vector.geometries.PointDrawable;
 import org.oscim.layers.vector.geometries.Style;
 import org.oscim.map.Map;
+import org.oscim.map.Viewport;
 import org.oscim.renderer.bucket.LineBucket;
+import org.oscim.renderer.bucket.LineTexBucket;
 import org.oscim.renderer.bucket.MeshBucket;
 import org.oscim.renderer.bucket.TextBucket;
 import org.oscim.renderer.bucket.TextItem;
+import org.oscim.renderer.other.VTMTextItemWrapper;
 import org.oscim.theme.styles.AreaStyle;
 import org.oscim.theme.styles.LineStyle;
+import org.oscim.theme.styles.TextStyle;
 import org.oscim.utils.FastMath;
 import org.oscim.utils.QuadTree;
 import org.oscim.utils.SpatialIndex;
@@ -48,6 +55,8 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+
+import javax.print.attribute.TextSyntax;
 
 import static org.oscim.core.MercatorProjection.latitudeToY;
 import static org.oscim.core.MercatorProjection.longitudeToX;
@@ -71,9 +80,9 @@ public class VectorLayer extends AbstractVectorLayer<Drawable> {
     protected final JtsConverter mConverter;
     protected double mMinX;
     protected double mMinY;
-    private List<TextItem> textItems = new LinkedList<>();
-    protected TextBucket mTextBucket;
+    private List<VTMTextItemWrapper> textItems = new LinkedList<>();
     private TextBucket mTextLayer;
+    private TextStyle mTextStyle;
 
     private static class GeometryWithStyle implements Drawable {
         final Geometry geometry;
@@ -95,8 +104,12 @@ public class VectorLayer extends AbstractVectorLayer<Drawable> {
         }
     }
 
-    public void addText(TextItem text) {
+    public void addText(VTMTextItemWrapper text) {
         textItems.add(text);
+    }
+
+    public void setTextStyle(TextStyle textStyle) {
+        mTextStyle = textStyle;
     }
 
     protected Polygon mEnvelope;
@@ -108,6 +121,7 @@ public class VectorLayer extends AbstractVectorLayer<Drawable> {
     public VectorLayer(Map map) {
         super(map);
         mConverter = new JtsConverter(Tile.SIZE / UNSCALE_COORD);
+
     }
 
     private static Box bbox(Geometry geometry, Style style) {
@@ -184,8 +198,6 @@ public class VectorLayer extends AbstractVectorLayer<Drawable> {
         if (Double.isNaN(bbox.xmin))
             return;
 
-        mTextLayer = new TextBucket();
-        t.buckets.set(mTextLayer);
         //    mEnvelope = new GeomBuilder()
         //        .point(bbox.xmin, bbox.ymin)
         //        .point(bbox.xmin, bbox.ymax)
@@ -202,20 +214,22 @@ public class VectorLayer extends AbstractVectorLayer<Drawable> {
 
         bbox.scale(1E6);
 
+        mTextLayer = new TextBucket();
+        t.buckets.set(mTextLayer);
         int level = 0;
         Style lastStyle = null;
 
+        //t.buckets.clear();
+
+        // TODO sort by some order...
 
         /* go through features, find the matching style and draw */
         synchronized (this) {
-
-            for (TextItem ti : textItems) {
-                mTextLayer.addText(ti);
-            }
+            addTextItems();
+            //mTextLayer.clear();
+            //
             tmpDrawables.clear();
             mDrawables.search(bbox, tmpDrawables);
-            // TODO sort by some order...
-
             for (Drawable d : tmpDrawables) {
                 Style style = d.getStyle();
                 draw(t, level, d, style);
@@ -225,11 +239,26 @@ public class VectorLayer extends AbstractVectorLayer<Drawable> {
 
                 lastStyle = style;
             }
-            //t.buckets.set(mTextBucket);
-        }
-        mTextLayer.prepare();
 
-        mTextLayer.clearLabels();
+        }
+        //
+    }
+
+    private void addTextItems()
+    {
+        for (VTMTextItemWrapper ti : textItems) {
+            TextItem textItem = TextItem.pool.get();
+
+            org.oscim.core.Point p = new org.oscim.core.Point();
+            mMap.viewport().mNextFrame.toScreenPoint(ti.p, p);
+            textItem.set(p.x, p.y, ti.text, ti.style);
+            if (ti.text == null && mTextStyle != null) {
+                textItem.text = mTextStyle;
+            }
+
+            mTextLayer.addText(textItem);
+        }
+
     }
 
     protected void draw(Task task, int level, Drawable d, Style style) {

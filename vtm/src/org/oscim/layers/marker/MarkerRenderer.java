@@ -145,9 +145,8 @@ public class MarkerRenderer extends BucketRenderer {
             }
 
             it.dy = sin * it.x + cos * it.y;
-            //LinkedList<InternalItem> searchResults = new LinkedList<>();
             if (it.visible && markerClustering) {
-                double width = groundRes * it.item.getMarker().getBitmap().getWidth() * 1e-7 / 2;
+                double width = groundRes * it.item.getMarker().getBitmap().getWidth() * 1e-7 / 2.2;
                 it.didSearch = true;
                 for (InternalItem i : mItems)
                 {
@@ -157,26 +156,7 @@ public class MarkerRenderer extends BucketRenderer {
                         i.wasFound = true;
                     }
                 }
-
-                /*
-                it.didSearch = true;
-                clusterQuadTree.search(new Box(it.px - width, it.py - width, it.px + width, it.py + width), searchResults);
-
-                for (InternalItem i : searchResults)
-                {
-                    if (!i.didSearch && !i.equals(it))
-                    {
-                        i.wasFound = true;
-                    }
-                }*/
             }
-
-
-
-            //if (!it.visible && !it.wasFound) {
-            //    it.visible = true;
-                //changedVisible++;
-            //}
             numVisible++;
         }
 
