@@ -17,12 +17,14 @@
 package org.oscim.layers.vector;
 
 import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.CoordinateSequence;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
+import com.vividsolutions.jts.geom.impl.PackedCoordinateSequenceFactory;
 import com.vividsolutions.jts.simplify.DouglasPeuckerSimplifier;
 
 import org.oscim.backend.canvas.Color;
@@ -248,14 +250,17 @@ public class VectorLayer extends AbstractVectorLayer<Drawable> {
     {
         for (VTMTextItemWrapper ti : textItems) {
             TextItem textItem = TextItem.pool.get();
-
-            org.oscim.core.Point p = new org.oscim.core.Point();
-            mMap.viewport().mNextFrame.toScreenPoint(ti.p, p);
-            textItem.set(p.x, p.y, ti.text, ti.style);
+            GeometryBuffer mGeom = new GeometryBuffer(1, 2);
+            mGeom.startPoints();
+            CoordinateSequence c = PackedCoordinateSequenceFactory.DOUBLE_FACTORY.create(new double[]{ti.p.getLongitude(), ti.p.getLatitude()}, 2);
+            Point p = new Point(c, new GeometryFactory());
+            mConverter.transformPoint(mGeom.clear(), p);
+            org.oscim.core.Point resultPoint = mGeom.getPoint(0);
             if (ti.text == null && mTextStyle != null) {
                 textItem.text = mTextStyle;
             }
 
+            textItem.set(resultPoint.getX(), resultPoint.getY(), ti.text, ti.style);
             mTextLayer.addText(textItem);
         }
 

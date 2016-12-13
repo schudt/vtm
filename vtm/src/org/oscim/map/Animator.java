@@ -336,4 +336,12 @@ public class Animator {
     public boolean isActive() {
         return mState != ANIM_NONE;
     }
+
+    /**
+     * Get the map position at animation end.<br>
+     * Note: valid only with animateTo methods.
+     */
+    public MapPosition getEndPosition() {
+        return mDeltaPos;
+    }
 }
