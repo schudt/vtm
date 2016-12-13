@@ -5,7 +5,9 @@ package org.oscim.utils;
  */
 
 import org.oscim.core.GeoPoint;
+import org.oscim.core.PointF;
 
+import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -147,6 +149,12 @@ public final class LatLongUtils
     public static double longitudeDistance(double meters, double latitude){
         return (meters * 360) / (2 * Math.PI * EQUATORIAL_RADIUS * Math.cos(Math.toRadians(latitude)));
     }
+
+    public static double[] rotatePoint(double centerX, double centerY, double pointX, double pointY, double bearing) {
+        return new double[]{centerX + (pointX - centerX) * Math.cos(bearing) - (pointY - centerY) * Math.sin(bearing),
+                centerY + (pointX - centerX)*Math.sin(bearing) + (pointY - centerY)*Math.cos(bearing)};
+    }
+
 
     /**
      * Converts a coordinate from microdegrees (degrees * 10^6) to degrees. No validation is performed.

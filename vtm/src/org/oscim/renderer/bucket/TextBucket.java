@@ -139,7 +139,7 @@ public class TextBucket extends TextureBucket {
             while (it != null) {
                 addItem(it, width, height, x, y);
 
-                /* six indices to draw the four vertices */
+                // six indices to draw the four vertices
                 numIndices += TextureBucket.INDICES_PER_SPRITE;
                 numVertices += 4;
 
@@ -160,8 +160,8 @@ public class TextBucket extends TextureBucket {
         t.indices = (numIndices - offsetIndices);
     }
 
-    protected void addItem(TextItem it,
-                           float width, float height, float x, float y) {
+    private void addItem(TextItem it,
+                         float width, float height, float x, float y) {
         /* texture coordinates */
         short u1 = (short) (COORD_SCALE * x);
         short v1 = (short) (COORD_SCALE * y);

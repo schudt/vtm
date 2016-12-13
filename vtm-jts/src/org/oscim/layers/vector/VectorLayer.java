@@ -227,7 +227,6 @@ public class VectorLayer extends AbstractVectorLayer<Drawable> {
 
         /* go through features, find the matching style and draw */
         synchronized (this) {
-            addTextItems();
             //mTextLayer.clear();
             //
             tmpDrawables.clear();
@@ -241,7 +240,7 @@ public class VectorLayer extends AbstractVectorLayer<Drawable> {
 
                 lastStyle = style;
             }
-
+            addTextItems();
         }
         //
     }

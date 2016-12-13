@@ -46,8 +46,8 @@ public class CircleBucket extends RenderBucket {
             return;
         }
 
-        float x = geom.getPointX(0);
-        float y = geom.getPointY(0);
+        double x = geom.getPointX(0);
+        double y = geom.getPointY(0);
 
         if (GLAdapter.CIRCLE_QUADS) {
             // Create quad

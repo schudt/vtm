@@ -19,6 +19,8 @@
 package org.oscim.layers.marker;
 
 import org.oscim.core.Box;
+import org.oscim.core.GeoPoint;
+import org.oscim.core.GeometryBuffer;
 import org.oscim.core.MercatorProjection;
 import org.oscim.core.Point;
 import org.oscim.core.Tile;
@@ -26,7 +28,11 @@ import org.oscim.renderer.BucketRenderer;
 import org.oscim.renderer.GLViewport;
 import org.oscim.renderer.bucket.SymbolBucket;
 import org.oscim.renderer.bucket.SymbolItem;
+import org.oscim.renderer.bucket.TextBucket;
+import org.oscim.renderer.bucket.TextItem;
+import org.oscim.renderer.other.VTMTextItemWrapper;
 import org.oscim.scalebar.DistanceUnitAdapter;
+import org.oscim.utils.LatLongUtils;
 import org.oscim.utils.QuadTree;
 import org.oscim.utils.TimSort;
 import org.oscim.utils.geom.GeometryUtils;
@@ -58,6 +64,7 @@ public class MarkerRenderer extends BucketRenderer {
     private boolean mUpdate;
 
     private InternalItem[] mItems;
+    private TextBucket     mTextLayer;
 
     static class InternalItem {
         MarkerInterface item;
@@ -93,10 +100,31 @@ public class MarkerRenderer extends BucketRenderer {
         this.markerClustering = markerClustering;
     }
 
+    private void renderMarkerLabel(InternalItem internalItem) {
+        MarkerInterface marker = internalItem.item;
+        //Only render if is type of LabeldMarker
+        if (!(marker instanceof LabeledMarkerInterface) ) {
+            return;
+        }
+        TextItem textItem = TextItem.pool.get();
+        VTMTextItemWrapper ti = ((LabeledMarkerInterface) marker).getLabel();
+        // Render Marker Label, if Text is available.
+        if (ti == null || ti.text == null)
+            return;
+
+        int distance = (int)((double)internalItem.item.getMarker().getBitmap().getHeight() / 1.5);
+        double[] rotated = LatLongUtils.rotatePoint(internalItem.x, internalItem.y, internalItem.x, internalItem.y + distance, Math.toRadians(mMapPosition.bearing));
+        textItem.set(rotated[0], rotated[1], ti.text, ti.style);
+        mTextLayer.addText(textItem);
+
+    }
+
     @Override
     public synchronized void update(GLViewport v) {
         if (!v.changed() && !mUpdate)
             return;
+
+        mTextLayer = new TextBucket();
 
         mUpdate = false;
 
@@ -211,9 +239,14 @@ public class MarkerRenderer extends BucketRenderer {
             s.offset = marker.getHotspot();
             s.billboard = marker.isBillboard();
             mSymbolLayer.pushSymbol(s);
+
+            renderMarkerLabel(it);
+
         }
 
+        mSymbolLayer.next = mTextLayer;
         buckets.set(mSymbolLayer);
+
         buckets.prepare();
 
         compile();
