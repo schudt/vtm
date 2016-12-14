@@ -36,12 +36,14 @@ import org.oscim.core.Tile;
 import org.oscim.layers.vector.geometries.Drawable;
 import org.oscim.layers.vector.geometries.LineDrawable;
 import org.oscim.layers.vector.geometries.PointDrawable;
+import org.oscim.layers.vector.geometries.PolygonDrawable;
 import org.oscim.layers.vector.geometries.Style;
 import org.oscim.map.Map;
 import org.oscim.map.Viewport;
 import org.oscim.renderer.bucket.LineBucket;
 import org.oscim.renderer.bucket.LineTexBucket;
 import org.oscim.renderer.bucket.MeshBucket;
+import org.oscim.renderer.bucket.PolygonBucket;
 import org.oscim.renderer.bucket.TextBucket;
 import org.oscim.renderer.bucket.TextItem;
 import org.oscim.renderer.other.VTMTextItemWrapper;
@@ -343,7 +345,7 @@ public class VectorLayer extends AbstractVectorLayer<Drawable> {
     }
 
     protected void drawPolygon(Task t, int level, Geometry polygon, Style style) {
-        MeshBucket mesh = t.buckets.getMeshBucket(level);
+        PolygonBucket mesh = t.buckets.getPolygonBucket(level);
         if (mesh.area == null) {
             mesh.area = new AreaStyle(2, Color.fade(style.fillColor,
                     style.fillAlpha));
@@ -351,7 +353,7 @@ public class VectorLayer extends AbstractVectorLayer<Drawable> {
 
         LineBucket ll = t.buckets.getLineBucket(level + 1);
         if (ll.line == null) {
-            ll.line = new LineStyle(1, style.strokeColor, style.strokeWidth);
+            ll.line = new LineStyle(2, style.strokeColor, style.strokeWidth);
         }
 
         if (style.generalization != Style.GENERALIZATION_NONE) {
@@ -371,9 +373,9 @@ public class VectorLayer extends AbstractVectorLayer<Drawable> {
 
             if (polygon.isValid())
             {
-                mesh.addConvexMesh(mGeom);
+                //ll.addLine(mGeom);
+                mesh.addPolygon(mGeom.points, mGeom.index);
             }
-            ll.addLine(mGeom);
         }
     }
 
