@@ -160,7 +160,7 @@ public class LabelPlacement {
         return l;
     }
 
-    private static float flipLongitude(float dx, int max) {
+    public static float flipLongitude(float dx, int max) {
         // flip around date-line
         if (dx > max)
             dx = dx - max * 2;

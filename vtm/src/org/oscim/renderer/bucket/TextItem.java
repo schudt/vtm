@@ -94,6 +94,35 @@ public class TextItem extends Inlist<TextItem> {
 
     public byte edges;
 
+    public boolean bboxOverlaps(TextItem other, float add) {
+        if (this.y1 < this.y2) {
+            if (other.y1 < other.y2)
+                return (this.x1 - add < other.x2)
+                       && (other.x1 < this.x2 + add)
+                       && (this.y1 - add < other.y2)
+                       && (other.y1 < this.y2 + add);
+
+            // flip other
+            return (this.x1 - add < other.x2)
+                   && (other.x1 < this.x2 + add)
+                   && (this.y1 - add < other.y1)
+                   && (other.y2 < this.y2 + add);
+        }
+
+        // flip this
+        if (other.y1 < other.y2)
+            return (this.x1 - add < other.x2)
+                   && (other.x1 < this.x2 + add)
+                   && (this.y2 - add < other.y2)
+                   && (other.y1 < this.y1 + add);
+
+        // flip both
+        return (this.x1 - add < other.x2)
+               && (other.x1 < this.x2 + add)
+               && (this.y2 - add < other.y1)
+               && (other.y2 < this.y1 + add);
+    }
+
     @Override
     public String toString() {
         return x + " " + y + " " + string;
