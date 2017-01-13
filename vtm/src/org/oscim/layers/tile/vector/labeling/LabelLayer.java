@@ -48,6 +48,10 @@ public class LabelLayer extends Layer implements Map.UpdateListener, TileManager
         mRenderer = new TextRenderer(mWorker);
     }
 
+    public void addOtherLabel(Label label) {
+        mLabelPlacer.addLabel(label);
+    }
+
     class Worker extends SimpleWorker<LabelTask> {
 
         public Worker(Map map) {

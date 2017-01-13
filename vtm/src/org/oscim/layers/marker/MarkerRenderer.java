@@ -112,9 +112,14 @@ public class MarkerRenderer extends BucketRenderer {
         if (ti == null || ti.text == null)
             return;
 
+        org.oscim.core.Point result = new org.oscim.core.Point(0, 0);
+        mMarkerLayer.map().viewport().toScreenPoint(ti.p, result);
+        textItem.screenPoint = result;
+
         int distance = (int)((double)internalItem.item.getMarker().getBitmap().getHeight() / 1.5);
         double[] rotated = LatLongUtils.rotatePoint(internalItem.x, internalItem.y, internalItem.x, internalItem.y + distance, Math.toRadians(mMapPosition.bearing));
         textItem.set(rotated[0], rotated[1], ti.text, ti.style);
+
         mTextLayer.addText(textItem);
 
     }
@@ -183,6 +188,8 @@ public class MarkerRenderer extends BucketRenderer {
                         i.visible = false;
                         i.wasFound = true;
                     }
+
+                    //if (i.item.)
                 }
             }
             numVisible++;
@@ -207,6 +214,7 @@ public class MarkerRenderer extends BucketRenderer {
         sort(mItems, 0, mItems.length);
         //log.debug(Arrays.toString(mItems));
         for (InternalItem it : mItems) {
+
             it.didSearch = false;
 
             if (it.wasFound) {
@@ -226,6 +234,8 @@ public class MarkerRenderer extends BucketRenderer {
                 continue;
             }
 
+            renderMarkerLabel(it);
+
             MarkerSymbol marker = it.item.getMarker();
             if (marker == null)
                 marker = mDefaultMarker;
@@ -239,8 +249,6 @@ public class MarkerRenderer extends BucketRenderer {
             s.offset = marker.getHotspot();
             s.billboard = marker.isBillboard();
             mSymbolLayer.pushSymbol(s);
-
-            renderMarkerLabel(it);
 
         }
 

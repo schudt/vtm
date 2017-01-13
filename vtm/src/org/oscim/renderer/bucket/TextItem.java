@@ -16,6 +16,7 @@
  */
 package org.oscim.renderer.bucket;
 
+import org.oscim.core.Point;
 import org.oscim.theme.styles.TextStyle;
 import org.oscim.utils.pool.Inlist;
 import org.oscim.utils.pool.SyncPool;
@@ -23,6 +24,10 @@ import org.oscim.utils.pool.SyncPool;
 public class TextItem extends Inlist<TextItem> {
     //static final Logger log = LoggerFactory.getLogger(TextItem.class);
     private final static int MAX_POOL = 250;
+
+    /* new Member von stephan */
+    public Point screenPoint;
+    public boolean hidden;
 
     public final static SyncPool<TextItem> pool = new SyncPool<TextItem>(MAX_POOL) {
 
@@ -41,6 +46,17 @@ public class TextItem extends Inlist<TextItem> {
             return true;
         }
     };
+
+
+    public void placeLabelFrom(double w, double h) {
+        // set line endpoints relative to view to be able to
+        // check intersections with label from other tiles
+
+        this.x1 = this.screenPoint.x - ((w / 2));
+        this.y1 = this.screenPoint.y - ((h / 2));
+        this.x2 = this.screenPoint.x + ((w / 2));
+        this.y2 = this.screenPoint.y + ((h / 2));
+    }
 
     public static TextItem copy(TextItem orig) {
 

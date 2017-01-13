@@ -43,7 +43,7 @@ public class LabelPlacement {
     }
 
     private final static float MIN_CAPTION_DIST = 5;
-    private final static float MIN_WAY_DIST = 3;
+    public final static  float MIN_WAY_DIST     = 3;
 
     /**
      * thread local pool of for unused label items
