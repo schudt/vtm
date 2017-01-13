@@ -73,6 +73,7 @@ public class TextBucket extends TextureBucket {
                 /* insert after text of same type and/or before same string */
                 item.next = it.next;
                 it.next = item;
+
                 return;
             }
         }
@@ -131,7 +132,6 @@ public class TextBucket extends TextureBucket {
             yy = y + height - it.text.fontDescent;
 
             mCanvas.drawText(it.string, x, yy, it.text.paint, it.text.stroke);
-
             // FIXME !!!
             if (width > TEXTURE_WIDTH)
                 width = TEXTURE_WIDTH;
@@ -159,6 +159,7 @@ public class TextBucket extends TextureBucket {
         t.offset = offsetIndices;
         t.indices = (numIndices - offsetIndices);
     }
+
 
     private void addItem(TextItem it,
                          float width, float height, float x, float y) {

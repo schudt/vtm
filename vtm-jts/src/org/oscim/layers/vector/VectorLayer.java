@@ -16,7 +16,6 @@
  */
 package org.oscim.layers.vector;
 
-import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.CoordinateSequence;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
@@ -31,17 +30,13 @@ import org.oscim.backend.canvas.Color;
 import org.oscim.core.Box;
 import org.oscim.core.GeometryBuffer;
 import org.oscim.core.MapPosition;
-import org.oscim.core.MercatorProjection;
 import org.oscim.core.Tile;
 import org.oscim.layers.vector.geometries.Drawable;
 import org.oscim.layers.vector.geometries.LineDrawable;
 import org.oscim.layers.vector.geometries.PointDrawable;
-import org.oscim.layers.vector.geometries.PolygonDrawable;
 import org.oscim.layers.vector.geometries.Style;
 import org.oscim.map.Map;
-import org.oscim.map.Viewport;
 import org.oscim.renderer.bucket.LineBucket;
-import org.oscim.renderer.bucket.LineTexBucket;
 import org.oscim.renderer.bucket.MeshBucket;
 import org.oscim.renderer.bucket.PolygonBucket;
 import org.oscim.renderer.bucket.TextBucket;
@@ -60,10 +55,9 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.print.attribute.TextSyntax;
-
 import static org.oscim.core.MercatorProjection.latitudeToY;
 import static org.oscim.core.MercatorProjection.longitudeToX;
+import static org.oscim.renderer.MapRenderer.COORD_SCALE;
 
 /* TODO keep bounding box of geometries - only try to render when bbox intersects viewport */
 
@@ -242,15 +236,37 @@ public class VectorLayer extends AbstractVectorLayer<Drawable> {
 
                 lastStyle = style;
             }
-            addTextItems();
+            addTextItems(t);
         }
         //
     }
 
-    private void addTextItems()
+    private void placeLabelFrom(TextItem ti, double w, double h, double minX, double minY) {
+        // set line endpoints relative to view to be able to
+        // check intersections with label from other tiles
+
+        /* Normalize Coordinates for Hittesting Polygones */
+        ti.x1 = ti.x - w / 2;
+        ti.y1 = ti.y - h / 2;
+        ti.x2 = ti.x + w / 2;
+        ti.y2 = ti.y + h / 2;
+
+        ti.x1 += Math.abs(minX);
+        ti.x2 += Math.abs(minX);
+        ti.y1 += Math.abs(minY);
+        ti.y2 += Math.abs(minY);
+    }
+
+
+
+    private void addTextItems(Task t)
     {
+        List<TmpTextItem> tmpTextItems = new LinkedList<>();
+        double minX = 0;
+        double minY = 0;
         for (VTMTextItemWrapper ti : textItems) {
             TextItem textItem = TextItem.pool.get();
+
             GeometryBuffer mGeom = new GeometryBuffer(1, 2);
             mGeom.startPoints();
             CoordinateSequence c = PackedCoordinateSequenceFactory.DOUBLE_FACTORY.create(new double[]{ti.p.getLongitude(), ti.p.getLatitude()}, 2);
@@ -262,7 +278,30 @@ public class VectorLayer extends AbstractVectorLayer<Drawable> {
             }
 
             textItem.set(resultPoint.getX(), resultPoint.getY(), ti.text, ti.style);
-            mTextLayer.addText(textItem);
+
+            // Calculate local maxima.
+            if ((resultPoint.x - textItem.width) < minX)
+                minX = (resultPoint.x - textItem.width);
+            if ((resultPoint.y - textItem.text.fontDescent) < minY)
+                minY = (resultPoint.y - textItem.text.fontDescent);
+
+            tmpTextItems.add(new TmpTextItem(textItem));
+        }
+
+        /* scale of tiles zoom-level relative to current position */
+        for (TmpTextItem it : tmpTextItems) {
+            placeLabelFrom(it.item, it.item.width, it.item.text.fontDescent, minX, minY);
+            for (TmpTextItem curr : tmpTextItems) {
+                //placeLabelFrom(curr.item, curr.item.width / 2, curr.item.text.fontDescent / scale, minX, minY);
+                if (!it.hidden && !curr.hidden && !curr.equals(it) && it.item.bboxOverlaps(curr.item, 1)) {
+                    it.hidden = true;
+                    break;
+                }
+            }
+            if (!it.hidden) {
+                mTextLayer.addText(it.item);
+            }
+
         }
 
     }
@@ -407,6 +446,17 @@ public class VectorLayer extends AbstractVectorLayer<Drawable> {
         for (int i = 0; i < quality; i++) {
             g.addPoint((float) (x + radius * Math.cos(i * step)),
                     (float) (y + radius * Math.sin(i * step)));
+        }
+    }
+
+    private class TmpTextItem {
+
+        public TextItem item;
+        public boolean hidden;
+
+        TmpTextItem(TextItem item) {
+            this.item = item;
+            this.hidden = false;
         }
     }
 }
