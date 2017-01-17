@@ -129,6 +129,8 @@ public class MarkerRenderer extends BucketRenderer {
         if (!v.changed() && !mUpdate)
             return;
 
+        sort(mItems, 0, mItems.length);
+
         mTextLayer = new TextBucket();
 
         mUpdate = false;
@@ -183,13 +185,11 @@ public class MarkerRenderer extends BucketRenderer {
                 it.didSearch = true;
                 for (InternalItem i : mItems)
                 {
-                    if (!i.didSearch && GeometryUtils.distance(new double[] {it.px, it.py, i.px, i.py}, 0, 2) < width)
+                    if (i.visible && !i.didSearch && GeometryUtils.distance(new double[] {it.px, it.py, i.px, i.py}, 0, 2) < width)
                     {
                         i.visible = false;
                         i.wasFound = true;
                     }
-
-                    //if (i.item.)
                 }
             }
             numVisible++;
@@ -211,7 +211,6 @@ public class MarkerRenderer extends BucketRenderer {
         mMapPosition.copy(v.pos);
         mMapPosition.setBearing(-mMapPosition.bearing);
 
-        sort(mItems, 0, mItems.length);
         //log.debug(Arrays.toString(mItems));
         for (InternalItem it : mItems) {
 
@@ -300,12 +299,14 @@ public class MarkerRenderer extends BucketRenderer {
         @Override
         public int compare(InternalItem a, InternalItem b) {
             if (a.visible && b.visible) {
-                if (a.dy > b.dy) {
+                /*if (a.dy > b.dy) {
                     return -1;
                 }
                 if (a.dy < b.dy) {
                     return 1;
                 }
+                */
+                return a.toString().compareTo(b.toString());
             } else if (a.visible) {
                 return -1;
             } else if (b.visible) {

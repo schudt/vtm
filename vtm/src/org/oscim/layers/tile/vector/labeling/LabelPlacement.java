@@ -48,7 +48,7 @@ public class LabelPlacement {
     /**
      * thread local pool of for unused label items
      */
-    private final LabelPool mPool = new LabelPool();
+    public final LabelPool mPool = new LabelPool();
 
     private final TileSet mTileSet = new TileSet();
     private final TileRenderer mTileRenderer;

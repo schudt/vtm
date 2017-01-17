@@ -216,7 +216,6 @@ public class VectorLayer extends AbstractVectorLayer<Drawable> {
         mConverter.setPosition(t.position.x, t.position.y, t.position.scale);
 
         bbox.scale(1E6);
-
         mTextLayer = new TextBucket();
         t.buckets.set(mTextLayer);
         int level = 0;
@@ -251,7 +250,6 @@ public class VectorLayer extends AbstractVectorLayer<Drawable> {
 
     private void addTextItems(Task t)
     {
-        //List<VTMTextItemWrapper> tmpTextItems = new LinkedList<>();
         for (VTMTextItemWrapper ti : textItems) {
             TextItem textItem = TextItem.pool.get();
 
@@ -270,31 +268,13 @@ public class VectorLayer extends AbstractVectorLayer<Drawable> {
 
             textItem.set(resultPoint.getX(), resultPoint.getY(), ti.text, ti.style);
             textItem.screenPoint = result;
-
             ti.hidden = false;
             ti.item = textItem;
-            //tmpTextItems.add(ti);
             mTextLayer.addText(ti.item);
         }
-
-        /*
-        for (VTMTextItemWrapper it : tmpTextItems) {
-            it.item.placeLabelFrom(it.item.width, it.item.text.fontHeight);
-            for (VTMTextItemWrapper curr : tmpTextItems) {
-                it.item.placeLabelFrom(curr.item.width, curr.item.text.fontHeight);
-                if (!it.hidden && !curr.hidden && !curr.equals(it) && (it.item.bboxOverlaps(curr.item, 1))) {
-                    it.hidden = true;
-                    break;
-                }
-            }
-            if (!it.hidden) {
-                mTextLayer.addText(it.item);
-            }
-        }
-        */
     }
 
-    protected void draw(Task task, int level, Drawable d, Style style) {
+    private void draw(Task task, int level, Drawable d, Style style) {
         Geometry geom = d.getGeometry();
 
         if (d instanceof LineDrawable) {
@@ -306,7 +286,7 @@ public class VectorLayer extends AbstractVectorLayer<Drawable> {
         }
     }
 
-    protected void drawPoint(Task t, int level, Geometry points, Style style) {
+    private void drawPoint(Task t, int level, Geometry points, Style style) {
 
         MeshBucket mesh = t.buckets.getMeshBucket(level);
         if (mesh.area == null) {
@@ -331,7 +311,7 @@ public class VectorLayer extends AbstractVectorLayer<Drawable> {
         }
     }
 
-    protected void drawLine(Task t, int level, Geometry line, Style style) {
+    private void drawLine(Task t, int level, Geometry line, Style style) {
 
         LineBucket ll;
         if (style.stipple == 0 && style.texture == null)
@@ -371,8 +351,8 @@ public class VectorLayer extends AbstractVectorLayer<Drawable> {
         }
     }
 
-    protected void drawPolygon(Task t, int level, Geometry polygon, Style style) {
-        PolygonBucket mesh = t.buckets.getPolygonBucket(level);
+    private void drawPolygon(Task t, int level, Geometry polygon, Style style) {
+        MeshBucket mesh = t.buckets.getMeshBucket(level);
         if (mesh.area == null) {
             mesh.area = new AreaStyle(2, Color.fade(style.fillColor,
                     style.fillAlpha));
@@ -400,14 +380,14 @@ public class VectorLayer extends AbstractVectorLayer<Drawable> {
 
             if (polygon.isValid())
             {
-                //ll.addLine(mGeom);
-                mesh.addPolygon(mGeom.points, mGeom.index);
+                ll.addLine(mGeom);
+                mesh.addConvexMesh(mGeom);
             }
         }
     }
 
-    protected void addCircle(GeometryBuffer g, MapPosition pos,
-                             double px, double py, Style style) {
+    private void addCircle(GeometryBuffer g, MapPosition pos,
+                           double px, double py, Style style) {
 
         double scale = pos.scale * Tile.SIZE / UNSCALE_COORD;
         double x = (longitudeToX(px) - pos.x) * scale;

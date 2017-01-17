@@ -131,20 +131,27 @@ public class TextBucket extends TextureBucket {
 
             yy = y + height - it.text.fontDescent;
 
-            it.placeLabelFrom(it.width, it.text.fontHeight);
-            for (TextItem ti = labels; ti != null && ti.text != null && !ti.hidden;) {
-                ti.placeLabelFrom(ti.width, ti.text.fontHeight);
-                if (!ti.hidden && !ti.equals(it) && (it.bboxOverlaps(ti, 1))) {
-                    it.hidden = true;
-                    break;
+            if (it != null && it.screenPoint != null)
+            {
+                it.placeLabelFrom(it.width, it.text.fontHeight);
+                it.hidden = false;
+                for (TextItem ti = labels; ti != null; ti = ti.next)
+                {
+                    if (it.hidden) break;
+                    ti.placeLabelFrom(ti.width, ti.text.fontHeight);
+                    if (!ti.hidden && !ti.equals(it) && (it.bboxOverlaps(ti, 1)))
+                    {
+                        it.hidden = true;
+                        break;
+                    }
                 }
-                ti = ti.next;
-            }
 
+            }
             if (!it.hidden)
             {
                 mCanvas.drawText(it.string, x, yy, it.text.paint, it.text.stroke);
             }
+
             // FIXME !!!
             if (width > TEXTURE_WIDTH)
                 width = TEXTURE_WIDTH;

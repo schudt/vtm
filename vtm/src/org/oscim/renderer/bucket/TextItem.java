@@ -27,7 +27,7 @@ public class TextItem extends Inlist<TextItem> {
 
     /* new Member von stephan */
     public Point screenPoint;
-    public boolean hidden;
+    public boolean hidden = false;
 
     public final static SyncPool<TextItem> pool = new SyncPool<TextItem>(MAX_POOL) {
 
@@ -52,6 +52,7 @@ public class TextItem extends Inlist<TextItem> {
         // set line endpoints relative to view to be able to
         // check intersections with label from other tiles
 
+        if (this.screenPoint == null) return;
         this.x1 = this.screenPoint.x - ((w / 2));
         this.y1 = this.screenPoint.y - ((h / 2));
         this.x2 = this.screenPoint.x + ((w / 2));
