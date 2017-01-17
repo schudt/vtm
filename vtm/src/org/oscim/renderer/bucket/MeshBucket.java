@@ -50,11 +50,11 @@ public class MeshBucket extends RenderBucket {
     public MeshBucket(int level) {
         super(RenderBucket.MESH, true, false);
         this.level = level;
+        if (tess == null)
+            tess = new TessJNI(100);
     }
 
     public void addMesh(GeometryBuffer geom) {
-        if (tess == null)
-            tess = new TessJNI(8);
 
         tess.addContour2D(geom.index, geom.points);
     }
@@ -77,7 +77,7 @@ public class MeshBucket extends RenderBucket {
 
         for (int i = 4; i < geom.index[0]; i += 2) {
 
-            vertexItems.add((float)geom.points[i + 0] * COORD_SCALE,
+            vertexItems.add((float)geom.points[i] * COORD_SCALE,
                     (float)geom.points[i + 1] * COORD_SCALE);
 
             indiceItems.add(start, prev, ++prev);

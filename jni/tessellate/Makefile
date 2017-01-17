@@ -1,2 +1,12 @@
-all:
-	gcc -g -DTEST dict.c mesh.c render.c tess.c geom.c memalloc.c normal.c priorityq.c sweep.c tessmono.c tessellate.c main.c -o tessellate
+all: tessellate.js
+
+EMCC=~/code/emscripten/emcc
+
+_tessellate.js: dict.c mesh.c render.c tess.c geom.c memalloc.c normal.c priorityq.c sweep.c tessmono.c tessellate.c
+	${EMCC} -O2 -s EXPORTED_FUNCTIONS="['_tessellate', '_malloc', '_free']" dict.c mesh.c render.c tess.c geom.c memalloc.c normal.c priorityq.c sweep.c tessmono.c tessellate.c -o _tessellate.js
+	gcc dict.c mesh.c render.c tess.c geom.c memalloc.c normal.c priorityq.c sweep.c tessmono.c tessellate.c main.c -o tessellate
+
+tessellate.js: _begin.js _tessellate.js _middle.js tessellate_api.js _end.js
+	cat _begin.js _tessellate.js  _middle.js tessellate_api.js _end.js > tessellate.js
+
+
