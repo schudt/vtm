@@ -58,7 +58,7 @@ public final class PolygonBucket extends RenderBucket {
 
     public AreaStyle area;
 
-    PolygonBucket(int layer) {
+    public PolygonBucket(int layer) {
         super(RenderBucket.POLYGON, true, false);
         level = layer;
     }

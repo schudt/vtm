@@ -355,10 +355,16 @@ public class VectorLayer extends AbstractVectorLayer<Drawable> {
     }
 
     private void drawPolygon(Task t, int level, Geometry polygon, Style style) {
-        PolygonBucket mesh = t.buckets.getPolygonBucket(level);
+        MeshBucket mesh = t.buckets.getMeshBucket(level);
         if (mesh.area == null) {
-            mesh.area = new AreaStyle(Color.fade(style.fillColor,
-                    style.fillAlpha));
+            mesh.area = AreaStyle.builder()
+                                .strokeColor("#ff6600")
+                                .color("#ff6600")
+                                .level(5000)
+                                .fadeScale(-1)
+                                .blendScale(-1)
+                                 .mesh(true)
+                                .build();
         }
 
        LineBucket ll = t.buckets.getLineBucket(level + 1);
@@ -396,7 +402,7 @@ public class VectorLayer extends AbstractVectorLayer<Drawable> {
             if (polygon.isValid())
             {
                 ll.addLine(mGeom);
-                mesh.addPolygon(mGeom.points, mGeom.index);
+                mesh.addMesh(mGeom);
             }
         }
     }

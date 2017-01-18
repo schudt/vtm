@@ -215,6 +215,12 @@ public class AreaStyle extends RenderStyle<AreaStyle> {
             return self();
         }
 
+        public T fillColor(int color) {
+            this.fillColor = color;
+            return self();
+        }
+
+
         public T blendColor(String color) {
             this.blendColor = parseColor(color);
             return self();
