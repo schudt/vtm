@@ -6,9 +6,10 @@
 - Improved gestures implementation [#253](https://github.com/mapsforge/vtm/issues/253)
 - Polygon label position enhancements [#80](https://github.com/mapsforge/vtm/issues/80)
 - vtm-web modules update [#51](https://github.com/mapsforge/vtm/issues/51)
-- Mapbox vector tiles [#57](https://github.com/mapsforge/vtm/issues/57)
-- SVG resources scaling [#214](https://github.com/mapsforge/vtm/issues/214)
+- Mapbox (Mapzen) vector tiles [#57](https://github.com/mapsforge/vtm/issues/57)
+- SVG resources scaling in themes [#214](https://github.com/mapsforge/vtm/issues/214)
 - Circle map style [#122](https://github.com/mapsforge/vtm/issues/122)
+- Oneway arrows in themes [#275](https://github.com/mapsforge/vtm/issues/275)
 - PathLayer (vtm) fix disappearing segments [#108](https://github.com/mapsforge/vtm/issues/108)
 - House numbers (nodes) fix visibility [#168](https://github.com/mapsforge/vtm/issues/168)
 - Android fix quick scale vs long press [#250](https://github.com/mapsforge/vtm/issues/250)
@@ -22,22 +23,20 @@
 - Many other minor improvements and bug fixes
 - [Solved issues](https://github.com/mapsforge/vtm/issues?q=is%3Aissue+is%3Aclosed+milestone%3A0.7.0)
 
-## Version 0.6.X
-
-### Version 0.6.0 (2016-10-28) -- VTM revive
+## Version 0.6.0 (2016-10-28) -- VTM revive
 
 - Same as 0.6.0-rc3
 
-#### Version 0.6.0-rc3 (2016-10-22)
+### Version 0.6.0-rc3 (2016-10-22)
 
 - Minor improvements and bug fixes
 
-#### Version 0.6.0-rc2 (2016-10-16)
+### Version 0.6.0-rc2 (2016-10-16)
 
 - Location layer [#171](https://github.com/mapsforge/vtm/issues/171)
 - Minor improvements and bug fixes
 
-#### Version 0.6.0-rc1 (2016-10-08)
+### Version 0.6.0-rc1 (2016-10-08)
 
 - Render theme SVG resources [#60](https://github.com/mapsforge/vtm/issues/60)
 - Mapsforge multilingual maps [#34](https://github.com/mapsforge/vtm/issues/34)
