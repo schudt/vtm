@@ -20,6 +20,9 @@ android {
         versionCode versionCode()
         versionName versionName()
         minSdkVersion androidMinSdk()
+        ndk {
+            moduleName "vtm-jni"
+        }
     }
 
     sourceSets {
@@ -41,7 +44,7 @@ android.libraryVariants.all { variant ->
     def name = variant.buildType.name
     if (name.equals("debug")) {
         print "Skipping debug jar"
-        return; // Skip debug builds.
+        //return; // Skip debug builds.
     }
 
     def jar = project.tasks.create "jar${name.capitalize()}", Jar
@@ -72,3 +75,4 @@ if (project.hasProperty("SONATYPE_USERNAME")) {
         project.apply from: "${rootProject.projectDir}/deploy.gradle"
     }
 }
+

@@ -971,8 +971,7 @@ class MapDatabase implements ITileDataSource {
                         continue;
                     }
 
-                e.simplify(0, true);
-
+                e.simplify(1, true);
                 e.setLayer(layer);
 
                 mapDataSink.process(e);

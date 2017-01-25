@@ -30,7 +30,6 @@ import org.oscim.backend.canvas.Color;
 import org.oscim.core.Box;
 import org.oscim.core.GeometryBuffer;
 import org.oscim.core.MapPosition;
-import org.oscim.core.MercatorProjection;
 import org.oscim.core.Tile;
 import org.oscim.layers.vector.geometries.Drawable;
 import org.oscim.layers.vector.geometries.LineDrawable;
@@ -44,29 +43,20 @@ import org.oscim.renderer.bucket.TextBucket;
 import org.oscim.renderer.bucket.TextItem;
 import org.oscim.renderer.other.VTMTextItemWrapper;
 import org.oscim.theme.styles.AreaStyle;
-import org.oscim.theme.styles.CircleStyle;
-import org.oscim.theme.styles.ExtrusionStyle;
 import org.oscim.theme.styles.LineStyle;
-import org.oscim.theme.styles.RenderStyle;
-import org.oscim.theme.styles.SymbolStyle;
 import org.oscim.theme.styles.TextStyle;
-import org.oscim.tiling.source.mapfile.Projection;
 import org.oscim.utils.FastMath;
 import org.oscim.utils.QuadTree;
 import org.oscim.utils.SpatialIndex;
-import org.oscim.utils.geom.OBB2D;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
 import static org.oscim.core.MercatorProjection.latitudeToY;
 import static org.oscim.core.MercatorProjection.longitudeToX;
-import static org.oscim.layers.tile.vector.labeling.LabelPlacement.MIN_WAY_DIST;
-import static org.oscim.renderer.MapRenderer.COORD_SCALE;
 
 /* TODO keep bounding box of geometries - only try to render when bbox intersects viewport */
 
@@ -357,14 +347,8 @@ public class VectorLayer extends AbstractVectorLayer<Drawable> {
     private void drawPolygon(Task t, int level, Geometry polygon, Style style) {
         MeshBucket mesh = t.buckets.getMeshBucket(level);
         if (mesh.area == null) {
-            mesh.area = AreaStyle.builder()
-                                .strokeColor("#ff6600")
-                                .color("#ff6600")
-                                .level(5000)
-                                .fadeScale(-1)
-                                .blendScale(-1)
-                                 .mesh(true)
-                                .build();
+            mesh.area = new AreaStyle(Color.fade(style.fillColor,
+                    style.fillAlpha));
         }
 
        LineBucket ll = t.buckets.getLineBucket(level + 1);
@@ -402,7 +386,7 @@ public class VectorLayer extends AbstractVectorLayer<Drawable> {
             if (polygon.isValid())
             {
                 ll.addLine(mGeom);
-                mesh.addMesh(mGeom);
+                mesh.addConvexMesh(mGeom);
             }
         }
     }
