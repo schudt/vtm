@@ -233,7 +233,10 @@ public class VectorLayer extends AbstractVectorLayer<Drawable> {
 
                 lastStyle = style;
             }
-            addTextItems();
+            if (t.position.zoomLevel > 16)
+            {
+                addTextItems();
+            }
         }
         //
     }
