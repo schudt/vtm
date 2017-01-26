@@ -8,6 +8,7 @@ dependencies {
 }
 
 android {
+    publishNonDefault true
     compileSdkVersion androidCompileSdk()
     buildToolsVersion = androidBuildToolsVersion()
 
@@ -37,8 +38,28 @@ android {
         release.setRoot('build-types/release')
     }
 
+    buildTypes {
+
+        debug {
+            shrinkResources false
+            minifyEnabled false
+        }
+
+        develop {
+            shrinkResources false
+            minifyEnabled false
+        }
+
+        release {
+            shrinkResources true
+            minifyEnabled true
+            zipAlignEnabled true
+        }
+    }
+
     lintOptions { abortOnError false }
 }
+
 
 android.libraryVariants.all { variant ->
     def name = variant.buildType.name
