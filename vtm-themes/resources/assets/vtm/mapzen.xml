@@ -1046,6 +1046,12 @@
                         stroke-width="2.0" symbol="assets:symbols/dot_black.svg" />
                 </m>
             </m>
+            <m v="locality">
+                <m zoom-max="7">
+                    <caption dy="14" fill="#000000" k="name" priority="1" size="19" stroke="#ffffff"
+                        stroke-width="2.0" symbol="assets:symbols/dot_black.svg" />
+                </m>
+            </m>
             <m v="country">
                 <caption style="bold" fill="#000000" k="name" priority="0" size="20"
                     stroke="#ffffff" stroke-width="2.0" />
