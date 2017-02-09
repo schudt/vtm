@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 [![Build Status](https://travis-ci.org/mapsforge/vtm.svg?branch=master)](https://travis-ci.org/mapsforge/vtm)
 [![GitHub license](https://img.shields.io/badge/license-LGPL3-blue.svg)](COPYING.LESSER)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.mapsforge/vtm/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.mapsforge/vtm)
@@ -59,3 +60,7 @@ This library contains code from several projects:
 ## Screenshots
 ![Screenshot Samples App Bremen 1](docs/images/screenshot-bremen-1.png)
 ![Screenthot Samples App Bremen 2](docs/images/screenshot-bremen-2.png)
+=======
+# com.contagt.android.vtm
+
+>>>>>>> 162f912c688823d1d437eef9b0f8e0f722a1120d
