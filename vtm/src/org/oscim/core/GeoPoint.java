@@ -62,6 +62,9 @@ public class GeoPoint implements Comparable<GeoPoint> {
      */
     public final int longitudeE6;
 
+    public final double lat;
+    public final double lon;
+
     /**
      * @param lat the latitude in degrees, will be limited to the possible
      *            latitude range.
@@ -69,8 +72,10 @@ public class GeoPoint implements Comparable<GeoPoint> {
      *            longitude range.
      */
     public GeoPoint(double lat, double lon) {
+        this.lat = lat;
         lat = FastMath.clamp(lat, MercatorProjection.LATITUDE_MIN, MercatorProjection.LATITUDE_MAX);
         this.latitudeE6 = (int) (lat * CONVERSION_FACTOR);
+        this.lon = lon;
         lon = FastMath.clamp(lon, MercatorProjection.LONGITUDE_MIN, MercatorProjection.LONGITUDE_MAX);
         this.longitudeE6 = (int) (lon * CONVERSION_FACTOR);
     }
@@ -175,14 +180,14 @@ public class GeoPoint implements Comparable<GeoPoint> {
      * @return the latitude value of this GeoPoint in degrees.
      */
     public double getLatitude() {
-        return this.latitudeE6 / CONVERSION_FACTOR;
+        return this.lat;
     }
 
     /**
      * @return the longitude value of this GeoPoint in degrees.
      */
     public double getLongitude() {
-        return this.longitudeE6 / CONVERSION_FACTOR;
+        return this.lon;
     }
 
     @Override

@@ -8,8 +8,9 @@ dependencies {
 }
 
 android {
+    publishNonDefault true
     compileSdkVersion androidCompileSdk()
-    buildToolsVersion = '25.0.0'
+    buildToolsVersion = androidBuildToolsVersion()
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_7
@@ -20,6 +21,9 @@ android {
         versionCode versionCode()
         versionName versionName()
         minSdkVersion androidMinSdk()
+        ndk {
+            moduleName "vtm-jni"
+        }
     }
 
     sourceSets {
@@ -34,14 +38,34 @@ android {
         release.setRoot('build-types/release')
     }
 
+    buildTypes {
+
+        debug {
+            shrinkResources false
+            minifyEnabled false
+        }
+
+        develop {
+            shrinkResources false
+            minifyEnabled false
+        }
+
+        release {
+            shrinkResources true
+            minifyEnabled true
+            zipAlignEnabled true
+        }
+    }
+
     lintOptions { abortOnError false }
 }
+
 
 android.libraryVariants.all { variant ->
     def name = variant.buildType.name
     if (name.equals("debug")) {
         print "Skipping debug jar"
-        return; // Skip debug builds.
+        //return; // Skip debug builds.
     }
 
     def jar = project.tasks.create "jar${name.capitalize()}", Jar
@@ -72,3 +96,4 @@ if (project.hasProperty("SONATYPE_USERNAME")) {
         project.apply from: "${rootProject.projectDir}/deploy.gradle"
     }
 }
+

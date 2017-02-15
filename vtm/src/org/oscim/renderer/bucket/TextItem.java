@@ -16,6 +16,7 @@
  */
 package org.oscim.renderer.bucket;
 
+import org.oscim.core.Point;
 import org.oscim.theme.styles.TextStyle;
 import org.oscim.utils.pool.Inlist;
 import org.oscim.utils.pool.SyncPool;
@@ -23,6 +24,10 @@ import org.oscim.utils.pool.SyncPool;
 public class TextItem extends Inlist<TextItem> {
     //static final Logger log = LoggerFactory.getLogger(TextItem.class);
     private final static int MAX_POOL = 250;
+
+    /* new Member von stephan */
+    public Point screenPoint;
+    public boolean hidden = false;
 
     public final static SyncPool<TextItem> pool = new SyncPool<TextItem>(MAX_POOL) {
 
@@ -41,6 +46,18 @@ public class TextItem extends Inlist<TextItem> {
             return true;
         }
     };
+
+
+    public void placeLabelFrom(double w, double h) {
+        // set line endpoints relative to view to be able to
+        // check intersections with label from other tiles
+
+        if (this.screenPoint == null) return;
+        this.x1 = this.screenPoint.x - ((w / 2));
+        this.y1 = this.screenPoint.y - ((h / 2));
+        this.x2 = this.screenPoint.x + ((w / 2));
+        this.y2 = this.screenPoint.y + ((h / 2));
+    }
 
     public static TextItem copy(TextItem orig) {
 
@@ -93,6 +110,35 @@ public class TextItem extends Inlist<TextItem> {
     //public TextItem n2;
 
     public byte edges;
+
+    public boolean bboxOverlaps(TextItem other, float add) {
+        if (this.y1 < this.y2) {
+            if (other.y1 < other.y2)
+                return (this.x1 - add < other.x2)
+                       && (other.x1 < this.x2 + add)
+                       && (this.y1 - add < other.y2)
+                       && (other.y1 < this.y2 + add);
+
+            // flip other
+            return (this.x1 - add < other.x2)
+                   && (other.x1 < this.x2 + add)
+                   && (this.y1 - add < other.y1)
+                   && (other.y2 < this.y2 + add);
+        }
+
+        // flip this
+        if (other.y1 < other.y2)
+            return (this.x1 - add < other.x2)
+                   && (other.x1 < this.x2 + add)
+                   && (this.y2 - add < other.y2)
+                   && (other.y1 < this.y1 + add);
+
+        // flip both
+        return (this.x1 - add < other.x2)
+               && (other.x1 < this.x2 + add)
+               && (this.y2 - add < other.y1)
+               && (other.y2 < this.y1 + add);
+    }
 
     @Override
     public String toString() {

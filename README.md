@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 [![Maven Central](https://img.shields.io/maven-central/v/org.mapsforge/vtm.svg)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.mapsforge%22)
 [![Build Status](https://travis-ci.org/mapsforge/vtm.svg?branch=master)](https://travis-ci.org/mapsforge/vtm)
 [![License: LGPL v3](https://img.shields.io/badge/License-LGPL%20v3-blue.svg)](http://www.gnu.org/licenses/lgpl-3.0)
@@ -40,12 +39,15 @@ If you have any questions or problems, don't hesitate to ask our public [mailing
 - **vtm-web** HTML5/GWT backend
 - **vtm-web-app** HTML5/GWT application
 
-## Applications
-- VTM is used by many [applications](docs/Applications.md).
-
 ## WebGL Demo
 [OpenScienceMap](http://opensciencemap.org/s3db/#scale=17,rot=61,tilt=51,lat=53.075,lon=8.807) view of Bremen.
 - Hold right mouse button to change view direction.
+
+## Applications
+- VTM is used by many [applications](docs/Applications.md).
+
+## Maps
+- Mapsforge [map providers](docs/Mapsforge-Maps.md).
 
 ## Credits
 This library contains code from several projects:
@@ -56,6 +58,7 @@ This library contains code from several projects:
 - **tessellate** (SGI Free Software License B 2.0): (https://github.com/cscheid/tessellate)
 
 ## Screenshots
+<<<<<<< HEAD
 ![Screenshot Samples App Bremen 1](docs/images/screenshot-bremen-1.png)
 ![Screenthot Samples App Bremen 2](docs/images/screenshot-bremen-2.png)
 # com.contagt.android.vtm

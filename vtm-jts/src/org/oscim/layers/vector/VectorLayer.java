@@ -16,7 +16,6 @@
  */
 package org.oscim.layers.vector;
 
-import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.CoordinateSequence;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
@@ -31,17 +30,13 @@ import org.oscim.backend.canvas.Color;
 import org.oscim.core.Box;
 import org.oscim.core.GeometryBuffer;
 import org.oscim.core.MapPosition;
-import org.oscim.core.MercatorProjection;
 import org.oscim.core.Tile;
 import org.oscim.layers.vector.geometries.Drawable;
 import org.oscim.layers.vector.geometries.LineDrawable;
 import org.oscim.layers.vector.geometries.PointDrawable;
-import org.oscim.layers.vector.geometries.PolygonDrawable;
 import org.oscim.layers.vector.geometries.Style;
 import org.oscim.map.Map;
-import org.oscim.map.Viewport;
 import org.oscim.renderer.bucket.LineBucket;
-import org.oscim.renderer.bucket.LineTexBucket;
 import org.oscim.renderer.bucket.MeshBucket;
 import org.oscim.renderer.bucket.PolygonBucket;
 import org.oscim.renderer.bucket.TextBucket;
@@ -59,8 +54,6 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-
-import javax.print.attribute.TextSyntax;
 
 import static org.oscim.core.MercatorProjection.latitudeToY;
 import static org.oscim.core.MercatorProjection.longitudeToX;
@@ -217,13 +210,11 @@ public class VectorLayer extends AbstractVectorLayer<Drawable> {
         mConverter.setPosition(t.position.x, t.position.y, t.position.scale);
 
         bbox.scale(1E6);
-
         mTextLayer = new TextBucket();
+        t.buckets.clear();
         t.buckets.set(mTextLayer);
-        int level = 0;
+        int level = 2000;
         Style lastStyle = null;
-
-        //t.buckets.clear();
 
         // TODO sort by some order...
 
@@ -242,15 +233,22 @@ public class VectorLayer extends AbstractVectorLayer<Drawable> {
 
                 lastStyle = style;
             }
-            addTextItems();
+            if (t.position.zoomLevel > 16)
+            {
+                addTextItems();
+            }
         }
         //
     }
+
+
+
 
     private void addTextItems()
     {
         for (VTMTextItemWrapper ti : textItems) {
             TextItem textItem = TextItem.pool.get();
+
             GeometryBuffer mGeom = new GeometryBuffer(1, 2);
             mGeom.startPoints();
             CoordinateSequence c = PackedCoordinateSequenceFactory.DOUBLE_FACTORY.create(new double[]{ti.p.getLongitude(), ti.p.getLatitude()}, 2);
@@ -261,13 +259,18 @@ public class VectorLayer extends AbstractVectorLayer<Drawable> {
                 textItem.text = mTextStyle;
             }
 
-            textItem.set(resultPoint.getX(), resultPoint.getY(), ti.text, ti.style);
-            mTextLayer.addText(textItem);
-        }
+            org.oscim.core.Point result = new org.oscim.core.Point(0, 0);
+            mMap.viewport().toScreenPoint(ti.p, result);
 
+            textItem.set(resultPoint.getX(), resultPoint.getY(), ti.text, ti.style);
+            textItem.screenPoint = result;
+            ti.hidden = false;
+            ti.item = textItem;
+            mTextLayer.addText(ti.item);
+        }
     }
 
-    protected void draw(Task task, int level, Drawable d, Style style) {
+    private void draw(Task task, int level, Drawable d, Style style) {
         Geometry geom = d.getGeometry();
 
         if (d instanceof LineDrawable) {
@@ -279,7 +282,7 @@ public class VectorLayer extends AbstractVectorLayer<Drawable> {
         }
     }
 
-    protected void drawPoint(Task t, int level, Geometry points, Style style) {
+    private void drawPoint(Task t, int level, Geometry points, Style style) {
 
         MeshBucket mesh = t.buckets.getMeshBucket(level);
         if (mesh.area == null) {
@@ -304,7 +307,7 @@ public class VectorLayer extends AbstractVectorLayer<Drawable> {
         }
     }
 
-    protected void drawLine(Task t, int level, Geometry line, Style style) {
+    private void drawLine(Task t, int level, Geometry line, Style style) {
 
         LineBucket ll;
         if (style.stipple == 0 && style.texture == null)
@@ -344,21 +347,33 @@ public class VectorLayer extends AbstractVectorLayer<Drawable> {
         }
     }
 
-    protected void drawPolygon(Task t, int level, Geometry polygon, Style style) {
-        PolygonBucket mesh = t.buckets.getPolygonBucket(level);
+    private void drawPolygon(Task t, int level, Geometry polygon, Style style) {
+        MeshBucket mesh = t.buckets.getMeshBucket(level);
         if (mesh.area == null) {
-            mesh.area = new AreaStyle(2, Color.fade(style.fillColor,
+            mesh.area = new AreaStyle(Color.fade(style.fillColor,
                     style.fillAlpha));
         }
 
-        LineBucket ll = t.buckets.getLineBucket(level + 1);
+       LineBucket ll = t.buckets.getLineBucket(level + 1);
         if (ll.line == null) {
-            ll.line = new LineStyle(2, style.strokeColor, style.strokeWidth);
+            ll.line = LineStyle.builder()
+                                         .cap(style.cap)
+                                         .color(style.strokeColor)
+                                         .fixed(style.fixed)
+                                         .level(0)
+                                         .randomOffset(style.randomOffset)
+                                         .stipple(style.stipple)
+                                         .stippleColor(style.stippleColor)
+                                         .stippleWidth(style.stippleWidth)
+                                         .strokeWidth(style.strokeWidth)
+                                         .texture(style.texture)
+                                         .build();
         }
 
         if (style.generalization != Style.GENERALIZATION_NONE) {
             polygon = DouglasPeuckerSimplifier.simplify(polygon, mMinX * style.generalization);
         }
+
 
         //if (polygon.isRectangle());
 
@@ -373,14 +388,14 @@ public class VectorLayer extends AbstractVectorLayer<Drawable> {
 
             if (polygon.isValid())
             {
-                //ll.addLine(mGeom);
-                mesh.addPolygon(mGeom.points, mGeom.index);
+                ll.addLine(mGeom);
+                mesh.addConvexMesh(mGeom);
             }
         }
     }
 
-    protected void addCircle(GeometryBuffer g, MapPosition pos,
-                             double px, double py, Style style) {
+    private void addCircle(GeometryBuffer g, MapPosition pos,
+                           double px, double py, Style style) {
 
         double scale = pos.scale * Tile.SIZE / UNSCALE_COORD;
         double x = (longitudeToX(px) - pos.x) * scale;

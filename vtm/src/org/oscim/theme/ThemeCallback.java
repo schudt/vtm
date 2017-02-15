@@ -1,11 +1,5 @@
 /*
- * Copyright 2012 osmdroid authors: Viesturs Zarins, Martin Pearman
- * Copyright 2012 Hannes Janetzek
  * Copyright 2016 devemux86
- * Copyright 2016 Bezzu
- * Copyright 2016 Pedinel
- *
- * This file is part of the OpenScienceMap project (http://www.opensciencemap.org).
  *
  * This program is free software: you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free Software
@@ -18,22 +12,14 @@
  * You should have received a copy of the GNU Lesser General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.oscim.layers;
-
-import org.oscim.layers.tile.PolygonRenderer;
-import org.oscim.map.Map;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+package org.oscim.theme;
 
 /**
- * This class draws a path line in given color or texture.
+ * Callback methods for render theme.
  */
-public class PolygonLayer extends GenericLayer
-{
-    static final Logger log = LoggerFactory.getLogger(PolygonLayer.class);
-
-    public PolygonLayer(Map map) {
-        super(map, new PolygonRenderer());
-    }
+public interface ThemeCallback {
+    /**
+     * @return the color-int
+     */
+    int getColor(int color);
 }

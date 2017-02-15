@@ -21,6 +21,7 @@ import org.oscim.backend.canvas.Color;
 import org.oscim.core.GeometryBuffer;
 import org.oscim.core.MapPosition;
 import org.oscim.core.MercatorProjection;
+import org.oscim.core.Tile;
 import org.oscim.renderer.GLShader;
 import org.oscim.renderer.GLState;
 import org.oscim.renderer.GLUtils;
@@ -50,11 +51,11 @@ public class MeshBucket extends RenderBucket {
     public MeshBucket(int level) {
         super(RenderBucket.MESH, true, false);
         this.level = level;
+        if (tess == null)
+            tess = new TessJNI(100);
     }
 
     public void addMesh(GeometryBuffer geom) {
-        if (tess == null)
-            tess = new TessJNI(8);
 
         tess.addContour2D(geom.index, geom.points);
     }
@@ -66,7 +67,7 @@ public class MeshBucket extends RenderBucket {
             return;
         }
 
-        vertexItems.add((float)geom.points[0] * COORD_SCALE,
+        /*vertexItems.add((float)geom.points[0] * COORD_SCALE,
                 (float)geom.points[1] * COORD_SCALE);
 
         vertexItems.add((float)geom.points[2] * COORD_SCALE,
@@ -77,14 +78,35 @@ public class MeshBucket extends RenderBucket {
 
         for (int i = 4; i < geom.index[0]; i += 2) {
 
-            vertexItems.add((float)geom.points[i + 0] * COORD_SCALE,
+            vertexItems.add((float)geom.points[i] * COORD_SCALE,
                     (float)geom.points[i + 1] * COORD_SCALE);
 
             indiceItems.add(start, prev, ++prev);
             numVertices++;
 
             numIndices += 3;
+        }*/
+
+        short center = (short) ((Tile.SIZE >> 1) * COORD_SCALE);
+        vertexItems.add(center, center);
+        numVertices++;
+
+
+        for (int i = 0; i < geom.index[0]; i += 2) {
+
+                indiceItems.add((short) numVertices);
+                numIndices++;
+
+                vertexItems.add((float)geom.points[i] * COORD_SCALE, (float)geom.points[i + 1] * COORD_SCALE);
+                numVertices++;
+
+                indiceItems.add((short) numVertices);
+                numIndices++;
         }
+        vertexItems.add((float)geom.points[0] * COORD_SCALE,
+                (float)geom.points[1] * COORD_SCALE);
+        numVertices++;
+
 
         //numPoints += geom.pointPos;
         //tess.addContour2D(geom.index, geom.points);

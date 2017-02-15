@@ -19,8 +19,8 @@ package org.oscim.layers.tile.vector.labeling;
 import org.oscim.renderer.bucket.TextItem;
 import org.oscim.utils.geom.OBB2D;
 
-final class Label extends TextItem {
-    TextItem item;
+public final class Label extends TextItem {
+    public TextItem item;
 
     //Link blocking;
     //Link blockedBy;
@@ -64,32 +64,7 @@ final class Label extends TextItem {
     }
 
     public static boolean bboxOverlaps(TextItem it1, TextItem it2, float add) {
-        if (it1.y1 < it1.y2) {
-            if (it2.y1 < it2.y2)
-                return (it1.x1 - add < it2.x2)
-                        && (it2.x1 < it1.x2 + add)
-                        && (it1.y1 - add < it2.y2)
-                        && (it2.y1 < it1.y2 + add);
-
-            // flip it2
-            return (it1.x1 - add < it2.x2)
-                    && (it2.x1 < it1.x2 + add)
-                    && (it1.y1 - add < it2.y1)
-                    && (it2.y2 < it1.y2 + add);
-        }
-
-        // flip it1
-        if (it2.y1 < it2.y2)
-            return (it1.x1 - add < it2.x2)
-                    && (it2.x1 < it1.x2 + add)
-                    && (it1.y2 - add < it2.y2)
-                    && (it2.y1 < it1.y1 + add);
-
-        // flip both
-        return (it1.x1 - add < it2.x2)
-                && (it2.x1 < it1.x2 + add)
-                && (it1.y2 - add < it2.y1)
-                && (it2.y2 < it1.y1 + add);
+        return it1.bboxOverlaps(it2, add);
     }
 
     public void setAxisAlignedBBox() {

@@ -112,9 +112,14 @@ public class MarkerRenderer extends BucketRenderer {
         if (ti == null || ti.text == null)
             return;
 
+        org.oscim.core.Point result = new org.oscim.core.Point(0, 0);
+        mMarkerLayer.map().viewport().toScreenPoint(ti.p, result);
+        textItem.screenPoint = result;
+
         int distance = (int)((double)internalItem.item.getMarker().getBitmap().getHeight() / 1.5);
         double[] rotated = LatLongUtils.rotatePoint(internalItem.x, internalItem.y, internalItem.x, internalItem.y + distance, Math.toRadians(mMapPosition.bearing));
         textItem.set(rotated[0], rotated[1], ti.text, ti.style);
+
         mTextLayer.addText(textItem);
 
     }
@@ -123,6 +128,8 @@ public class MarkerRenderer extends BucketRenderer {
     public synchronized void update(GLViewport v) {
         if (!v.changed() && !mUpdate)
             return;
+
+        sort(mItems, 0, mItems.length);
 
         mTextLayer = new TextBucket();
 
@@ -178,7 +185,7 @@ public class MarkerRenderer extends BucketRenderer {
                 it.didSearch = true;
                 for (InternalItem i : mItems)
                 {
-                    if (!i.didSearch && GeometryUtils.distance(new double[] {it.px, it.py, i.px, i.py}, 0, 2) < width)
+                    if (i.visible && !i.didSearch && GeometryUtils.distance(new double[] {it.px, it.py, i.px, i.py}, 0, 2) < width)
                     {
                         i.visible = false;
                         i.wasFound = true;
@@ -204,9 +211,9 @@ public class MarkerRenderer extends BucketRenderer {
         mMapPosition.copy(v.pos);
         mMapPosition.setBearing(-mMapPosition.bearing);
 
-        sort(mItems, 0, mItems.length);
         //log.debug(Arrays.toString(mItems));
         for (InternalItem it : mItems) {
+
             it.didSearch = false;
 
             if (it.wasFound) {
@@ -226,6 +233,8 @@ public class MarkerRenderer extends BucketRenderer {
                 continue;
             }
 
+            renderMarkerLabel(it);
+
             MarkerSymbol marker = it.item.getMarker();
             if (marker == null)
                 marker = mDefaultMarker;
@@ -239,8 +248,6 @@ public class MarkerRenderer extends BucketRenderer {
             s.offset = marker.getHotspot();
             s.billboard = marker.isBillboard();
             mSymbolLayer.pushSymbol(s);
-
-            renderMarkerLabel(it);
 
         }
 
@@ -292,12 +299,14 @@ public class MarkerRenderer extends BucketRenderer {
         @Override
         public int compare(InternalItem a, InternalItem b) {
             if (a.visible && b.visible) {
-                if (a.dy > b.dy) {
+                /*if (a.dy > b.dy) {
                     return -1;
                 }
                 if (a.dy < b.dy) {
                     return 1;
                 }
+                */
+                return a.toString().compareTo(b.toString());
             } else if (a.visible) {
                 return -1;
             } else if (b.visible) {

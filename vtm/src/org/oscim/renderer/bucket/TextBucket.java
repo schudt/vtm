@@ -73,6 +73,7 @@ public class TextBucket extends TextureBucket {
                 /* insert after text of same type and/or before same string */
                 item.next = it.next;
                 it.next = item;
+
                 return;
             }
         }
@@ -82,7 +83,7 @@ public class TextBucket extends TextureBucket {
     }
 
     @Override
-    public void prepare() {
+    public void  prepare() {
         int numIndices = 0;
         int offsetIndices = 0;
 
@@ -130,7 +131,26 @@ public class TextBucket extends TextureBucket {
 
             yy = y + height - it.text.fontDescent;
 
-            mCanvas.drawText(it.string, x, yy, it.text.paint, it.text.stroke);
+            if (it != null && it.screenPoint != null)
+            {
+                it.placeLabelFrom(it.width, it.text.fontHeight);
+                it.hidden = false;
+                for (TextItem ti = labels; ti != null; ti = ti.next)
+                {
+                    if (it.hidden) break;
+                    ti.placeLabelFrom(ti.width, ti.text.fontHeight);
+                    if (!ti.hidden && !ti.equals(it) && (it.bboxOverlaps(ti, 1)))
+                    {
+                        it.hidden = true;
+                        break;
+                    }
+                }
+
+            }
+            if (!it.hidden)
+            {
+                mCanvas.drawText(it.string, x, yy, it.text.paint, it.text.stroke);
+            }
 
             // FIXME !!!
             if (width > TEXTURE_WIDTH)
@@ -159,6 +179,7 @@ public class TextBucket extends TextureBucket {
         t.offset = offsetIndices;
         t.indices = (numIndices - offsetIndices);
     }
+
 
     private void addItem(TextItem it,
                          float width, float height, float x, float y) {

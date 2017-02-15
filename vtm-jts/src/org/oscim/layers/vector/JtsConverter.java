@@ -47,6 +47,26 @@ public class JtsConverter {
         }
     }
 
+    public void transformPolygonNoProjection(GeometryBuffer g, Polygon polygon) {
+        Coordinate coord = mTmpCoord;
+
+        CoordinateSequence ring = polygon.getExteriorRing().getCoordinateSequence();
+
+        g.startPolygon();
+        for (int j = 0; j < ring.size() - 1; j++) {
+            ring.getCoordinate(j, coord);
+            addPointNoProjection(g, coord);
+        }
+        for (int j = 0, n = polygon.getNumInteriorRing(); j < n; j++) {
+            g.startHole();
+            ring = polygon.getInteriorRingN(j).getCoordinateSequence();
+            for (int k = 0; k < ring.size() - 1; k++) {
+                ring.getCoordinate(k, coord);
+                addPointNoProjection(g, coord);
+            }
+        }
+    }
+
     public void transformLineString(GeometryBuffer g, LineString linestring) {
         Coordinate coord = mTmpCoord;
 
@@ -71,6 +91,10 @@ public class JtsConverter {
     public void addPoint(GeometryBuffer g, Coordinate coord) {
         g.addPoint((float) ((longitudeToX(coord.x) - x) * scale),
                 (float) ((latitudeToY(coord.y) - y) * scale));
+    }
+
+    public void addPointNoProjection(GeometryBuffer g, Coordinate coord) {
+        g.addPoint(coord.x, coord.y);
     }
 
     public void addPoint(GeometryBuffer g, double lon, double lat) {

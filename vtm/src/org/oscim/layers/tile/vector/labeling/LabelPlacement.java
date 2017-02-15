@@ -43,12 +43,12 @@ public class LabelPlacement {
     }
 
     private final static float MIN_CAPTION_DIST = 5;
-    private final static float MIN_WAY_DIST = 3;
+    public final static  float MIN_WAY_DIST     = 3;
 
     /**
      * thread local pool of for unused label items
      */
-    private final LabelPool mPool = new LabelPool();
+    public final LabelPool mPool = new LabelPool();
 
     private final TileSet mTileSet = new TileSet();
     private final TileRenderer mTileRenderer;
@@ -160,7 +160,7 @@ public class LabelPlacement {
         return l;
     }
 
-    private static float flipLongitude(float dx, int max) {
+    public static float flipLongitude(float dx, int max) {
         // flip around date-line
         if (dx > max)
             dx = dx - max * 2;
