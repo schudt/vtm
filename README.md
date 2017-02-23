@@ -61,3 +61,15 @@ This library contains code from several projects:
 ![Screenshot Samples App Bremen 1](docs/images/screenshot-bremen-1.png)
 ![Screenthot Samples App Bremen 2](docs/images/screenshot-bremen-2.png)
 # com.contagt.android.vtm
+
+### Android
+![Android](docs/images/android.png)
+
+### iOS
+![iOS](docs/images/ios.png)
+
+### Desktop
+![Desktop](docs/images/desktop.png)
+
+### Browser
+![Browser](docs/images/browser.png)

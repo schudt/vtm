@@ -1,6 +1,10 @@
 # Changelog
 
-## New since 0.6.0
+### Version 0.7.0-rc2 (2017-02-20)
+
+- Fix theme parsing in non-Latin locales [#297](https://github.com/mapsforge/vtm/issues/297)
+
+### Version 0.7.0-rc1 (2017-02-16)
 
 - Mapsforge multiple map files [#208](https://github.com/mapsforge/vtm/issues/208)
 - Improved gestures implementation [#253](https://github.com/mapsforge/vtm/issues/253)
@@ -15,6 +19,7 @@
 - House numbers (nodes) fix visibility [#168](https://github.com/mapsforge/vtm/issues/168)
 - Android fix quick scale vs long press [#250](https://github.com/mapsforge/vtm/issues/250)
 - Use baseline 160dpi in scaling [#236](https://github.com/mapsforge/vtm/issues/236)
+- OkHttp3 update [#138](https://github.com/mapsforge/vtm/issues/138)
 - libGDX double tap zoom [#263](https://github.com/mapsforge/vtm/issues/263)
 - MapFileTileSource zoom level API enhancements [#219](https://github.com/mapsforge/vtm/issues/219)
 - Animator enhancements with easing functions [#246](https://github.com/mapsforge/vtm/issues/246)
