@@ -47,8 +47,6 @@ public interface Canvas {
 
     void drawLine(float x1, float y1, float x2, float y2, Paint paint);
 
-    void drawCircle(float x, float y, float radius, Paint paint);
-
     void fillColor(int color);
 
     int getHeight();

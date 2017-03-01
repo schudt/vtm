@@ -152,16 +152,6 @@ class AndroidPaint implements Paint {
     }
 
     @Override
-    public Style getStyle() {
-        switch (mPaint.getStyle()) {
-            case STROKE:
-                return Style.STROKE;
-            default:
-                return Style.FILL;
-        }
-    }
-
-    @Override
     public float getTextHeight(String text) {
         mPaint.getTextBounds(text, 0, text.length(), rect);
         return rect.height();
