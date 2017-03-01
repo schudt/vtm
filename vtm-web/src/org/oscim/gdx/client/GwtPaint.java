@@ -1,6 +1,7 @@
 /*
  * Copyright 2013 Hannes Janetzek
  * Copyright 2016 devemux86
+ * Copyright 2017 nebular
  *
  * This file is part of the OpenScienceMap project (http://www.opensciencemap.org).
  *
@@ -37,6 +38,8 @@ public class GwtPaint implements Paint {
 
     //String font = "12px sans-serif";
     String font = "13px Helvetica";
+
+    Style style;
 
     @Override
     public int getColor() {
@@ -130,6 +133,11 @@ public class GwtPaint implements Paint {
     @Override
     public float getStrokeWidth() {
         return strokeWidth;
+    }
+
+    @Override
+    public Style getStyle() {
+        return style;
     }
 
     @Override
