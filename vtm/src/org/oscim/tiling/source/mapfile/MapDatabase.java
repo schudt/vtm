@@ -186,7 +186,7 @@ class MapDatabase implements ITileDataSource {
     private String mSignatureWay;
     private double mTileLatitude;
     private double mTileLongitude;
-    private int[] mIntBuffer;
+    private long[] mIntBuffer;
 
     private final MapElement mElem = new MapElement();
 
@@ -227,7 +227,7 @@ class MapDatabase implements ITileDataSource {
         }
 
         if (mIntBuffer == null)
-            mIntBuffer = new int[MAXIMUM_WAY_NODES_SEQUENCE_LENGTH * 2];
+            mIntBuffer = new long[MAXIMUM_WAY_NODES_SEQUENCE_LENGTH * 2];
 
         try {
             mTileProjection.setTile(tile);
@@ -487,8 +487,8 @@ class MapDatabase implements ITileDataSource {
                         Projection.tileXToLongitude(subFileParameter.boundaryTileLeft + column,
                                 subFileParameter.baseZoomLevel);
 
-                mTileLatitude = (int) (tileLatitudeDeg * 1E6);
-                mTileLongitude = (int) (tileLongitudeDeg * 1E6);
+                mTileLatitude = (long) (tileLatitudeDeg * 1E15);
+                mTileLongitude = (long) (tileLongitudeDeg * 1E15);
 
                 processBlock(queryParams, subFileParameter, mapDataSink);
             }
@@ -539,9 +539,9 @@ class MapDatabase implements ITileDataSource {
             }
 
             /* get the POI latitude offset (VBE-S) */
-            double latitude = mTileLatitude + mReadBuffer.readSignedInt();
+            double latitude = mTileLatitude + mReadBuffer.readLong();
             /* get the POI longitude offset (VBE-S) */
-            double longitude = mTileLongitude + mReadBuffer.readSignedInt();
+            double longitude = mTileLongitude + mReadBuffer.readLong();
 
             /* get the special byte which encodes multiple flags */
             byte specialByte = mReadBuffer.readByte();
@@ -633,10 +633,10 @@ class MapDatabase implements ITileDataSource {
 
     private int decodeWayNodesDoubleDelta(MapElement e, int length, boolean isLine) {
         // get the first way node latitude offset (VBE-S)
-        double firstLatitude = mTileLatitude + mReadBuffer.readSignedInt();
+        double firstLatitude = mTileLatitude + mReadBuffer.readLong();
 
         // get the first way node longitude offset (VBE-S)
-        double firstLongitude = this.mTileLongitude + this.mReadBuffer.readSignedInt();
+        double firstLongitude = this.mTileLongitude + this.mReadBuffer.readLong();
 
         double[] outBuffer = e.ensurePointSize(e.pointPos + length, true);
         int outPos = e.pointPos;
@@ -651,10 +651,10 @@ class MapDatabase implements ITileDataSource {
         double previousSingleDeltaLongitude = 0;
         for (int wayNodesIndex = 2; wayNodesIndex < length; wayNodesIndex += 2) {
             // get the way node latitude double-delta offset (VBE-S)
-            double doubleDeltaLatitude = mReadBuffer.readSignedInt();
+            double doubleDeltaLatitude = mReadBuffer.readLong();
 
             // get the way node longitude double-delta offset (VBE-S)
-            double doubleDeltaLongitude = mReadBuffer.readSignedInt();
+            double doubleDeltaLongitude = mReadBuffer.readLong();
 
             double singleDeltaLatitude = doubleDeltaLatitude + previousSingleDeltaLatitude;
             double singleDeltaLongitude = doubleDeltaLongitude + previousSingleDeltaLongitude;
@@ -689,10 +689,10 @@ class MapDatabase implements ITileDataSource {
 
     private int decodeWayNodesSingleDelta(MapElement e, int length, boolean isLine) {
         // get the first way node latitude single-delta offset (VBE-S)
-        double firstLatitude = mTileLatitude + mReadBuffer.readSignedInt();
+        double firstLatitude = mTileLatitude + mReadBuffer.readLong();
 
         // get the first way node longitude single-delta offset (VBE-S)
-        double firstLongitude = mTileLongitude + mReadBuffer.readSignedInt();
+        double firstLongitude = mTileLongitude + mReadBuffer.readLong();
 
         double[] outBuffer = e.ensurePointSize(e.pointPos + length, true);
         int outPos = e.pointPos;
@@ -705,10 +705,10 @@ class MapDatabase implements ITileDataSource {
 
         for (int wayNodesIndex = 2; wayNodesIndex < length; wayNodesIndex += 2) {
             // get the way node latitude offset (VBE-S)
-            currentLat = currentLat + mReadBuffer.readSignedInt();
+            currentLat = currentLat + mReadBuffer.readLong();
 
             // get the way node longitude offset (VBE-S)
-            currentLon = currentLon + mReadBuffer.readSignedInt();
+            currentLon = currentLon + mReadBuffer.readLong();
 
             if (wayNodesIndex == length - 2)
             {
@@ -734,8 +734,8 @@ class MapDatabase implements ITileDataSource {
 
 
     private int decodeWayNodes(boolean doubleDelta, MapElement e, int length, boolean isLine) {
-        int[] buffer = mIntBuffer;
-        mReadBuffer.readSignedInt(buffer, length);
+        long[] buffer = mIntBuffer;
+        mReadBuffer.readLong(buffer, length);
 
         double[] outBuffer = e.ensurePointSize(e.pointPos + length, true);
         int outPos = e.pointPos;
@@ -985,10 +985,10 @@ class MapDatabase implements ITileDataSource {
         double[] labelPosition = new double[2];
 
         /* get the label position latitude offset (VBE-S) */
-        labelPosition[1] = mReadBuffer.readSignedInt();
+        labelPosition[1] = mReadBuffer.readLong();
 
         /* get the label position longitude offset (VBE-S) */
-        labelPosition[0] = mReadBuffer.readSignedInt();
+        labelPosition[0] = mReadBuffer.readLong();
 
         return labelPosition;
     }
@@ -1030,7 +1030,7 @@ class MapDatabase implements ITileDataSource {
     }
 
     private static class TileProjection {
-        private static final double COORD_SCALE = 1000000.0;
+        private static final double COORD_SCALE = 1E15;
 
         long dx, dy;
         double divx, divy;

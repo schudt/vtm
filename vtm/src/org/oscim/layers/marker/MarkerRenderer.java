@@ -20,9 +20,6 @@
  */
 package org.oscim.layers.marker;
 
-import org.oscim.core.Box;
-import org.oscim.core.GeoPoint;
-import org.oscim.core.GeometryBuffer;
 import org.oscim.core.MercatorProjection;
 import org.oscim.core.Point;
 import org.oscim.core.Tile;
@@ -30,18 +27,10 @@ import org.oscim.renderer.BucketRenderer;
 import org.oscim.renderer.GLViewport;
 import org.oscim.renderer.bucket.SymbolBucket;
 import org.oscim.renderer.bucket.SymbolItem;
-import org.oscim.renderer.bucket.TextBucket;
-import org.oscim.renderer.bucket.TextItem;
-import org.oscim.renderer.other.VTMTextItemWrapper;
-import org.oscim.scalebar.DistanceUnitAdapter;
-import org.oscim.utils.LatLongUtils;
-import org.oscim.utils.QuadTree;
 import org.oscim.utils.TimSort;
 import org.oscim.utils.geom.GeometryUtils;
-import org.oscim.utils.math.MathUtils;
 
 import java.util.Comparator;
-import java.util.LinkedList;
 
 public class MarkerRenderer extends BucketRenderer {
 
@@ -52,8 +41,6 @@ public class MarkerRenderer extends BucketRenderer {
     protected final MarkerLayer<MarkerInterface> mMarkerLayer;
     protected final Point mMapPoint = new Point();
 
-    private boolean markerClustering = true;
-
     /**
      * increase view to show items that are partially visible
      */
@@ -62,27 +49,6 @@ public class MarkerRenderer extends BucketRenderer {
     /**
      * flag to force update of markers
      */
-    private boolean mUpdate;
-
-    private InternalItem[] mItems;
-    private TextBucket     mTextLayer;
-
-    static class InternalItem {
-        MarkerInterface item;
-
-        boolean didSearch = false;
-        boolean wasFound = false;
-        boolean visible;
-        boolean changes;
-        float x, y;
-        double px, py;
-        float dy;
-
-        @Override
-        public String toString() {
-            return "\n" + px + ":" + py + " / " + dy + " " + visible + " f:" + wasFound;
-        }
-    }
     protected boolean mUpdate;
 
     protected InternalItem[] mItems;
@@ -93,48 +59,10 @@ public class MarkerRenderer extends BucketRenderer {
         mDefaultMarker = defaultSymbol;
     }
 
-    public boolean isMarkerClustering()
-    {
-        return markerClustering;
-    }
-
-    public void setMarkerClustering(boolean markerClustering)
-    {
-        this.markerClustering = markerClustering;
-    }
-
-    private void renderMarkerLabel(InternalItem internalItem) {
-        MarkerInterface marker = internalItem.item;
-        //Only render if is type of LabeldMarker
-        if (!(marker instanceof LabeledMarkerInterface) ) {
-            return;
-        }
-        TextItem textItem = TextItem.pool.get();
-        VTMTextItemWrapper ti = ((LabeledMarkerInterface) marker).getLabel();
-        // Render Marker Label, if Text is available.
-        if (ti == null || ti.text == null)
-            return;
-
-        org.oscim.core.Point result = new org.oscim.core.Point(0, 0);
-        mMarkerLayer.map().viewport().toScreenPoint(ti.p, result);
-        textItem.screenPoint = result;
-
-        int distance = (int)((double)internalItem.item.getMarker().getBitmap().getHeight() / 1.5);
-        double[] rotated = LatLongUtils.rotatePoint(internalItem.x, internalItem.y, internalItem.x, internalItem.y + distance, Math.toRadians(mMapPosition.bearing));
-        textItem.set(rotated[0], rotated[1], ti.text, ti.style);
-
-        mTextLayer.addText(textItem);
-
-    }
-
     @Override
     public synchronized void update(GLViewport v) {
         if (!v.changed() && !mUpdate)
             return;
-
-        sort(mItems, 0, mItems.length);
-
-        mTextLayer = new TextBucket();
 
         mUpdate = false;
 
@@ -157,10 +85,11 @@ public class MarkerRenderer extends BucketRenderer {
             }
             return;
         }
+
         double angle = Math.toRadians(v.pos.bearing);
         float cos = (float) Math.cos(angle);
         float sin = (float) Math.sin(angle);
-        double groundRes = MercatorProjection.groundResolution(v.pos);
+
         /* check visibility */
         for (InternalItem it : mItems) {
             it.changes = false;
@@ -172,8 +101,6 @@ public class MarkerRenderer extends BucketRenderer {
             else if (it.x < -flip)
                 it.x += (flip << 1);
 
-
-
             if (!GeometryUtils.pointInPoly(it.x, it.y, mBox, 8, 0)) {
                 if (it.visible) {
                     it.changes = true;
@@ -183,17 +110,10 @@ public class MarkerRenderer extends BucketRenderer {
             }
 
             it.dy = sin * it.x + cos * it.y;
-            if (it.visible && markerClustering) {
-                double width = groundRes * it.item.getMarker().getBitmap().getWidth() * 1e-7 / 2.2;
-                it.didSearch = true;
-                for (InternalItem i : mItems)
-                {
-                    if (i.visible && !i.didSearch && GeometryUtils.distance(new double[] {it.px, it.py, i.px, i.py}, 0, 2) < width)
-                    {
-                        i.visible = false;
-                        i.wasFound = true;
-                    }
-                }
+
+            if (!it.visible) {
+                it.visible = true;
+                //changedVisible++;
             }
             numVisible++;
         }
@@ -212,31 +132,18 @@ public class MarkerRenderer extends BucketRenderer {
         }
         /* keep position for current state */
         mMapPosition.copy(v.pos);
-        mMapPosition.setBearing(-mMapPosition.bearing);
+        mMapPosition.bearing = -mMapPosition.bearing;
 
+        sort(mItems, 0, mItems.length);
         //log.debug(Arrays.toString(mItems));
         for (InternalItem it : mItems) {
-
-            it.didSearch = false;
-
-            if (it.wasFound) {
-                it.visible = false;
-                it.wasFound = false;
-                continue;
-            }
-
             if (!it.visible)
-            {
-                it.visible = true;
                 continue;
-            }
 
             if (it.changes) {
                 it.visible = false;
                 continue;
             }
-
-            renderMarkerLabel(it);
 
             MarkerSymbol marker = it.item.getMarker();
             if (marker == null)
@@ -250,18 +157,16 @@ public class MarkerRenderer extends BucketRenderer {
             }
             s.offset = marker.getHotspot();
             mSymbolLayer.pushSymbol(s);
-
         }
 
-        mSymbolLayer.next = mTextLayer;
         buckets.set(mSymbolLayer);
-
         buckets.prepare();
 
         compile();
     }
 
     protected void populate(int size) {
+
         InternalItem[] tmp = new InternalItem[size];
 
         for (int i = 0; i < size; i++) {
@@ -273,7 +178,6 @@ public class MarkerRenderer extends BucketRenderer {
             MercatorProjection.project(it.item.getPoint(), mMapPoint);
             it.px = mMapPoint.x;
             it.py = mMapPoint.y;
-
         }
         synchronized (this) {
             mUpdate = true;
@@ -300,14 +204,12 @@ public class MarkerRenderer extends BucketRenderer {
         @Override
         public int compare(InternalItem a, InternalItem b) {
             if (a.visible && b.visible) {
-                /*if (a.dy > b.dy) {
+                if (a.dy > b.dy) {
                     return -1;
                 }
                 if (a.dy < b.dy) {
                     return 1;
                 }
-                */
-                return a.toString().compareTo(b.toString());
             } else if (a.visible) {
                 return -1;
             } else if (b.visible) {

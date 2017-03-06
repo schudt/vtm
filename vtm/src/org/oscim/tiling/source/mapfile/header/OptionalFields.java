@@ -100,14 +100,14 @@ final class OptionalFields {
     private OpenResult readMapStartPosition(ReadBuffer readBuffer) {
         if (this.hasStartPosition) {
             // get and check the start position latitude (4 byte)
-            int mapStartLatitude = readBuffer.readInt();
+            long mapStartLatitude = readBuffer.readLong();
             if (mapStartLatitude < RequiredFields.LATITUDE_MIN
                     || mapStartLatitude > RequiredFields.LATITUDE_MAX) {
                 return new OpenResult("invalid map start latitude: " + mapStartLatitude);
             }
 
             // get and check the start position longitude (4 byte)
-            int mapStartLongitude = readBuffer.readInt();
+            long mapStartLongitude = readBuffer.readLong();
             if (mapStartLongitude < RequiredFields.LONGITUDE_MIN
                     || mapStartLongitude > RequiredFields.LONGITUDE_MAX) {
                 return new OpenResult("invalid map start longitude: " + mapStartLongitude);

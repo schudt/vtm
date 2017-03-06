@@ -28,43 +28,43 @@ public class BoundingBox {
     /**
      * Conversion factor from degrees to microdegrees.
      */
-    private static final double CONVERSION_FACTOR = 1000000d;
+    private static final double CONVERSION_FACTOR = 1000000000000000d;
 
     /**
      * The maximum latitude value of this BoundingBox in microdegrees (degrees *
-     * 10^6).
+     * 10^15).
      */
-    public int maxLatitudeE6;
+    public long maxLatitudeE15;
 
     /**
      * The maximum longitude value of this BoundingBox in microdegrees (degrees
-     * * 10^6).
+     * * 10^15).
      */
-    public int maxLongitudeE6;
+    public long maxLongitudeE15;
 
     /**
      * The minimum latitude value of this BoundingBox in microdegrees (degrees *
-     * 10^6).
+     * 10^15).
      */
-    public int minLatitudeE6;
+    public long minLatitudeE15;
 
     /**
      * The minimum longitude value of this BoundingBox in microdegrees (degrees
-     * * 10^6).
+     * * 10^15).
      */
-    public int minLongitudeE6;
+    public long minLongitudeE15;
 
     /**
-     * @param minLatitudeE6  the minimum latitude in microdegrees (degrees * 10^6).
-     * @param minLongitudeE6 the minimum longitude in microdegrees (degrees * 10^6).
-     * @param maxLatitudeE6  the maximum latitude in microdegrees (degrees * 10^6).
-     * @param maxLongitudeE6 the maximum longitude in microdegrees (degrees * 10^6).
+     * @param minLatitudeE15  the minimum latitude in microdegrees (degrees * 10^15).
+     * @param minLongitudeE15 the minimum longitude in microdegrees (degrees * 10^15).
+     * @param maxLatitudeE15  the maximum latitude in microdegrees (degrees * 10^15).
+     * @param maxLongitudeE15 the maximum longitude in microdegrees (degrees * 10^15).
      */
-    public BoundingBox(int minLatitudeE6, int minLongitudeE6, int maxLatitudeE6, int maxLongitudeE6) {
-        this.minLatitudeE6 = minLatitudeE6;
-        this.minLongitudeE6 = minLongitudeE6;
-        this.maxLatitudeE6 = maxLatitudeE6;
-        this.maxLongitudeE6 = maxLongitudeE6;
+    public BoundingBox(long minLatitudeE15, long minLongitudeE15, long maxLatitudeE15, long maxLongitudeE15) {
+        this.minLatitudeE15 = minLatitudeE15;
+        this.minLongitudeE15 = minLongitudeE15;
+        this.maxLatitudeE15 = maxLatitudeE15;
+        this.maxLongitudeE15 = maxLongitudeE15;
     }
 
     /**
@@ -74,20 +74,20 @@ public class BoundingBox {
      * @param maxLongitude the maximum longitude coordinate in degrees.
      */
     public BoundingBox(double minLatitude, double minLongitude, double maxLatitude, double maxLongitude) {
-        this.minLatitudeE6 = (int) (minLatitude * 1E6);
-        this.minLongitudeE6 = (int) (minLongitude * 1E6);
-        this.maxLatitudeE6 = (int) (maxLatitude * 1E6);
-        this.maxLongitudeE6 = (int) (maxLongitude * 1E6);
+        this.minLatitudeE15 = (long) (minLatitude * 1E15);
+        this.minLongitudeE15 = (long) (minLongitude * 1E15);
+        this.maxLatitudeE15 = (long) (maxLatitude * 1E15);
+        this.maxLongitudeE15 = (long) (maxLongitude * 1E15);
     }
 
     /**
      * @param geoPoints the coordinates list.
      */
     public BoundingBox(List<GeoPoint> geoPoints) {
-        int minLat = Integer.MAX_VALUE;
-        int minLon = Integer.MAX_VALUE;
-        int maxLat = Integer.MIN_VALUE;
-        int maxLon = Integer.MIN_VALUE;
+        long minLat = Long.MAX_VALUE;
+        long minLon = Long.MAX_VALUE;
+        long maxLat = Long.MIN_VALUE;
+        long maxLon = Long.MIN_VALUE;
         for (GeoPoint geoPoint : geoPoints) {
             minLat = Math.min(minLat, geoPoint.latitudeE6);
             minLon = Math.min(minLon, geoPoint.longitudeE6);
@@ -95,10 +95,10 @@ public class BoundingBox {
             maxLon = Math.max(maxLon, geoPoint.longitudeE6);
         }
 
-        this.minLatitudeE6 = minLat;
-        this.minLongitudeE6 = minLon;
-        this.maxLatitudeE6 = maxLat;
-        this.maxLongitudeE6 = maxLon;
+        this.minLatitudeE15 = minLat;
+        this.minLongitudeE15 = minLon;
+        this.maxLatitudeE15 = maxLat;
+        this.maxLongitudeE15 = maxLon;
     }
 
     /**
@@ -107,10 +107,10 @@ public class BoundingBox {
      * otherwise.
      */
     public boolean contains(GeoPoint geoPoint) {
-        return geoPoint.latitudeE6 <= maxLatitudeE6
-                && geoPoint.latitudeE6 >= minLatitudeE6
-                && geoPoint.longitudeE6 <= maxLongitudeE6
-                && geoPoint.longitudeE6 >= minLongitudeE6;
+        return geoPoint.latitudeE6 <= maxLatitudeE15
+                && geoPoint.latitudeE6 >= minLatitudeE15
+                && geoPoint.longitudeE6 <= maxLongitudeE15
+                && geoPoint.longitudeE6 >= minLongitudeE15;
     }
 
     @Override
@@ -121,13 +121,13 @@ public class BoundingBox {
             return false;
         }
         BoundingBox other = (BoundingBox) obj;
-        if (maxLatitudeE6 != other.maxLatitudeE6) {
+        if (maxLatitudeE15 != other.maxLatitudeE15) {
             return false;
-        } else if (maxLongitudeE6 != other.maxLongitudeE6) {
+        } else if (maxLongitudeE15 != other.maxLongitudeE15) {
             return false;
-        } else if (minLatitudeE6 != other.minLatitudeE6) {
+        } else if (minLatitudeE15 != other.minLatitudeE15) {
             return false;
-        } else if (minLongitudeE6 != other.minLongitudeE6) {
+        } else if (minLongitudeE15 != other.minLongitudeE15) {
             return false;
         }
         return true;
@@ -138,10 +138,10 @@ public class BoundingBox {
      * @return a BoundingBox that covers this BoundingBox and the given BoundingBox.
      */
     public BoundingBox extendBoundingBox(BoundingBox boundingBox) {
-        return new BoundingBox(Math.min(this.minLatitudeE6, boundingBox.minLatitudeE6),
-                Math.min(this.minLongitudeE6, boundingBox.minLongitudeE6),
-                Math.max(this.maxLatitudeE6, boundingBox.maxLatitudeE6),
-                Math.max(this.maxLongitudeE6, boundingBox.maxLongitudeE6));
+        return new BoundingBox(Math.min(this.minLatitudeE15, boundingBox.minLatitudeE15),
+                Math.min(this.minLongitudeE15, boundingBox.minLongitudeE15),
+                Math.max(this.maxLatitudeE15, boundingBox.maxLatitudeE15),
+                Math.max(this.maxLongitudeE15, boundingBox.maxLongitudeE15));
     }
 
     /**
@@ -235,13 +235,13 @@ public class BoundingBox {
 
     public String format() {
         return new StringBuilder()
-                .append(minLatitudeE6 / CONVERSION_FACTOR)
+                .append(minLatitudeE15 / CONVERSION_FACTOR)
                 .append(',')
-                .append(minLongitudeE6 / CONVERSION_FACTOR)
+                .append(minLongitudeE15 / CONVERSION_FACTOR)
                 .append(',')
-                .append(maxLatitudeE6 / CONVERSION_FACTOR)
+                .append(maxLatitudeE15 / CONVERSION_FACTOR)
                 .append(',')
-                .append(maxLongitudeE6 / CONVERSION_FACTOR)
+                .append(maxLongitudeE15 / CONVERSION_FACTOR)
                 .toString();
     }
 
@@ -250,10 +250,10 @@ public class BoundingBox {
      * BoundingBox.
      */
     public GeoPoint getCenterPoint() {
-        int latitudeOffset = (maxLatitudeE6 - minLatitudeE6) / 2;
-        int longitudeOffset = (maxLongitudeE6 - minLongitudeE6) / 2;
-        return new GeoPoint(minLatitudeE6 + latitudeOffset, minLongitudeE6
-                + longitudeOffset);
+        long latitudeOffset = (maxLatitudeE15 - minLatitudeE15) / 2;
+        long longitudeOffset = (maxLongitudeE15 - minLongitudeE15) / 2;
+        return new GeoPoint(minLatitudeE15 + latitudeOffset, minLongitudeE15
+                                                             + longitudeOffset);
     }
 
     /**
@@ -274,38 +274,38 @@ public class BoundingBox {
      * @return the maximum latitude value of this BoundingBox in degrees.
      */
     public double getMaxLatitude() {
-        return maxLatitudeE6 / CONVERSION_FACTOR;
+        return maxLatitudeE15 / CONVERSION_FACTOR;
     }
 
     /**
      * @return the maximum longitude value of this BoundingBox in degrees.
      */
     public double getMaxLongitude() {
-        return maxLongitudeE6 / CONVERSION_FACTOR;
+        return maxLongitudeE15 / CONVERSION_FACTOR;
     }
 
     /**
      * @return the minimum latitude value of this BoundingBox in degrees.
      */
     public double getMinLatitude() {
-        return minLatitudeE6 / CONVERSION_FACTOR;
+        return minLatitudeE15 / CONVERSION_FACTOR;
     }
 
     /**
      * @return the minimum longitude value of this BoundingBox in degrees.
      */
     public double getMinLongitude() {
-        return minLongitudeE6 / CONVERSION_FACTOR;
+        return minLongitudeE15 / CONVERSION_FACTOR;
     }
 
     @Override
     public int hashCode() {
-        int result = 7;
-        result = 31 * result + maxLatitudeE6;
-        result = 31 * result + maxLongitudeE6;
-        result = 31 * result + minLatitudeE6;
-        result = 31 * result + minLongitudeE6;
-        return result;
+        long result = 7;
+        result = 31 * result + maxLatitudeE15;
+        result = 31 * result + maxLongitudeE15;
+        result = 31 * result + minLatitudeE15;
+        result = 31 * result + minLongitudeE15;
+        return (int)result;
     }
 
     /**
@@ -325,13 +325,13 @@ public class BoundingBox {
     public String toString() {
         return new StringBuilder()
                 .append("BoundingBox [minLat=")
-                .append(minLatitudeE6)
+                .append(minLatitudeE15)
                 .append(", minLon=")
-                .append(minLongitudeE6)
+                .append(minLongitudeE15)
                 .append(", maxLat=")
-                .append(maxLatitudeE6)
+                .append(maxLatitudeE15)
                 .append(", maxLon=")
-                .append(maxLongitudeE6)
+                .append(maxLongitudeE15)
                 .append("]")
                 .toString();
     }

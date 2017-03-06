@@ -30,7 +30,7 @@ public class SubFileParameter {
     /**
      * Divisor for converting coordinates stored as integers to double values.
      */
-    private static final double COORDINATES_DIVISOR = 1000000d;
+    private static final double COORDINATES_DIVISOR = 1000000000000000d;
 
     /**
      * Base zoom level of the sub-file, which equals to one block.
@@ -123,19 +123,19 @@ public class SubFileParameter {
 
         // calculate the XY numbers of the boundary tiles in this sub-file
         this.boundaryTileBottom = Projection.latitudeToTileY(
-                subFileParameterBuilder.boundingBox.minLatitudeE6
+                subFileParameterBuilder.boundingBox.minLatitudeE15
                         / COORDINATES_DIVISOR,
                 this.baseZoomLevel);
         this.boundaryTileLeft = Projection.longitudeToTileX(
-                subFileParameterBuilder.boundingBox.minLongitudeE6
+                subFileParameterBuilder.boundingBox.minLongitudeE15
                         / COORDINATES_DIVISOR,
                 this.baseZoomLevel);
         this.boundaryTileTop = Projection.latitudeToTileY(
-                subFileParameterBuilder.boundingBox.maxLatitudeE6
+                subFileParameterBuilder.boundingBox.maxLatitudeE15
                         / COORDINATES_DIVISOR,
                 this.baseZoomLevel);
         this.boundaryTileRight = Projection.longitudeToTileX(
-                subFileParameterBuilder.boundingBox.maxLongitudeE6
+                subFileParameterBuilder.boundingBox.maxLongitudeE15
                         / COORDINATES_DIVISOR,
                 this.baseZoomLevel);
 

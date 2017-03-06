@@ -161,6 +161,12 @@ public class ReadBuffer {
         }
     }
 
+    public synchronized void readLong(long[] values, int length) {
+        for (int i = 0; i < length; i++) {
+            values[i] = this.readLong();
+        }
+    }
+
     /**
      * Converts a variable amount of bytes from the read buffer to an unsigned
      * int.

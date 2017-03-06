@@ -29,7 +29,7 @@ public class GeoPoint implements Comparable<GeoPoint> {
     /**
      * Conversion factor from degrees to microdegrees.
      */
-    private static final double CONVERSION_FACTOR = 1000000d;
+    private static final double CONVERSION_FACTOR = 1000000000000000d;
 
     /**
      * The equatorial radius as defined by the <a href="http://en.wikipedia.org/wiki/World_Geodetic_System">WGS84
@@ -55,12 +55,12 @@ public class GeoPoint implements Comparable<GeoPoint> {
     /**
      * The latitude value of this GeoPoint in microdegrees (degrees * 10^6).
      */
-    public final int latitudeE6;
+    public final long latitudeE6;
 
     /**
      * The longitude value of this GeoPoint in microdegrees (degrees * 10^6).
      */
-    public final int longitudeE6;
+    public final long longitudeE6;
 
     public final double lat;
     public final double lon;
@@ -74,10 +74,10 @@ public class GeoPoint implements Comparable<GeoPoint> {
     public GeoPoint(double lat, double lon) {
         this.lat = lat;
         lat = FastMath.clamp(lat, MercatorProjection.LATITUDE_MIN, MercatorProjection.LATITUDE_MAX);
-        this.latitudeE6 = (int) (lat * CONVERSION_FACTOR);
+        this.latitudeE6 = (long) (lat * CONVERSION_FACTOR);
         this.lon = lon;
         lon = FastMath.clamp(lon, MercatorProjection.LONGITUDE_MIN, MercatorProjection.LONGITUDE_MAX);
-        this.longitudeE6 = (int) (lon * CONVERSION_FACTOR);
+        this.longitudeE6 = (long) (lon * CONVERSION_FACTOR);
     }
 
     /**
@@ -86,7 +86,7 @@ public class GeoPoint implements Comparable<GeoPoint> {
      * @param longitudeE6 the longitude in microdegrees (degrees * 10^6), will be
      *                    limited to the possible longitude range.
      */
-    public GeoPoint(int latitudeE6, int longitudeE6) {
+    public GeoPoint(long latitudeE6, long longitudeE6) {
         this(latitudeE6 / CONVERSION_FACTOR, longitudeE6 / CONVERSION_FACTOR);
     }
 
@@ -106,10 +106,10 @@ public class GeoPoint implements Comparable<GeoPoint> {
      * @return the hash code of this object.
      */
     private int calculateHashCode() {
-        int result = 7;
+        long result = 7;
         result = 31 * result + this.latitudeE6;
         result = 31 * result + this.longitudeE6;
-        return result;
+        return (int)result;
     }
 
     @Override

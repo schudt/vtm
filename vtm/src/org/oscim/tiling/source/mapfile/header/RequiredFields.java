@@ -58,49 +58,49 @@ final class RequiredFields {
     /**
      * Highest version of the map file format supported by this implementation.
      */
-    private static final int SUPPORTED_FILE_VERSION_MAX = 4;
+    private static final int SUPPORTED_FILE_VERSION_MAX = 7;
 
     /**
      * The maximum latitude values in microdegrees.
      */
-    static final int LATITUDE_MAX = 90000000;
+    static final long LATITUDE_MAX = 900000000000000000L;
 
     /**
      * The minimum latitude values in microdegrees.
      */
-    static final int LATITUDE_MIN = -90000000;
+    static final long LATITUDE_MIN = -900000000000000000L;
 
     /**
      * The maximum longitude values in microdegrees.
      */
-    static final int LONGITUDE_MAX = 180000000;
+    static final long LONGITUDE_MAX = 1800000000000000000L;
 
     /**
      * The minimum longitude values in microdegrees.
      */
-    static final int LONGITUDE_MIN = -180000000;
+    static final long LONGITUDE_MIN = -1800000000000000000L;
 
     static OpenResult readBoundingBox(ReadBuffer readBuffer, MapFileInfoBuilder mapFileInfoBuilder) {
         // get and check the minimum latitude (4 bytes)
-        int minLatitude = readBuffer.readInt();
+        long minLatitude = readBuffer.readLong();
         if (minLatitude < LATITUDE_MIN || minLatitude > LATITUDE_MAX) {
             return new OpenResult("invalid minimum latitude: " + minLatitude);
         }
 
         // get and check the minimum longitude (4 bytes)
-        int minLongitude = readBuffer.readInt();
+        long minLongitude = readBuffer.readLong();
         if (minLongitude < LONGITUDE_MIN || minLongitude > LONGITUDE_MAX) {
             return new OpenResult("invalid minimum longitude: " + minLongitude);
         }
 
         // get and check the maximum latitude (4 bytes)
-        int maxLatitude = readBuffer.readInt();
+        long maxLatitude = readBuffer.readLong();
         if (maxLatitude < LATITUDE_MIN || maxLatitude > LATITUDE_MAX) {
             return new OpenResult("invalid maximum latitude: " + maxLatitude);
         }
 
         // get and check the maximum longitude (4 bytes)
-        int maxLongitude = readBuffer.readInt();
+        long maxLongitude = readBuffer.readLong();
         if (maxLongitude < LONGITUDE_MIN || maxLongitude > LONGITUDE_MAX) {
             return new OpenResult("invalid maximum longitude: " + maxLongitude);
         }

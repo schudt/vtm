@@ -48,7 +48,7 @@ public final class LatLongUtils
     /**
      * Conversion factor from degrees to microdegrees.
      */
-    private static final double CONVERSION_FACTOR = 1000000.0;
+    private static final double CONVERSION_FACTOR = 1000000000000000.0;
 
     /** The Constant DELIMITER. */
     private static final String DELIMITER = ",";
