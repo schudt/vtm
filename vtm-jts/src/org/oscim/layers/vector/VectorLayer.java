@@ -51,6 +51,7 @@ import org.oscim.utils.SpatialIndex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.awt.geom.Area;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -350,9 +351,14 @@ public class VectorLayer extends AbstractVectorLayer<Drawable> {
     private void drawPolygon(Task t, int level, Geometry polygon, Style style) {
         MeshBucket mesh = t.buckets.getMeshBucket(level);
         if (mesh.area == null) {
-            mesh.area = new AreaStyle(Color.fade(style.fillColor,
-                    style.fillAlpha));
+            //mesh.area = new AreaStyle(Color.fade(style.fillColor,
+            //        style.fillAlpha));
+            mesh.area = AreaStyle.builder()
+                                 .style("floor")
+                                 .fillColor(Color.GREEN)
+                                 .build();
         }
+
 
        LineBucket ll = t.buckets.getLineBucket(level + 1);
         if (ll.line == null) {
@@ -379,13 +385,13 @@ public class VectorLayer extends AbstractVectorLayer<Drawable> {
 
         for (int i = 0; i < polygon.getNumGeometries(); i++) {
             mConverter.transformPolygon(mGeom.clear(), (Polygon) polygon.getGeometryN(i));
-
+    /*
             if (mGeom.getNumPoints() < 3)
                 continue;
 
             if (!mClipper.clip(mGeom))
                 continue;
-
+    */
             if (polygon.isValid())
             {
                 ll.addLine(mGeom);
