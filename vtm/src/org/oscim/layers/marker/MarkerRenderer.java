@@ -3,6 +3,7 @@
  * Copyright 2016 Izumi Kawashima
  * Copyright 2017 Longri
  * Copyright 2017 devemux86
+ * Copyright 2017 nebular
  *
  * This file is part of the OpenScienceMap project (http://www.opensciencemap.org).
  *
@@ -17,7 +18,6 @@
  * You should have received a copy of the GNU Lesser General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.oscim.layers.marker;
 
 import org.oscim.core.Box;
@@ -47,11 +47,10 @@ public class MarkerRenderer extends BucketRenderer {
 
     protected final MarkerSymbol mDefaultMarker;
 
-    private QuadTree<InternalItem> clusterQuadTree;
-    private final SymbolBucket mSymbolLayer;
-    private final float[] mBox = new float[8];
-    private final MarkerLayer<MarkerInterface> mMarkerLayer;
-    private final Point mMapPoint = new Point();
+    protected final SymbolBucket mSymbolLayer;
+    protected final float[] mBox = new float[8];
+    protected final MarkerLayer<MarkerInterface> mMarkerLayer;
+    protected final Point mMapPoint = new Point();
 
     private boolean markerClustering = true;
 
@@ -84,12 +83,14 @@ public class MarkerRenderer extends BucketRenderer {
             return "\n" + px + ":" + py + " / " + dy + " " + visible + " f:" + wasFound;
         }
     }
+    protected boolean mUpdate;
+
+    protected InternalItem[] mItems;
 
     public MarkerRenderer(MarkerLayer<MarkerInterface> markerLayer, MarkerSymbol defaultSymbol) {
         mSymbolLayer = new SymbolBucket();
         mMarkerLayer = markerLayer;
         mDefaultMarker = defaultSymbol;
-        clusterQuadTree = new QuadTree<>(4, 4);
     }
 
     public boolean isMarkerClustering()
@@ -273,7 +274,6 @@ public class MarkerRenderer extends BucketRenderer {
             it.px = mMapPoint.x;
             it.py = mMapPoint.y;
 
-            clusterQuadTree.insert(new Box(it.px, it.py, it.px, it.py), it);
         }
         synchronized (this) {
             mUpdate = true;
