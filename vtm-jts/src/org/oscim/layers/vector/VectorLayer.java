@@ -69,6 +69,7 @@ import static org.oscim.core.MercatorProjection.longitudeToX;
 public class VectorLayer extends AbstractVectorLayer<Drawable> {
 
     public static final Logger log = LoggerFactory.getLogger(VectorLayer.class);
+    public static final int MAX_ZOOM_LEVEL_FOR_ROOM_LABELS = 17;
 
     //private final SpatialIndex<Drawable> mDrawables = new RTree<Drawable>();
     protected final SpatialIndex<Drawable> mDrawables = new QuadTree<Drawable>(1 << 30, 18);
@@ -234,7 +235,7 @@ public class VectorLayer extends AbstractVectorLayer<Drawable> {
 
                 lastStyle = style;
             }
-            if (t.position.zoomLevel > 16)
+            if (t.position.zoomLevel > MAX_ZOOM_LEVEL_FOR_ROOM_LABELS)
             {
                 addTextItems();
             }

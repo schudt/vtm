@@ -34,7 +34,7 @@ public class LocationRenderer extends LayerRenderer {
     private static final long ANIM_RATE = 50;
     private static final long INTERVAL = 2000;
 
-    private static final float CIRCLE_SIZE = 60;
+    private static final float CIRCLE_SIZE = 2;
     private static final int SHOW_ACCURACY_ZOOM = 16;
 
     private final Map mMap;

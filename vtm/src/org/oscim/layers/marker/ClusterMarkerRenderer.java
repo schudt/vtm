@@ -28,6 +28,7 @@ import org.oscim.layers.marker.utils.ScreenUtils;
 import org.oscim.layers.marker.utils.SparseIntArray;
 import org.oscim.renderer.GLViewport;
 import org.oscim.renderer.bucket.SymbolItem;
+import org.oscim.renderer.bucket.TextBucket;
 import org.oscim.utils.FastMath;
 import org.oscim.utils.geom.GeometryUtils;
 
@@ -59,7 +60,7 @@ public class ClusterMarkerRenderer extends MarkerRenderer {
     /**
      * Clustering grid square size, decrease to cluster more aggresively. Ideally this value is the typical marker size
      */
-    private static final int MAP_GRID_SIZE_DP = 64;
+    private static final int MAP_GRID_SIZE_DP = 24;
 
     /**
      * cached bitmaps database, we will cache cluster bitmaps from 1 to MAX_SIZE
@@ -198,7 +199,7 @@ public class ClusterMarkerRenderer extends MarkerRenderer {
     @Override
     public synchronized void update(GLViewport v) {
         final double scale = Tile.SIZE * v.pos.scale;
-
+        mTextLayer = new TextBucket();
         if (mClusteringEnabled) {
             /*
               Clustering check: If clustering is enabled and there's been a significant scale change
@@ -343,11 +344,13 @@ public class ClusterMarkerRenderer extends MarkerRenderer {
                 s.set(it.x, it.y, symbol.getBitmap(), true);
                 s.offset = symbol.getHotspot();
                 s.billboard = symbol.isBillboard();
+                renderMarkerLabel(it);
             }
 
             mSymbolLayer.pushSymbol(s);
         }
 
+        mSymbolLayer.next = mTextLayer;
         buckets.set(mSymbolLayer);
         buckets.prepare();
 

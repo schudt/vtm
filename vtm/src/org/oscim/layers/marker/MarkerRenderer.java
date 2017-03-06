@@ -27,6 +27,10 @@ import org.oscim.renderer.BucketRenderer;
 import org.oscim.renderer.GLViewport;
 import org.oscim.renderer.bucket.SymbolBucket;
 import org.oscim.renderer.bucket.SymbolItem;
+import org.oscim.renderer.bucket.TextBucket;
+import org.oscim.renderer.bucket.TextItem;
+import org.oscim.renderer.other.VTMTextItemWrapper;
+import org.oscim.utils.LatLongUtils;
 import org.oscim.utils.TimSort;
 import org.oscim.utils.geom.GeometryUtils;
 
@@ -40,7 +44,7 @@ public class MarkerRenderer extends BucketRenderer {
     protected final float[] mBox = new float[8];
     protected final MarkerLayer<MarkerInterface> mMarkerLayer;
     protected final Point mMapPoint = new Point();
-
+    protected TextBucket     mTextLayer;
     /**
      * increase view to show items that are partially visible
      */
@@ -59,10 +63,42 @@ public class MarkerRenderer extends BucketRenderer {
         mDefaultMarker = defaultSymbol;
     }
 
+    /**
+     * Allows to Render Labels that are connected to Markers on the Map.
+     * Labels are also effected by clustering and hiding of connected Markers.
+     * @param internalItem
+     */
+    void renderMarkerLabel(InternalItem internalItem) {
+
+        MarkerInterface marker = internalItem.item;
+
+        //Only render if is type of LabeldMarker
+        if (!(marker instanceof LabeledMarkerInterface) ) {
+            return;
+        }
+
+        TextItem textItem = TextItem.pool.get();
+        VTMTextItemWrapper ti = ((LabeledMarkerInterface) marker).getLabel();
+        // Render Marker Label, if Text is available.
+        if (ti == null || ti.text == null)
+            return;
+
+        org.oscim.core.Point result = new org.oscim.core.Point(0, 0);
+        mMarkerLayer.map().viewport().toScreenPoint(ti.p, result);
+        textItem.screenPoint = result;
+
+        int distance = (int)((double)internalItem.item.getMarker().getBitmap().getHeight() / 1.5);
+        double[] rotated = LatLongUtils.rotatePoint(internalItem.x, internalItem.y, internalItem.x, internalItem.y + distance, Math.toRadians(mMapPosition.bearing));
+        textItem.set(rotated[0], rotated[1], ti.text, ti.style);
+        mTextLayer.addText(textItem);
+    }
+
     @Override
     public synchronized void update(GLViewport v) {
         if (!v.changed() && !mUpdate)
             return;
+
+        mTextLayer = new TextBucket();
 
         mUpdate = false;
 
@@ -155,10 +191,13 @@ public class MarkerRenderer extends BucketRenderer {
             } else {
                 s.set(it.x, it.y, marker.getTextureRegion(), marker.rotation, marker.isBillboard());
             }
+
+            renderMarkerLabel(it);
+
             s.offset = marker.getHotspot();
             mSymbolLayer.pushSymbol(s);
         }
-
+        mSymbolLayer.next = mTextLayer;
         buckets.set(mSymbolLayer);
         buckets.prepare();
 
