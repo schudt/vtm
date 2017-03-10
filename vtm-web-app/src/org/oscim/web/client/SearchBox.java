@@ -252,8 +252,8 @@ public class SearchBox {
 
                 BoundingBox b = d.getBoundingBox();
                 if (b != null) {
-                    if (b.maxLatitudeE6 - b.minLatitudeE6 < 100 &&
-                            b.maxLongitudeE6 - b.minLongitudeE6 < 100)
+                    if (b.maxLatitudeE15 - b.minLatitudeE15 < 100 &&
+                            b.maxLongitudeE15 - b.minLongitudeE15 < 100)
                         // for small bbox use zoom=16 to get an overview
                         map.animator().animateTo(500, b.getCenterPoint(), 1 << 16, false);
                     else
@@ -272,11 +272,11 @@ public class SearchBox {
 
                         //log.debug("add polygon " + p.length());
                     } else {
-                        mOverlay.addPoint(b.maxLatitudeE6, b.minLongitudeE6);
-                        mOverlay.addPoint(b.maxLatitudeE6, b.maxLongitudeE6);
-                        mOverlay.addPoint(b.minLatitudeE6, b.maxLongitudeE6);
-                        mOverlay.addPoint(b.minLatitudeE6, b.minLongitudeE6);
-                        mOverlay.addPoint(b.maxLatitudeE6, b.minLongitudeE6);
+                        mOverlay.addPoint((int)b.maxLatitudeE15, (int)b.minLongitudeE15);
+                        mOverlay.addPoint((int)b.maxLatitudeE15, (int)b.maxLongitudeE15);
+                        mOverlay.addPoint((int)b.minLatitudeE15, (int)b.maxLongitudeE15);
+                        mOverlay.addPoint((int)b.minLatitudeE15, (int)b.minLongitudeE15);
+                        mOverlay.addPoint((int)b.maxLatitudeE15, (int)b.minLongitudeE15);
                     }
                     // hide overlay after 5 seconds
                     map.postDelayed(new Runnable() {

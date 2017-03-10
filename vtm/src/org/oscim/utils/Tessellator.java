@@ -33,7 +33,7 @@ public class Tessellator {
      * Special version for ExtrusionLayer to match indices with vertex
      * positions.
      */
-    public static int tessellate(double[] points, int ppos, int numPoints, int[] index,
+    public static int tessellate(float[] points, int ppos, int numPoints, int[] index,
                                  int ipos, int numRings, int vertexOffset, VertexData outTris) {
 
         int buckets = FastMath.log2(MathUtils.nextPowerOfTwo(numPoints));
@@ -41,9 +41,8 @@ public class Tessellator {
         //log.debug("tess use {}", buckets);
 
         TessJNI tess = new TessJNI(buckets);
-        float[] pointsF = Floats.toArray(Doubles.asList(points));
 
-        tess.addContour2D(index, pointsF, ipos, numRings);
+        tess.addContour2D(index, points, ipos, numRings);
         //log.debug("tess ipos:{} rings:{}", ipos, numRings);
 
         if (!tess.tesselate())

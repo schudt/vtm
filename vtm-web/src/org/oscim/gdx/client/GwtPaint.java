@@ -137,11 +137,6 @@ public class GwtPaint implements Paint {
     }
 
     @Override
-    public Style getStyle() {
-        return style;
-    }
-
-    @Override
     public float getTextHeight(String text) {
         // TODO
         return 0;

@@ -18,6 +18,9 @@
  */
 package org.oscim.renderer.bucket;
 
+import com.google.common.primitives.Doubles;
+import com.google.common.primitives.Floats;
+
 import org.oscim.backend.GL;
 import org.oscim.backend.canvas.Color;
 import org.oscim.core.GeometryBuffer;
@@ -334,7 +337,20 @@ public final class PolygonBucket extends RenderBucket {
 
                 if (div > 0.5) {
                     /* project bbox of polygon to screen */
-                    v.mvp.prj2D(pb.bbox, 0, box, 0, 4);
+
+                    float[] pbBbox = new float[pb.bbox.length];
+                    float[] bbox = new float[box.length];
+
+                    for (int i = 0; i < pb.bbox.length; i++)
+                    {
+                        pbBbox[i] = (float)pb.bbox[i];
+                    }
+                    for (int i = 0; i < box.length; i++)
+                    {
+                        bbox[i] = (float)box[i];
+                    }
+
+                    v.mvp.prj2D(pbBbox, 0, bbox, 0, 4);
 
                     int out = 0;
                     for (int i = 0; i < 8; i += 2) {

@@ -26,6 +26,13 @@ allprojects {
     }
 }
 
+def gradleBuildToolsVersion() { return '2.2.3' }
+def androidBuildToolsVersion() {return "25.0.2"}
+def androidSupportBuildToolsVersion() {return "23.4.0"}
+def appVersionCode() { return 160 }
+def appVersion() { return "1.2.1" }
+
+
 def androidCompileSdk() { return 25 }
 
 def androidMinSdk() { return 10 }

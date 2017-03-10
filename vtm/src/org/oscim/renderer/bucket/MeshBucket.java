@@ -62,8 +62,12 @@ public class MeshBucket extends RenderBucket {
             tess = new TessJNI(8);
 
 
-        float[] points = Floats.toArray(Doubles.asList(geom.points));
+        float[] points = new float[geom.points.length];
 
+        for (int i = 0; i < geom.points.length; i++)
+        {
+            points[i] = (float)geom.points[i];
+        }
         tess.addContour2D(geom.index, points);
     }
 

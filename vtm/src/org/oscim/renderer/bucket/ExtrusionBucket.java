@@ -424,7 +424,6 @@ public class ExtrusionBucket extends RenderBucket {
      */
     private void addRoof(int startVertex, GeometryBuffer geom, int ipos, int ppos) {
         int[] index = geom.index;
-        double[] points = geom.points;
 
         int numPoints = 0;
         int numRings = 0;
@@ -433,6 +432,13 @@ public class ExtrusionBucket extends RenderBucket {
         for (int i = ipos, n = index.length; i < n && index[i] > 0; i++) {
             numPoints += index[i];
             numRings++;
+        }
+
+        float[] points = new float[geom.points.length];
+
+        for (int i = 0; i < geom.points.length; i++)
+        {
+            points[i] = (float)geom.points[i];
         }
 
         numIndices += Tessellator.tessellate(points, ppos, numPoints,
