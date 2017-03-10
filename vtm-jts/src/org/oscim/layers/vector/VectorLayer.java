@@ -352,52 +352,32 @@ public class VectorLayer extends AbstractVectorLayer<Drawable> {
     private void drawPolygon(Task t, int level, Geometry polygon, Style style) {
         MeshBucket mesh = t.buckets.getMeshBucket(level);
         if (mesh.area == null) {
-            //mesh.area = new AreaStyle(Color.fade(style.fillColor,
-            //        style.fillAlpha));
-            mesh.area = AreaStyle.builder()
-                                 .style("floor")
-                                 .fillColor(Color.GREEN)
-                                 .build();
+            mesh.area = new AreaStyle(Color.fade(style.fillColor,
+                    style.fillAlpha));
         }
 
-
-       LineBucket ll = t.buckets.getLineBucket(level + 1);
+        LineBucket ll = t.buckets.getLineBucket(level + 1);
         if (ll.line == null) {
-            ll.line = LineStyle.builder()
-                                         .cap(style.cap)
-                                         .color(style.strokeColor)
-                                         .fixed(style.fixed)
-                                         .level(0)
-                                         .randomOffset(style.randomOffset)
-                                         .stipple(style.stipple)
-                                         .stippleColor(style.stippleColor)
-                                         .stippleWidth(style.stippleWidth)
-                                         .strokeWidth(style.strokeWidth)
-                                         .texture(style.texture)
-                                         .build();
+            ll.line = new LineStyle(2, style.strokeColor, style.strokeWidth);
         }
 
         if (style.generalization != Style.GENERALIZATION_NONE) {
             polygon = DouglasPeuckerSimplifier.simplify(polygon, mMinX * style.generalization);
         }
 
-
-        //if (polygon.isRectangle());
+        // if (polygon.isRectangle())
 
         for (int i = 0; i < polygon.getNumGeometries(); i++) {
             mConverter.transformPolygon(mGeom.clear(), (Polygon) polygon.getGeometryN(i));
-    /*
+
             if (mGeom.getNumPoints() < 3)
                 continue;
 
             if (!mClipper.clip(mGeom))
                 continue;
-    */
-            if (polygon.isValid())
-            {
-                ll.addLine(mGeom);
-                mesh.addConvexMesh(mGeom);
-            }
+
+            mesh.addMesh(mGeom);
+            ll.addLine(mGeom);
         }
     }
 

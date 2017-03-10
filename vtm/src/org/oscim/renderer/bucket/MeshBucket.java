@@ -16,6 +16,9 @@
  */
 package org.oscim.renderer.bucket;
 
+import com.google.common.primitives.Doubles;
+import com.google.common.primitives.Floats;
+
 import org.oscim.backend.GL;
 import org.oscim.backend.canvas.Color;
 import org.oscim.core.GeometryBuffer;
@@ -51,13 +54,17 @@ public class MeshBucket extends RenderBucket {
     public MeshBucket(int level) {
         super(RenderBucket.MESH, true, false);
         this.level = level;
-        if (tess == null)
-            tess = new TessJNI(100);
     }
 
     public void addMesh(GeometryBuffer geom) {
+        numPoints += geom.pointPos;
+        if (tess == null)
+            tess = new TessJNI(8);
 
-        tess.addContour2D(geom.index, geom.points);
+
+        float[] points = Floats.toArray(Doubles.asList(geom.points));
+
+        tess.addContour2D(geom.index, points);
     }
 
     public void addConvexMesh(GeometryBuffer geom) {

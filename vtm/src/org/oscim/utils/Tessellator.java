@@ -16,6 +16,9 @@
  */
 package org.oscim.utils;
 
+import com.google.common.primitives.Doubles;
+import com.google.common.primitives.Floats;
+
 import org.oscim.renderer.bucket.VertexData;
 import org.oscim.utils.math.MathUtils;
 import org.slf4j.Logger;
@@ -38,8 +41,9 @@ public class Tessellator {
         //log.debug("tess use {}", buckets);
 
         TessJNI tess = new TessJNI(buckets);
+        float[] pointsF = Floats.toArray(Doubles.asList(points));
 
-        tess.addContour2D(index, points, ipos, numRings);
+        tess.addContour2D(index, pointsF, ipos, numRings);
         //log.debug("tess ipos:{} rings:{}", ipos, numRings);
 
         if (!tess.tesselate())
