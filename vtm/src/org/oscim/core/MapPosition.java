@@ -66,10 +66,11 @@ public class MapPosition
         this.y = 0.5;
         this.zoomLevel = 1;
         this.bearing = 0;
-         notifyPositionListener();
+        notifyPositionListener();
     }
 
     public MapPosition(double latitude, double longitude, double scale) {
+        setTilt(this.getTilt());
         setPosition(latitude, longitude);
         setScale(scale);
     }
@@ -163,9 +164,9 @@ public class MapPosition
         this.x = other.x;
         this.y = other.y;
 
+        this.tilt = other.tilt;
         this.bearing = other.bearing;
         this.scale = other.scale;
-        this.tilt = other.tilt;
         this.zoomLevel = other.zoomLevel;
         notifyPositionListener();
     }
@@ -223,7 +224,7 @@ public class MapPosition
         x = minx + dx / 2;
         y = miny + dy / 2;
         bearing = 0;
-        tilt = 0;
+        //tilt = 0;
     }
 
     @Override

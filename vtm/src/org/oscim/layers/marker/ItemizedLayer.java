@@ -191,7 +191,7 @@ public class ItemizedLayer<Item extends MarkerInterface> extends MarkerLayer<Ite
 
         Box box = mapPosition.getBBox(null, 128);
         box.map2mercator();
-        box.scale(1E6);
+        box.scale(1E15);
 
         int nearest = -1;
         int inside = -1;

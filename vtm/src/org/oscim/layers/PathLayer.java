@@ -51,6 +51,8 @@ public class PathLayer extends Layer {
     protected final ArrayList<GeoPoint> mPoints;
     protected boolean mUpdatePoints;
 
+    public boolean closePath = false;
+
     /**
      * Line style
      */
@@ -416,7 +418,7 @@ public class PathLayer extends Layer {
                 }
             }
             if (i > 2)
-                ll.addLine(projected, i, true);
+                ll.addLine(projected, i, closePath);
 
             // trigger redraw to let renderer fetch the result.
             mMap.render();
