@@ -2,7 +2,7 @@
  * Copyright 2010, 2011, 2012 mapsforge.org
  * Copyright 2013 Hannes Janetzek
  * Copyright 2016-2017 devemux86
- * Copyright 2016 Longri
+ * Copyright 2016-2017 Longri
  * Copyright 2016 Andrey Novikov
  *
  * This file is part of the OpenScienceMap project (http://www.opensciencemap.org).
@@ -143,13 +143,13 @@ public class XmlThemeBuilder extends DefaultHandler {
     private RuleBuilder mCurrentRule;
     private TextureAtlas mTextureAtlas;
 
-    private int mLevels = 0;
-    private int mMapBackground = 0xffffffff;
-    private float mTextScale = 1;
+    int mLevels = 0;
+    int mMapBackground = 0xffffffff;
+    float mTextScale = 1;
 
-    private final ThemeFile mTheme;
+    final ThemeFile mTheme;
     private final ThemeCallback mThemeCallback;
-    private RenderTheme mRenderTheme;
+    RenderTheme mRenderTheme;
 
     private final float mScale, mScale2;
 
@@ -170,12 +170,11 @@ public class XmlThemeBuilder extends DefaultHandler {
 
     @Override
     public void endDocument() {
-
         Rule[] rules = new Rule[mRulesList.size()];
         for (int i = 0, n = rules.length; i < n; i++)
             rules[i] = mRulesList.get(i).onComplete(null);
 
-        mRenderTheme = new RenderTheme(mMapBackground, mTextScale, rules, mLevels);
+        mRenderTheme = createTheme(rules);
 
         mRulesList.clear();
         mStyles.clear();
@@ -183,6 +182,10 @@ public class XmlThemeBuilder extends DefaultHandler {
         mElementStack.clear();
 
         mTextureAtlas = null;
+    }
+
+    RenderTheme createTheme(Rule[] rules) {
+        return new RenderTheme(mMapBackground, mTextScale, rules, mLevels);
     }
 
     @Override
@@ -1037,13 +1040,17 @@ public class XmlThemeBuilder extends DefaultHandler {
             try {
                 Bitmap bitmap = CanvasAdapter.getBitmapAsset(mTheme.getRelativePathPrefix(), src, b.symbolWidth, b.symbolHeight, b.symbolPercent);
                 if (bitmap != null)
-                    return b.bitmap(bitmap).build();
+                    return buildSymbol(b, src, bitmap);
             } catch (Exception e) {
                 log.debug(e.getMessage());
             }
             return null;
         }
         return b.texture(getAtlasRegion(src)).build();
+    }
+
+    SymbolStyle buildSymbol(SymbolBuilder<?> b, String src, Bitmap bitmap) {
+        return b.bitmap(bitmap).build();
     }
 
     private ExtrusionStyle createExtrusion(String elementName, Attributes attributes, int level) {

@@ -23,19 +23,20 @@ If you have any questions or problems, don't hesitate to ask our public [mailing
   - GeoJSON tiles
   - Raster tiles: any quadtree-scheme tiles as texture
 - Backends:
-  - Android (optional libGDX)
+  - Android
   - iOS (using libGDX/RoboVM, [instructions](docs/ios.md))
   - Desktop (using libGDX/LWJGL)
   - HTML5/WebGL (using libGDX/GWT, [instructions](docs/web.md))
 
 ### Projects
 - **vtm** contains the core library
-- **vtm-android** Android backend (no libGDX required)
+- **vtm-android** Android backend
 - **vtm-android-example** provides examples using vtm-android
 - **vtm-gdx** common libGDX backend
 - **vtm-android-gdx** Android backend (with libGDX)
 - **vtm-desktop** Desktop backend
 - **vtm-ios** iOS backend
+- **vtm-ios-example** provides examples using vtm-ios
 - **vtm-web** HTML5/GWT backend
 - **vtm-web-app** HTML5/GWT application
 
@@ -52,7 +53,7 @@ If you have any questions or problems, don't hesitate to ask our public [mailing
 ## Credits
 This library contains code from several projects:
 - **Android** (Apache 2.0): some Matrix code, TimSort (http://source.android.com)
-- **libGDX** (Apache 2.0): AsyncTask, MathUtils and Interpolation classes (https://github.com/libgdx)
+- **libGDX** (Apache 2.0): AsyncTask, MathUtils, Interpolation, PixmapPacker (https://github.com/libgdx)
 - **mapsforge** (LGPL3): based on 0.2.4 (https://github.com/mapsforge/mapsforge)
 - **osmdroid** (Apache 2.0): some overlay classes (https://github.com/osmdroid/osmdroid)
 - **tessellate** (SGI Free Software License B 2.0): (https://github.com/cscheid/tessellate)

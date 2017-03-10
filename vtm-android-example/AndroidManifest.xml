@@ -33,6 +33,9 @@
             android:name=".AtlasMultiTextureActivity"
             android:configChanges="keyboardHidden|orientation|screenSize" />
         <activity
+            android:name=".AtlasThemeMapActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize" />
+        <activity
             android:name=".BitmapTileMapActivity"
             android:configChanges="keyboardHidden|orientation|screenSize" />
         <activity

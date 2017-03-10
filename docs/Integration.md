@@ -45,15 +45,10 @@ compile 'com.metsci.ext.com.kitfox.svg:svg-salamander:0.1.19'
 
 ## Snapshots
 
-We publish regularly SNAPSHOT builds to Sonatype OSS Repository Hosting.
+We publish SNAPSHOT builds to Sonatype OSS Repository Hosting.
 
 You need to add the repository:
 ```groovy
-configurations.all {
-    // check for latest snapshot on every build
-    resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
-}
-
 repositories {
     maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
 }
@@ -63,6 +58,13 @@ And declare the dependencies like:
 ```groovy
 compile 'org.mapsforge:vtm:master-SNAPSHOT'
 ...
+```
+
+For checking latest snapshot on every build:
+```groovy
+configurations.all {
+    resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+}
 ```
 
 ## Maven
