@@ -34,13 +34,11 @@ import org.oscim.core.Box;
 import org.oscim.core.GeoPoint;
 import org.oscim.core.GeometryBuffer;
 import org.oscim.core.MapPosition;
-import org.oscim.core.MercatorProjection;
 import org.oscim.core.Tile;
 import org.oscim.event.Gesture;
 import org.oscim.event.GestureListener;
 import org.oscim.event.MotionEvent;
 import org.oscim.layers.marker.ItemizedLayer;
-import org.oscim.layers.marker.utils.ScreenUtils;
 import org.oscim.layers.vector.geometries.Drawable;
 import org.oscim.layers.vector.geometries.LineDrawable;
 import org.oscim.layers.vector.geometries.PointDrawable;
@@ -48,23 +46,19 @@ import org.oscim.layers.vector.geometries.Style;
 import org.oscim.map.Map;
 import org.oscim.renderer.bucket.LineBucket;
 import org.oscim.renderer.bucket.MeshBucket;
-import org.oscim.renderer.bucket.PolygonBucket;
+import org.oscim.renderer.bucket.RenderBucket;
 import org.oscim.renderer.bucket.TextBucket;
 import org.oscim.renderer.bucket.TextItem;
 import org.oscim.renderer.other.VTMTextItemWrapper;
 import org.oscim.theme.styles.AreaStyle;
 import org.oscim.theme.styles.LineStyle;
 import org.oscim.theme.styles.TextStyle;
-import org.oscim.tiling.source.mapfile.Projection;
 import org.oscim.utils.FastMath;
-import org.oscim.utils.LatLongUtils;
 import org.oscim.utils.QuadTree;
 import org.oscim.utils.SpatialIndex;
-import org.oscim.utils.geom.GeometryUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.awt.geom.Area;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -235,7 +229,6 @@ public class VectorLayer extends AbstractVectorLayer<Drawable> implements Gestur
         //bbox.scale(1E6);
         mTextLayer = new TextBucket();
         t.buckets.clear();
-        t.buckets.set(mTextLayer);
         int level = 2000;
         Style lastStyle = null;
 
@@ -243,7 +236,7 @@ public class VectorLayer extends AbstractVectorLayer<Drawable> implements Gestur
 
         /* go through features, find the matching style and draw */
         synchronized (this) {
-            //mTextLayer.clear();
+            mTextLayer.clear();
             //
             tmpDrawables.clear();
             mDrawables.search(bbox, tmpDrawables);
@@ -260,6 +253,7 @@ public class VectorLayer extends AbstractVectorLayer<Drawable> implements Gestur
             {
                 addTextItems();
             }
+            t.buckets.insertBucket(mTextLayer, 2500);
         }
         //
     }

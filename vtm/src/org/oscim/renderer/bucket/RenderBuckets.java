@@ -195,6 +195,47 @@ public class RenderBuckets extends TileData {
         return buckets;
     }
 
+    /**
+     * Insert a RenderBucket at a arbirary Position in the Render-Bucket-Chain
+     * @param bucket - The Rendering Bucket.
+     * @param level - the zIndex of the Bucket. Buckets with higher Level will be rendered on top.
+     */
+    public void insertBucket(RenderBucket bucket, int level) {
+        RenderBucket b = buckets;
+        if (b == null || b.level > level) {
+            /* insert new bucket at start */
+            b = null;
+        } else {
+            if (mCurBucket != null && level > mCurBucket.level)
+                b = mCurBucket;
+
+            while (true) {
+                /* found bucket */
+                if (b.level == level) {
+                    bucket = b;
+                    break;
+                }
+                /* insert bucket between current and next bucket */
+                if (b.next == null || b.next.level > level)
+                    break;
+
+                b = b.next;
+            }
+        }
+
+        if (bucket == null)
+            throw new IllegalArgumentException();
+
+        if (b == null) {
+            /** insert at start */
+            bucket.next = buckets;
+            buckets = bucket;
+        } else {
+            bucket.next = b.next;
+            b.next = bucket;
+        }
+    }
+
     private RenderBucket getBucket(int level, int type) {
         RenderBucket bucket = null;
 
