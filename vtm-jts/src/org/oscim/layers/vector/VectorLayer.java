@@ -16,6 +16,7 @@
  */
 package org.oscim.layers.vector;
 
+import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.CoordinateSequence;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
@@ -23,14 +24,23 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
+import com.vividsolutions.jts.geom.PrecisionModel;
 import com.vividsolutions.jts.geom.impl.PackedCoordinateSequenceFactory;
 import com.vividsolutions.jts.simplify.DouglasPeuckerSimplifier;
 
 import org.oscim.backend.canvas.Color;
+import org.oscim.core.BoundingBox;
 import org.oscim.core.Box;
+import org.oscim.core.GeoPoint;
 import org.oscim.core.GeometryBuffer;
 import org.oscim.core.MapPosition;
+import org.oscim.core.MercatorProjection;
 import org.oscim.core.Tile;
+import org.oscim.event.Gesture;
+import org.oscim.event.GestureListener;
+import org.oscim.event.MotionEvent;
+import org.oscim.layers.marker.ItemizedLayer;
+import org.oscim.layers.marker.utils.ScreenUtils;
 import org.oscim.layers.vector.geometries.Drawable;
 import org.oscim.layers.vector.geometries.LineDrawable;
 import org.oscim.layers.vector.geometries.PointDrawable;
@@ -45,9 +55,12 @@ import org.oscim.renderer.other.VTMTextItemWrapper;
 import org.oscim.theme.styles.AreaStyle;
 import org.oscim.theme.styles.LineStyle;
 import org.oscim.theme.styles.TextStyle;
+import org.oscim.tiling.source.mapfile.Projection;
 import org.oscim.utils.FastMath;
+import org.oscim.utils.LatLongUtils;
 import org.oscim.utils.QuadTree;
 import org.oscim.utils.SpatialIndex;
+import org.oscim.utils.geom.GeometryUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,22 +79,23 @@ import static org.oscim.core.MercatorProjection.longitudeToX;
  * package and
  * JTS geometries together with a GeometryStyle
  */
-public class VectorLayer extends AbstractVectorLayer<Drawable> {
+public class VectorLayer extends AbstractVectorLayer<Drawable> implements GestureListener{
 
     public static final Logger log = LoggerFactory.getLogger(VectorLayer.class);
     public static final int MAX_ZOOM_LEVEL_FOR_ROOM_LABELS = 17;
 
-    //private final SpatialIndex<Drawable> mDrawables = new RTree<Drawable>();
-    protected final SpatialIndex<Drawable> mDrawables = new QuadTree<Drawable>(1 << 30, 18);
+    protected final SpatialIndex<Drawable> mDrawables = new QuadTree<>(1 << 30, 21);
 
-    protected final List<Drawable> tmpDrawables = new ArrayList<Drawable>(128);
-
-    protected final JtsConverter mConverter;
-    protected double mMinX;
-    protected double mMinY;
+    protected final List<Drawable> tmpDrawables = new ArrayList<>(128);
+    protected final List<Drawable> tmpEventDrawables = new ArrayList<>(128);
+    protected           ItemizedLayer.OnItemGestureListener<Geometry> mOnItemGestureListener;
+    protected final JtsConverter                              mConverter;
+    protected       double                                    mMinX;
+    protected       double                                    mMinY;
     private List<VTMTextItemWrapper> textItems = new LinkedList<>();
     private TextBucket mTextLayer;
     private TextStyle mTextStyle;
+
 
     private static class GeometryWithStyle implements Drawable {
         final Geometry geometry;
@@ -123,6 +137,13 @@ public class VectorLayer extends AbstractVectorLayer<Drawable> {
 
     }
 
+    public VectorLayer(Map map, ItemizedLayer.OnItemGestureListener<Geometry> gestureListener) {
+        super(map);
+        mOnItemGestureListener = gestureListener;
+        mConverter = new JtsConverter(Tile.SIZE / UNSCALE_COORD);
+
+    }
+
     private static Box bbox(Geometry geometry, Style style) {
         Envelope e = geometry.getEnvelopeInternal();
         Box bbox = new Box(e.getMinX(), e.getMinY(), e.getMaxX(), e.getMaxY());
@@ -130,7 +151,7 @@ public class VectorLayer extends AbstractVectorLayer<Drawable> {
         //    bbox.
         //}
 
-        bbox.scale(1E6);
+        //bbox.scale(1E6);
         return bbox;
     }
 
@@ -211,7 +232,7 @@ public class VectorLayer extends AbstractVectorLayer<Drawable> {
 
         mConverter.setPosition(t.position.x, t.position.y, t.position.scale);
 
-        bbox.scale(1E6);
+        //bbox.scale(1E6);
         mTextLayer = new TextBucket();
         t.buckets.clear();
         t.buckets.set(mTextLayer);
@@ -410,5 +431,62 @@ public class VectorLayer extends AbstractVectorLayer<Drawable> {
             g.addPoint((float) (x + radius * Math.cos(i * step)),
                     (float) (y + radius * Math.sin(i * step)));
         }
+    }
+
+
+    @Override
+    public boolean onGesture(Gesture g, MotionEvent e)
+    {
+        if (g instanceof Gesture.Tap)
+        {
+            return tapGeometries(findSelectedGeometries(e));
+        }
+
+        else if (g instanceof Gesture.LongPress)
+        {
+            return longPressGeometries(findSelectedGeometries(e));
+        }
+
+        // Event was not consumed.
+        return false;
+    }
+
+    private List<Geometry> findSelectedGeometries(MotionEvent e) {
+        List<Geometry> geom = new LinkedList<>();
+
+        // Translate ScreenPoint to current LatLon
+        GeoPoint p = mMap.viewport().fromScreenPoint(e.getX(), (e.getY()));
+        Geometry g = new Point(new Coordinate(p.getLongitude(), p.getLatitude()), new PrecisionModel(), 0);
+
+        // Get the BoundingBox of the current ViewPort
+        BoundingBox b = map().getBoundingBox(0);
+        Box bbox = new Box(b.getMinLongitude(), b.getMinLatitude(), b.getMaxLongitude(), b.getMaxLatitude());
+
+        // Search in Drawables for Items that might be Located in the Area to speed up hittesting.
+        tmpEventDrawables.clear();
+        mDrawables.search(bbox, tmpEventDrawables);
+
+        // Do local precise Search in the Resultset
+        for (Drawable d : tmpEventDrawables) {
+            if (d.getGeometry().contains(g)) {
+                geom.add(d.getGeometry());
+            }
+        }
+
+        return geom;
+    }
+
+    private boolean tapGeometries(List<Geometry> g) {
+        for (int i = 0; i < g.size(); i++) {
+            mOnItemGestureListener.onItemSingleTapUp(i, g.get(i));
+        }
+        return true;
+    }
+
+    private boolean longPressGeometries(List<Geometry> g) {
+        for (int i = 0; i < g.size(); i++) {
+            mOnItemGestureListener.onItemLongPress(i, g.get(i));
+        }
+        return true;
     }
 }

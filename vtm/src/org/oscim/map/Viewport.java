@@ -210,7 +210,7 @@ public class Viewport {
         }
     }
 
-    protected void unproject(float x, float y, float[] coords, int position) {
+    public void unproject(float x, float y, float[] coords, int position) {
         mv[0] = x;
         mv[1] = y;
         mv[2] = -1;
