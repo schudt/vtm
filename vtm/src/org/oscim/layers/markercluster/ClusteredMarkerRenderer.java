@@ -45,7 +45,7 @@ import java.util.Comparator;
 public class ClusteredMarkerRenderer extends BucketRenderer {
 
     /* Max number to display inside a cluster icon */
-    private static final int CLUSTER_MAXSIZE = 10;
+    private static final int CLUSTER_MAXSIZE = 100;
 
     /* default color of number inside the icon. Would be super-cool to cook this into the map theme */
     private static int CLUSTER_COLORTEXT = 0xff8000c0;
@@ -109,7 +109,7 @@ public class ClusteredMarkerRenderer extends BucketRenderer {
         mStyleForeground = foregroundColor;
     }
 
-    static class InternalItem {
+    private static class InternalItem {
         ClusteredMarkerItem item;
         boolean visible;
         boolean changes;

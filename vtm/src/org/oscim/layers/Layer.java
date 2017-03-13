@@ -18,8 +18,12 @@ package org.oscim.layers;
 
 import org.oscim.map.Map;
 import org.oscim.renderer.LayerRenderer;
+import org.oscim.utils.TimSort;
 
-public abstract class Layer {
+import java.util.Comparator;
+
+public abstract class Layer implements Comparable<Layer>
+{
 
     public Layer(Map map) {
         mMap = map;
@@ -27,6 +31,7 @@ public abstract class Layer {
 
     private boolean mEnabled = true;
     protected final Map mMap;
+    private int zIndex = 0;
 
     protected LayerRenderer mRenderer;
 
@@ -54,7 +59,60 @@ public abstract class Layer {
     public void onDetach() {
     }
 
+    public int getzIndex()
+    {
+        return zIndex;
+    }
+
+    public void setzIndex(int zIndex)
+    {
+        this.zIndex = zIndex;
+    }
+
     public Map map() {
         return mMap;
     }
+
+
+    @Override
+    public int compareTo(Layer layer)
+    {
+        if (this.isEnabled() && layer.isEnabled()) {
+            if (this.getzIndex() > layer.getzIndex()) {
+                return -1;
+            }
+            if (this.getzIndex() < layer.getzIndex()) {
+                return 1;
+            }
+        } else if (this.isEnabled()) {
+            return -1;
+        } else if (layer.isEnabled()) {
+            return 1;
+        }
+
+        return 0;
+    }
+
+    public static TimSort<Layer> ZSORT = new TimSort<Layer>();
+
+    public final static Comparator<Layer> zComparator = new Comparator<Layer>() {
+        @Override
+        public int compare(Layer layer, Layer t1)
+        {
+            if (layer.isEnabled() && t1.isEnabled()) {
+                if (layer.getzIndex() > t1.getzIndex()) {
+                    return 1;
+                }
+                if (layer.getzIndex() < t1.getzIndex()) {
+                    return -1;
+                }
+            } else if (layer.isEnabled()) {
+                return 1;
+            } else if (t1.isEnabled()) {
+                return -1;
+            }
+
+            return 0;
+        }
+    };
 }
