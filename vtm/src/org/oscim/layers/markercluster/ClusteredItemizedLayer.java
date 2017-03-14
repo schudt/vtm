@@ -271,7 +271,7 @@ public class ClusteredItemizedLayer<Item extends ClusteredMarkerItem> extends Cl
 
         Box bbox = mapPosition.getBBox(null, 128);
         bbox.map2mercator();
-        bbox.scale(1E6);
+        bbox.scale(1E15);
 
         int nearest = -1;
         int inside = -1;
@@ -354,7 +354,7 @@ public class ClusteredItemizedLayer<Item extends ClusteredMarkerItem> extends Cl
     @Override
     public boolean onGesture(Gesture g, MotionEvent e) {
 
-        if (g instanceof Gesture.Tap)
+        if (g instanceof Gesture.Tap || g instanceof Gesture.Press)
             return activateSelectedItems(e, mActiveItemSingleTap);
 
         if (g instanceof Gesture.LongPress)
