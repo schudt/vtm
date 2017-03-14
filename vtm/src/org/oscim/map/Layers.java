@@ -27,8 +27,11 @@ import org.oscim.map.Map.InputListener;
 import org.oscim.map.Map.UpdateListener;
 import org.oscim.renderer.LayerRenderer;
 
+import java.lang.reflect.Array;
 import java.util.AbstractList;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -64,6 +67,7 @@ public final class Layers extends AbstractList<Layer> {
         if (mLayerList.contains(layer))
             throw new IllegalArgumentException("layer added twice");
 
+
         // bind added layer
         if (layer instanceof UpdateListener)
             mMap.events.bind((UpdateListener) layer);
@@ -82,6 +86,7 @@ public final class Layers extends AbstractList<Layer> {
         }
 
         mLayerList.add(index, layer);
+
         mDirtyLayers = true;
     }
 
@@ -220,6 +225,7 @@ public final class Layers extends AbstractList<Layer> {
 
     private synchronized void updateLayers() {
         mLayers = new Layer[mLayerList.size()];
+
         int numRenderLayers = 0;
 
         for (int i = 0, n = mLayerList.size(); i < n; i++) {
@@ -239,10 +245,12 @@ public final class Layers extends AbstractList<Layer> {
             mLayers[n - i - 1] = o;
         }
 
+        Arrays.sort(mLayers);
+
         mLayerRenderer = new LayerRenderer[numRenderLayers];
 
         for (int i = 0, cnt = 0, n = mLayerList.size(); i < n; i++) {
-            Layer o = mLayerList.get(i);
+            Layer o = mLayers[i];
             LayerRenderer l = o.getRenderer();
             if (l != null)
                 mLayerRenderer[cnt++] = l;

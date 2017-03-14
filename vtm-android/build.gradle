@@ -71,7 +71,7 @@ android.libraryVariants.all { variant ->
     jar.from variant.javaCompile.destinationDir
     artifacts.add('archives', jar);
 
-    file('natives').eachDir() { dir ->
+    file('../jni/libs').eachDir() { dir ->
         def nativesJar = project.tasks.create "nativesJar${name.capitalize()}-${dir.name}", Jar
         nativesJar.classifier = "natives-${dir.name}"
         nativesJar.from(dir.path)
@@ -83,7 +83,7 @@ android.libraryVariants.all { variant ->
     fatJar.dependsOn variant.javaCompile
     fatJar.from variant.javaCompile.destinationDir
     fatJar.from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
-    file('natives').eachDir() { dir ->
+    file('../jni/libs').eachDir() { dir ->
         fatJar.from(dir.path)
     }
     artifacts.add('archives', fatJar);

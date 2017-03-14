@@ -79,15 +79,15 @@ public abstract class Layer implements Comparable<Layer>
     {
         if (this.isEnabled() && layer.isEnabled()) {
             if (this.getzIndex() > layer.getzIndex()) {
-                return -1;
-            }
-            if (this.getzIndex() < layer.getzIndex()) {
                 return 1;
             }
+            if (this.getzIndex() < layer.getzIndex()) {
+                return -1;
+            }
         } else if (this.isEnabled()) {
-            return -1;
-        } else if (layer.isEnabled()) {
             return 1;
+        } else if (layer.isEnabled()) {
+            return -1;
         }
 
         return 0;

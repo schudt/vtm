@@ -25,13 +25,18 @@ import org.oscim.core.MercatorProjection;
 import org.oscim.core.Point;
 import org.oscim.core.PointF;
 import org.oscim.core.Tile;
+import org.oscim.layers.marker.LabeledMarkerInterface;
 import org.oscim.layers.marker.MarkerSymbol;
 import org.oscim.layers.markercluster.AndroidLeech.SparseIntArray;
 import org.oscim.renderer.BucketRenderer;
 import org.oscim.renderer.GLViewport;
 import org.oscim.renderer.bucket.SymbolBucket;
 import org.oscim.renderer.bucket.SymbolItem;
+import org.oscim.renderer.bucket.TextBucket;
+import org.oscim.renderer.bucket.TextItem;
+import org.oscim.renderer.other.VTMTextItemWrapper;
 import org.oscim.utils.FastMath;
+import org.oscim.utils.LatLongUtils;
 import org.oscim.utils.TimSort;
 import org.oscim.utils.geom.GeometryUtils;
 
@@ -96,6 +101,10 @@ public class ClusteredMarkerRenderer extends BucketRenderer {
     /* If this is made PROTECTED, this class could extend ItemizedLayer */
     protected InternalItem[] mItems;
 
+    /**
+     * Textlayer for Marker Labels
+     */
+    protected TextBucket mTextLayer;
     /**
      * Configures the cluster icon style. This is called by the constructor and cannot be made public because
      * we pre-cache the icons at construction time so the renderer does not have to create them while rendering
@@ -166,6 +175,7 @@ public class ClusteredMarkerRenderer extends BucketRenderer {
     public synchronized void update(GLViewport v) {
 
         final double scale = Tile.SIZE * v.pos.scale;
+        mTextLayer = new TextBucket();
 
         if (mClusteringEnabled) {
 
@@ -317,12 +327,14 @@ public class ClusteredMarkerRenderer extends BucketRenderer {
                 s.offset = symbol.getHotspot();
                 s.billboard = symbol.isBillboard();
 
+                renderMarkerLabel(it);
             }
 
             mSymbolLayer.pushSymbol(s);
 
         }
 
+        mSymbolLayer.next = mTextLayer;
         buckets.set(mSymbolLayer);
         buckets.prepare();
 
@@ -539,6 +551,35 @@ public class ClusteredMarkerRenderer extends BucketRenderer {
         return sClusterBitmaps[size];
     }
 
+    /**
+     * Allows to Render Labels that are connected to Markers on the Map.
+     * Labels are also effected by clustering and hiding of connected Markers.
+     * @param internalItem
+     */
+    void renderMarkerLabel(InternalItem internalItem) {
+
+        ClusteredMarkerItem marker = internalItem.item;
+
+        //Only render if is type of LabeldMarker
+        if (marker.getTitle().equals("")) {
+            return;
+        }
+
+        TextItem textItem = TextItem.pool.get();
+        VTMTextItemWrapper ti = ((LabeledMarkerInterface) marker).getLabel();
+        // Render Marker Label, if Text is available.
+        if (ti == null || ti.text == null)
+            return;
+
+        org.oscim.core.Point result = new org.oscim.core.Point(0, 0);
+        mMarkerLayer.map().viewport().toScreenPoint(ti.p, result);
+        textItem.screenPoint = result;
+
+        int distance = (int)((double)internalItem.item.getMarker().getBitmap().getHeight() / 1.5);
+        double[] rotated = LatLongUtils.rotatePoint(internalItem.x, internalItem.y, internalItem.x, internalItem.y + distance, Math.toRadians(mMapPosition.bearing));
+        textItem.set(rotated[0], rotated[1], ti.text, ti.style);
+        mTextLayer.addText(textItem);
+    }
 
     public static class ClusterStyle {
         final int background;

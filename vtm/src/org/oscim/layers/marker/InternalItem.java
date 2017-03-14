@@ -23,7 +23,7 @@ package org.oscim.layers.marker;
 /**
  * The internal representation of a marker.
  */
-class InternalItem {
+public class InternalItem {
 
     MarkerInterface item;
     boolean visible;
