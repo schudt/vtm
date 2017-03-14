@@ -68,7 +68,7 @@ import javax.annotation.Nullable;
  *         (ACTION_UP/MOVE/DOWN) so drag and drop can be trivially implemented
  */
 
-public class ClusteredItemizedLayer<Item extends ClusteredMarkerItem> extends ClusteredMarkerLayer<Item> implements Map.InputListener, GestureListener {
+public class ClusteredItemizedLayer<Item extends ClusteredMarkerItem> extends ClusteredMarkerLayer<Item> implements GestureListener {
 
     private final static int DEFAULT_CLUSTER_BACKGROUND = 0xffffffff, DEFAULT_CLUSTER_FOREGROUND = 0xff000000;
 
@@ -335,26 +335,17 @@ public class ClusteredItemizedLayer<Item extends ClusteredMarkerItem> extends Cl
         boolean onItemSingleTapUp(int index, T item);
 
         boolean onItemLongPress(int index, T item);
-
-        /** Added raw touch message to implement drag n drop */
-        void onRawEvent(MotionEvent motionEvent);
     }
 
     public interface ActiveItem {
         boolean run(int aIndex);
     }
 
-    @Override
-    public void onInputEvent(Event e, MotionEvent motionEvent) {
-        if (mOnItemGestureListener != null)
-            mOnItemGestureListener.onRawEvent(motionEvent);
-    }
-
 
     @Override
     public boolean onGesture(Gesture g, MotionEvent e) {
 
-        if (g instanceof Gesture.Tap || g instanceof Gesture.Press)
+        if (g instanceof Gesture.Tap)
             return activateSelectedItems(e, mActiveItemSingleTap);
 
         if (g instanceof Gesture.LongPress)

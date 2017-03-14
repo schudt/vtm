@@ -73,7 +73,7 @@ import static org.oscim.core.MercatorProjection.longitudeToX;
  * package and
  * JTS geometries together with a GeometryStyle
  */
-public class VectorLayer extends AbstractVectorLayer<Drawable> implements GestureListener{
+public class VectorLayer extends AbstractVectorLayer<Drawable> implements GestureListener {
 
     public static final Logger log = LoggerFactory.getLogger(VectorLayer.class);
     public static final int MAX_ZOOM_LEVEL_FOR_ROOM_LABELS = 17;
@@ -471,16 +471,18 @@ public class VectorLayer extends AbstractVectorLayer<Drawable> implements Gestur
     }
 
     private boolean tapGeometries(List<Geometry> g) {
+        boolean result = false;
         for (int i = 0; i < g.size(); i++) {
-            mOnItemGestureListener.onItemSingleTapUp(i, g.get(i));
+            result |= mOnItemGestureListener.onItemSingleTapUp(i, g.get(i));
         }
-        return true;
+        return result;
     }
 
     private boolean longPressGeometries(List<Geometry> g) {
+        boolean result = false;
         for (int i = 0; i < g.size(); i++) {
-            mOnItemGestureListener.onItemLongPress(i, g.get(i));
+            result |= mOnItemGestureListener.onItemLongPress(i, g.get(i));
         }
-        return true;
+        return result;
     }
 }
