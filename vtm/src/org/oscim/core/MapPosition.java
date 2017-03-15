@@ -181,6 +181,14 @@ public class MapPosition
         notifyPositionListener();
     }
 
+    public void set(double scale, float bearing, float tilt) {
+        this.scale = scale;
+        this.bearing = clampBearing(bearing);
+        this.tilt = tilt;
+        this.zoomLevel = FastMath.log2((int) scale);
+        notifyPositionListener();
+    }
+
     private static float clampBearing(float bearing) {
         while (bearing > 180)
             bearing -= 360;

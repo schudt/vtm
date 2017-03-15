@@ -100,6 +100,18 @@ public class Animator {
         animStart(duration, ANIM_MOVE | ANIM_SCALE | ANIM_ROTATE | ANIM_TILT, easingType);
     }
 
+    public synchronized void animate(long duration, MapPosition targetPos, Easing.Type easingType) {
+        ThreadUtils.assertMainThread();
+        mMap.getMapPosition(mStartPos);
+
+        mDeltaPos.set(targetPos.getX() - mStartPos.x,
+                targetPos.getY() - mStartPos.y,
+                targetPos.getScale() - mStartPos.scale,
+                targetPos.getBearing() - mStartPos.bearing,
+                targetPos.getTilt() - mStartPos.tilt);
+        animStart(duration, ANIM_MOVE | ANIM_SCALE | ANIM_ROTATE | ANIM_TILT, easingType);
+    }
+
     public void animateTo(BoundingBox bbox) {
         animateTo(1000, bbox, Easing.Type.LINEAR);
     }
