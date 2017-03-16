@@ -19,22 +19,30 @@ package org.oscim.event;
 
 public interface Gesture {
 
-    final class Press implements Gesture {
+    class GestureTrait implements Gesture {
+        @Override
+        public String toString()
+        {
+            return super.getClass().getName();
+        }
     }
 
-    final class LongPress implements Gesture {
+    final class Press extends GestureTrait implements Gesture {
     }
 
-    final class Tap implements Gesture {
+    final class LongPress extends GestureTrait implements Gesture {
     }
 
-    final class DoubleTap implements Gesture {
+    final class Tap extends GestureTrait implements Gesture {
     }
 
-    final class TripleTap implements Gesture {
+    final class DoubleTap extends GestureTrait implements Gesture {
     }
 
-    final class TwoFingerTap implements Gesture {
+    final class TripleTap extends GestureTrait implements Gesture {
+    }
+
+    final class TwoFingerTap extends GestureTrait implements Gesture {
     }
 
     Gesture PRESS = new Press();
@@ -43,4 +51,5 @@ public interface Gesture {
     Gesture DOUBLE_TAP = new DoubleTap();
     Gesture TRIPLE_TAP = new TripleTap();
     Gesture TWO_FINGER_TAP = new TwoFingerTap();
+
 }

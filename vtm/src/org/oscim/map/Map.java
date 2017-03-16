@@ -46,6 +46,10 @@ import org.oscim.utils.async.TaskQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
+import java.util.Set;
+
+
 public abstract class Map implements TaskQueue {
 
     private static final Logger log = LoggerFactory.getLogger(Map.class);
@@ -53,7 +57,9 @@ public abstract class Map implements TaskQueue {
     /**
      * If true the {@link MapEventLayer2} will be used instead of default {@link MapEventLayer}.
      */
-    public static boolean NEW_GESTURES = false;
+    public static boolean NEW_GESTURES = true;
+
+    private HashMap<GestureObserver, Gesture[]> mGestureObservers;
 
     /**
      * Listener interface for map update notifications.
@@ -232,6 +238,7 @@ public abstract class Map implements TaskQueue {
     }
 
     public void destroy() {
+        mGestureObservers.clear();
         mLayers.destroy();
         mAsyncExecutor.dispose();
     }
@@ -344,6 +351,37 @@ public abstract class Map implements TaskQueue {
         return getMapPosition(false, mapPosition);
     }
 
+
+
+    /**
+     * Adds a new GestureObserver to the Gesture on the Map.
+     * @param o The GestureObserver to be notified on a Gesture Event.
+     */
+    public void registerGestureObserver(GestureObserver o, Gesture[] gestures) throws Exception
+    {
+        if (mGestureObservers == null) {
+            mGestureObservers = new HashMap<>();
+        }
+
+        if (!mGestureObservers.containsKey(o))
+        {
+            mGestureObservers.put(o, gestures);
+        } else {
+            Gesture[] g = mGestureObservers.get(o);
+            StringBuilder b = new StringBuilder(g.length);
+            for (Gesture gs : g) {
+                b.append(gs.toString());
+            }
+            throw new Exception("GestureObserver is already Registered with the Following Gestures: {" + b.toString()+ "}. Please unregister and Register a new Observer to change Filter");
+        }
+    }
+
+    public void unregisterGestureObserver(GestureObserver o) {
+        if (mGestureObservers != null) {
+            mGestureObservers.remove(o);
+        }
+    }
+
     /**
      * Get current {@link MapPosition}. Consider using
      * getViewport.getMapPosition(pos) instead to reuse
@@ -413,7 +451,29 @@ public abstract class Map implements TaskQueue {
     }
 
     public boolean handleGesture(Gesture g, MotionEvent e) {
+        handleGestureObservers(g, e);
         return mLayers.handleGesture(g, e);
+    }
+
+    /**
+     * Handle Events on all Gesture Observers
+     * @param g Gesture
+     * @param e MotionEvent
+     */
+    private void handleGestureObservers(Gesture g, MotionEvent e)
+    {
+        if (mGestureObservers != null)
+        {
+            Set<java.util.Map.Entry<GestureObserver, Gesture[]>> s = mGestureObservers.entrySet();
+            for (java.util.Map.Entry<GestureObserver, Gesture[]> o : s)
+            {
+                for (Gesture i : o.getValue()) {
+                    if (i == g) {
+                        o.getKey().handleGesture(g, e);
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -425,4 +485,13 @@ public abstract class Map implements TaskQueue {
      * Called on render thread, use synchronized!
      */
     public abstract void doneFrame(boolean needsRedraw);
+
+    public interface GestureObserver {
+        /**
+         * Method that is called to handle the Gesture on the Map
+         * @param g Type of the Gesture.
+         * @param e Type of the Motion Event.
+         */
+        void handleGesture(Gesture g, MotionEvent e);
+    }
 }

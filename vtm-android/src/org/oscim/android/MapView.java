@@ -148,7 +148,6 @@ public class MapView extends GLSurfaceView {
                 mMap.viewport().setScreenSize(width, height);
         }
     }
-
     public Map map() {
         return mMap;
     }
