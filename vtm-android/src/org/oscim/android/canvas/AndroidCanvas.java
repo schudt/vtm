@@ -72,11 +72,6 @@ public class AndroidCanvas implements Canvas {
         scaledBitmap.recycle();
     }
 
-    @Override
-    public void drawCircle(float x, float y, float radius, Paint paint) {
-        canvas.drawCircle(x, y, radius, ((AndroidPaint) paint).mPaint);
-    }
-
     /**
      * drawCircle, Feb/2017
      * @param x Circle center x (px)
@@ -88,6 +83,12 @@ public class AndroidCanvas implements Canvas {
     @Override
     public void drawCircle(float x, float y, float radius, Paint paint) {
         canvas.drawCircle(x, y, radius, ((AndroidPaint)paint).mPaint);
+    }
+
+    @Override
+    public void drawLine(float x1, float y1, float x2, float y2, Paint paint)
+    {
+        canvas.drawLine(x1, y1, x2, y2, ((AndroidPaint)paint).mPaint);
     }
 
     @Override
