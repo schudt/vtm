@@ -30,7 +30,6 @@ import org.oscim.backend.canvas.Paint.FontStyle;
 import org.oscim.renderer.atlas.TextureAtlas;
 import org.oscim.renderer.atlas.TextureAtlas.Rect;
 import org.oscim.renderer.atlas.TextureRegion;
-import org.oscim.renderer.bucket.TextureItem;
 import org.oscim.theme.IRenderTheme.ThemeException;
 import org.oscim.theme.rule.Rule;
 import org.oscim.theme.rule.Rule.Closed;
@@ -49,6 +48,7 @@ import org.oscim.theme.styles.SymbolStyle;
 import org.oscim.theme.styles.SymbolStyle.SymbolBuilder;
 import org.oscim.theme.styles.TextStyle;
 import org.oscim.theme.styles.TextStyle.TextBuilder;
+import org.oscim.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.Attributes;
@@ -555,7 +555,7 @@ public class XmlThemeBuilder extends DefaultHandler {
                 logUnknownAttribute(elementName, name, value, i);
         }
 
-        b.texture = loadTexture(src, b.symbolWidth, b.symbolHeight, b.symbolPercent);
+        b.texture = Utils.loadTexture(mTheme.getRelativePathPrefix(), src, b.symbolWidth, b.symbolHeight, b.symbolPercent);
         /*if (b.texture != null)
             b.texture.mipmap = true;*/
 
@@ -648,25 +648,9 @@ public class XmlThemeBuilder extends DefaultHandler {
                 logUnknownAttribute(elementName, name, value, i);
         }
 
-        b.texture = loadTexture(src, b.symbolWidth, b.symbolHeight, b.symbolPercent);
+        b.texture = Utils.loadTexture(mTheme.getRelativePathPrefix(), src, b.symbolWidth, b.symbolHeight, b.symbolPercent);
 
         return b.build();
-    }
-
-    private TextureItem loadTexture(String src, int width, int height, int percent) {
-        if (src == null || src.length() == 0)
-            return null;
-
-        try {
-            Bitmap bitmap = CanvasAdapter.getBitmapAsset(mTheme.getRelativePathPrefix(), src, width, height, percent);
-            if (bitmap != null) {
-                log.debug("loading {}", src);
-                return new TextureItem(bitmap, true);
-            }
-        } catch (Exception e) {
-            log.debug("missing file / {}", e.getMessage());
-        }
-        return null;
     }
 
     private LineStyle createOutline(String style, Attributes attributes) {

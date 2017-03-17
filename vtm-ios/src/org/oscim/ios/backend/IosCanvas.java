@@ -93,6 +93,15 @@ public class IosCanvas implements Canvas {
     }
 
     @Override
+    public void drawBitmapScaled(Bitmap bitmap) {
+        CGRect rect = new CGRect(0, 0, this.cgBitmapContext.getWidth(), this.cgBitmapContext.getHeight());
+        this.cgBitmapContext.saveGState();
+        this.cgBitmapContext.translateCTM(0, 0);
+        this.cgBitmapContext.drawImage(rect, ((IosBitmap) bitmap).cgBitmapContext.toImage());
+        this.cgBitmapContext.restoreGState();
+    }
+
+    @Override
     public void drawCircle(float x, float y, float radius, Paint paint) {
         CGRect rect = new CGRect(x - radius, y - radius, x + radius, y + radius);
 
