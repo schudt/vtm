@@ -103,11 +103,6 @@ public class GwtCanvas implements org.oscim.backend.canvas.Canvas {
 
     @Override
     public void drawCircle(float x, float y, float radius, Paint paint) {
-        // TODO
-    }
-
-    @Override
-    public void drawCircle(float x, float y, float radius, Paint paint) {
 
         // TODO this has been blindly coded !
 
@@ -127,6 +122,11 @@ public class GwtCanvas implements org.oscim.backend.canvas.Canvas {
         }
 
         ctx.arc(x, y, radius, 0, 2*Math.PI);
+
+    }
+
+    @Override
+    public void drawLine(float x1, float y1, float x2, float y2, Paint paint) {
 
     }
 
