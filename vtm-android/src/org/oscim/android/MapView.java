@@ -22,6 +22,7 @@ import android.content.Context;
 import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.GestureDetector;
 
 import org.oscim.android.canvas.AndroidGraphics;
@@ -124,8 +125,11 @@ public class MapView extends GLSurfaceView {
     @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(android.view.MotionEvent motionEvent) {
+
         if (!isClickable())
             return false;
+
+        requestFocus();
 
         if (mGestureDetector != null) {
             if (mGestureDetector.onTouchEvent(motionEvent))
