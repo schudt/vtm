@@ -92,27 +92,4 @@ public abstract class Layer implements Comparable<Layer>
 
         return 0;
     }
-
-    public static TimSort<Layer> ZSORT = new TimSort<Layer>();
-
-    public final static Comparator<Layer> zComparator = new Comparator<Layer>() {
-        @Override
-        public int compare(Layer layer, Layer t1)
-        {
-            if (layer.isEnabled() && t1.isEnabled()) {
-                if (layer.getzIndex() > t1.getzIndex()) {
-                    return 1;
-                }
-                if (layer.getzIndex() < t1.getzIndex()) {
-                    return -1;
-                }
-            } else if (layer.isEnabled()) {
-                return 1;
-            } else if (t1.isEnabled()) {
-                return -1;
-            }
-
-            return 0;
-        }
-    };
 }
