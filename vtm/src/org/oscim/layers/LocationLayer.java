@@ -30,12 +30,11 @@ public class LocationLayer extends Layer {
 
     public LocationLayer(Map map) {
         super(map);
+        mRenderer = locationRenderer = new LocationRenderer(mMap, this);
 
         this.latitude = map.getMapPosition().getLatitude();
         this.longitude = map.getMapPosition().getLongitude();
         this.accurracy = 1;
-
-        mRenderer = locationRenderer = new LocationRenderer(mMap, this);
     }
 
     @Override
