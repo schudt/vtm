@@ -21,10 +21,19 @@ import org.oscim.map.Map;
 import org.oscim.renderer.LocationRenderer;
 
 public class LocationLayer extends Layer {
+
+    public double latitude;
+    public double longitude;
+    public double accurracy;
+
     public final LocationRenderer locationRenderer;
 
     public LocationLayer(Map map) {
         super(map);
+
+        this.latitude = map.getMapPosition().getLatitude();
+        this.longitude = map.getMapPosition().getLongitude();
+        this.accurracy = 1;
 
         mRenderer = locationRenderer = new LocationRenderer(mMap, this);
     }
@@ -41,6 +50,11 @@ public class LocationLayer extends Layer {
     }
 
     public void setPosition(double latitude, double longitude, double accuracy) {
+
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.accurracy = accuracy;
+
         double x = MercatorProjection.longitudeToX(longitude);
         double y = MercatorProjection.latitudeToY(latitude);
         double radius = accuracy / MercatorProjection.groundResolution(latitude, 1);
